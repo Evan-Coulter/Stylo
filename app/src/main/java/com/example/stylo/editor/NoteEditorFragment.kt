@@ -1,5 +1,6 @@
 package com.example.stylo.editor
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,9 @@ import com.example.stylo.MainActivity
 import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.RoomNote
+import jp.wasabeef.richeditor.RichEditor
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 
 class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
     private val viewModel: NoteEditorViewModel by viewModels {
@@ -37,6 +40,7 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initButtons(view)
+        initEditor(view)
     }
 
     private fun onNewState(newState: NoteEditorViewState) {
@@ -48,28 +52,29 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
     }
 
     private fun showClickHereState() {
-        view?.findViewById<TextView>(R.id.textView)?.text = "Click here state."
     }
 
     private fun showFullEditorState() {
-        view?.findViewById<TextView>(R.id.textView)?.text = "Full editor state."
     }
 
     private fun showSaveDialogState() {
-        view?.findViewById<TextView>(R.id.textView)?.text = "Save dialog state."
     }
 
 
     private fun initButtons(layout: View) {
-        layout.findViewById<Button>(R.id.button1).setOnClickListener {
-            viewModel.onEditorClicked()
-        }
-        layout.findViewById<Button>(R.id.button2).setOnClickListener {
-            viewModel.onSaveClicked("hello")
-        }
-        layout.findViewById<Button>(R.id.button3).setOnClickListener {
-            viewModel.onStart()
+        val editor = layout.findViewById<RichEditor>(R.id.editor)
+        layout.findViewById<Button>(R.id.italic).setOnClickListener { editor.setItalic() }
+        layout.findViewById<Button>(R.id.bold).setOnClickListener { editor.setBold() }
+        layout.findViewById<Button>(R.id.underline).setOnClickListener { editor.setUnderline() }
+        layout.findViewById<Button>(R.id.color).setOnClickListener { editor.setTextColor(Color.GREEN) }
+    }
+
+    private fun initEditor(layout: View) {
+        layout.findViewById<RichEditor>(R.id.editor).setOnTextChangeListener {
+            viewModel.onTextChanged(it)
         }
 
+        //TODO try this
+        // layout.findViewById<RichEditor>(R.id.editor).focusEditor()
     }
 }

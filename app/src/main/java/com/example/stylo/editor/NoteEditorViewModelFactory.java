@@ -8,8 +8,8 @@ import com.example.stylo.data.NotesRepository;
 import com.example.stylo.data.RoomNote;
 
 public class NoteEditorViewModelFactory implements ViewModelProvider.Factory {
-    private RoomNote note;
-    private NotesRepository repository;
+    private final RoomNote note;
+    private final NotesRepository repository;
 
     public NoteEditorViewModelFactory(RoomNote note, NotesRepository repository) {
         this.note = note;
