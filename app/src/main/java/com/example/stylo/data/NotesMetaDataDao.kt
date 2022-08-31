@@ -7,7 +7,7 @@ interface NotesMetaDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(note: RoomNote)
 
-    @Query("DELETE FROM roomnote WHERE id = :id")
+    @Query("DELETE FROM roomnote WHERE uid = :id")
     fun delete(id: Int)
 
     @Query("SELECT * FROM roomnote")

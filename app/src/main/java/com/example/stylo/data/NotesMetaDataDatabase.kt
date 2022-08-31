@@ -3,11 +3,10 @@ package com.example.stylo.data
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [RoomNote::class], version = 1)
+@Database(entities = [RoomNote::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class NotesMetaDataDatabase : RoomDatabase() {
     abstract fun notesMetaDataDao() : NotesMetaDataDao
-    abstract fun notesDataSource() : NotesRepository
 
     companion object {
         @Volatile
