@@ -6,43 +6,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".editor.NoteEditorFragment">
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleGroup"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:scrollbars="none">
 
-        <Button
-            android:id="@+id/italic"
-            android:text="Italic"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            style="?attr/materialButtonOutlinedStyle"/>
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleGroup"
+            android:layout_width="0dp"
+            android:layout_height="48dp">
+            <Button
+                android:id="@+id/italic"
+                android:text="Italic"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"/>
 
-        <Button
-            android:id="@+id/bold"
-            android:text="Bold"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            style="?attr/materialButtonOutlinedStyle"/>
+            <Button
+                android:id="@+id/bold"
+                android:text="Bold"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"/>
 
-        <Button
-            android:id="@+id/underline"
-            android:text="Underline"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            style="?attr/materialButtonOutlinedStyle"/>
+            <Button
+                android:id="@+id/underline"
+                android:text="Underline"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"/>
 
-        <Button
-            android:id="@+id/color"
-            android:text="Color"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            style="?attr/materialButtonOutlinedStyle"/>
+            <Button
+                android:id="@+id/color"
+                android:text="Color"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"/>
 
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+            <Button
+                android:id="@+id/save"
+                android:text="Save"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"/>
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </HorizontalScrollView>
 
 
     <jp.wasabeef.richeditor.RichEditor

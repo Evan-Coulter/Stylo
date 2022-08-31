@@ -13,7 +13,7 @@ class NoteEditorViewModel(note: RoomNote, private val repository: NotesRepositor
     private var editorText: String = ""
 
     private var _uiState: MutableStateFlow<NoteEditorViewState> = MutableStateFlow(
-        NoteEditorViewState.ShowClickHereMessage(
+        NoteEditorViewState.ShowPreviousJournalOrStartPrompt(
             editorTitle,
             editorText
         )
@@ -22,15 +22,11 @@ class NoteEditorViewModel(note: RoomNote, private val repository: NotesRepositor
         get() = _uiState
 
     fun onStart() {
-        _uiState.value = NoteEditorViewState.ShowClickHereMessage(editorTitle, editorText)
+        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(editorTitle, editorText)
     }
 
     fun onResume() {
-        _uiState.value = NoteEditorViewState.ShowClickHereMessage(editorTitle, editorText)
-    }
-
-    fun onEditorClicked() {
-        _uiState.value = NoteEditorViewState.ShowFullEditorView
+        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(editorTitle, editorText)
     }
 
     fun onTextChanged(text: String) {
@@ -39,6 +35,10 @@ class NoteEditorViewModel(note: RoomNote, private val repository: NotesRepositor
 
     fun onSaveClicked(title: String) {
         _uiState.value = NoteEditorViewState.ShowSavePrompt(title)
+    }
+
+    fun onTitleClicked() {
+        _uiState.value = NoteEditorViewState.ShowSetTitleState
     }
 
     fun onSaveFinished(title: String) {
