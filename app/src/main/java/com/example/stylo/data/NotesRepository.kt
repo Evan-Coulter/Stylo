@@ -1,9 +1,11 @@
 package com.example.stylo.data
 
+import java.util.*
+
 class NotesRepository (private val dao: NotesMetaDataDao) {
 
-    fun add(note: RoomNote, noteText: String) {
-        saveToFile(note, noteText)
+    fun add(note: RoomNote) {
+        saveToFile(note)
         dao.insert(note)
     }
 
@@ -12,10 +14,15 @@ class NotesRepository (private val dao: NotesMetaDataDao) {
     }
 
     fun getAll() : List<RoomNote>{
-        return dao.getAll()
+        //return dao.getAll()
+        return listOf(
+            RoomNote(0, "Journal 1", "","/file", Calendar.getInstance().time, Calendar.getInstance().time),
+            RoomNote(1, "Journal 2", "","/file", Calendar.getInstance().time, Calendar.getInstance().time),
+            RoomNote(2, "Journal 3", "","/file", Calendar.getInstance().time, Calendar.getInstance().time)
+        )
     }
 
-    private fun saveToFile(note: RoomNote, noteText: String) {
+    private fun saveToFile(note: RoomNote) {
         //TODO: implement save.
     }
 

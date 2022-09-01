@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import com.example.stylo.editor.NoteEditorFragment
+import com.example.stylo.list.NoteListFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                add<NoteEditorFragment>(R.id.fragmentContainer)
+                add<NoteListFragment>(R.id.fragmentContainer)
             }
         }
     }

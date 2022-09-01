@@ -5,32 +5,30 @@ import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.RoomNote
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 
 class NoteEditorViewModel(note: RoomNote, private val repository: NotesRepository) : ViewModel() {
     private val currentNote: RoomNote = note.copy()
-    private var editorTitle: String = currentNote.title
-    private var editorText: String = ""
 
     private var _uiState: MutableStateFlow<NoteEditorViewState> = MutableStateFlow(
         NoteEditorViewState.ShowPreviousJournalOrStartPrompt(
-            editorTitle,
-            editorText
+            currentNote.title,
+            currentNote.content
         )
     )
-    val uiState: StateFlow<NoteEditorViewState>
-        get() = _uiState
+    val uiState = _uiState.asStateFlow()
 
     fun onStart() {
-        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(editorTitle, editorText)
+        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(currentNote.title, currentNote.content)
     }
 
     fun onResume() {
-        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(editorTitle, editorText)
+        _uiState.value = NoteEditorViewState.ShowPreviousJournalOrStartPrompt(currentNote.title, currentNote.content)
     }
 
     fun onTextChanged(text: String) {
-        editorText = text
+        currentNote.title = text
     }
 
     fun onSaveClicked(title: String) {
@@ -38,17 +36,16 @@ class NoteEditorViewModel(note: RoomNote, private val repository: NotesRepositor
     }
 
     fun onTitleClicked() {
-        _uiState.value = NoteEditorViewState.ShowSetTitleState
+        _uiState.value = NoteEditorViewState.ShowSetTitleState(currentNote.title)
     }
 
     fun onSaveFinished(title: String) {
-        editorTitle = title
-        currentNote.title = editorTitle
+        currentNote.title = title
         currentNote.dateLastSaved = Calendar.getInstance().time
     }
 
     fun onEditorClosed() {
-        onSaveFinished(editorTitle)
-        repository.add(currentNote, editorText)
+        onSaveFinished(currentNote.title)
+        repository.add(currentNote)
     }
 }
