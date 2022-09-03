@@ -12,16 +12,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.stylo.MainActivity
 import com.example.stylo.MainApplication
 import com.example.stylo.R
-import com.example.stylo.data.RoomNote
+import com.example.stylo.data.model.RoomNoteBuilder
 import jp.wasabeef.richeditor.RichEditor
 import kotlinx.coroutines.launch
 
 class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
     private val viewModel: NoteEditorViewModel by viewModels {
-        NoteEditorViewModelFactory(RoomNote(), (requireActivity().application as MainApplication).notesRepository)
+        NoteEditorViewModelFactory(RoomNoteBuilder().create(), (requireActivity().application as MainApplication).notesRepository)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,7 +43,7 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
 
     private fun onNewState(newState: NoteEditorViewState) {
         when (newState) {
-            is NoteEditorViewState.ShowPreviousJournalOrStartPrompt -> showFullEditorState()
+            is NoteEditorViewState.ShowBasicEditorScreen -> showFullEditorState()
             is NoteEditorViewState.ShowSavePrompt -> showSaveDialogState()
             is NoteEditorViewState.ShowSetTitleState -> showSetTitleState()
         }
@@ -76,12 +75,6 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
             viewModel.onTextChanged(it)
         }
         layout.findViewById<RichEditor>(R.id.editor).focusEditor()
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onStart()
     }
 
     override fun onResume() {

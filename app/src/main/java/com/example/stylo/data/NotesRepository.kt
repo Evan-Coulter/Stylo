@@ -1,5 +1,7 @@
 package com.example.stylo.data
 
+import com.example.stylo.data.database.NotesMetaDataDao
+import com.example.stylo.data.model.RoomNote
 import java.util.*
 
 class NotesRepository (private val dao: NotesMetaDataDao) {

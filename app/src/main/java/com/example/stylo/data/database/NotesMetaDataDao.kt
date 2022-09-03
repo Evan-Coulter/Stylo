@@ -1,6 +1,7 @@
-package com.example.stylo.data
+package com.example.stylo.data.database
 
 import androidx.room.*
+import com.example.stylo.data.model.RoomNote
 
 @Dao
 interface NotesMetaDataDao {

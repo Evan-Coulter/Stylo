@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.stylo.data.NotesRepository;
-import com.example.stylo.data.RoomNote;
+import com.example.stylo.data.model.RoomNote;
 
 public class NoteEditorViewModelFactory implements ViewModelProvider.Factory {
     private final RoomNote note;

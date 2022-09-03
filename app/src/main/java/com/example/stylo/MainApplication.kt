@@ -1,7 +1,7 @@
 package com.example.stylo
 
 import android.app.Application
-import com.example.stylo.data.NotesMetaDataDatabase
+import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.NotesRepository
 
 class MainApplication : Application() {

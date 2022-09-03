@@ -12,12 +12,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.stylo.MainActivity
 import com.example.stylo.MainApplication
 import com.example.stylo.R
-import com.example.stylo.data.RoomNote
-import com.example.stylo.editor.NoteEditorViewModel
-import com.example.stylo.editor.NoteEditorViewState
+import com.example.stylo.data.model.RoomNote
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
 class NoteListFragment : Fragment() {
@@ -52,7 +50,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.list)
             is NoteListViewState.ShowNoNotesSavedYetPrompt -> showEmptyListState()
             is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
-            is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDiaog()
+            is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDialog()
             is NoteListViewState.ShowEditFolderNameOrColorDialog -> showEditFolderDialog()
         }
     }
@@ -60,7 +58,7 @@ class NoteListFragment : Fragment() {
     private fun showBasicListState(list: List<RoomNote>) {}
     private fun showEmptyListState() {}
     private fun showFoldersTrayDialog() {}
-    private fun showRenameNoteDiaog() {}
+    private fun showRenameNoteDialog() {}
     private fun showEditFolderDialog() {}
 
 
@@ -74,6 +72,9 @@ class NoteListFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.folder).setOnClickListener { Toast.makeText(context, "Folder clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.search).setOnClickListener { Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.list_card_switch).setOnClickListener { Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show() }
+        view.findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            Toast.makeText(context, "Switch to editor", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initRecyclerView(view: View) {

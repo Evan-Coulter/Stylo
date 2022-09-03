@@ -1,7 +1,7 @@
 package com.example.stylo.list
 
-import com.example.stylo.data.RoomFolder
-import com.example.stylo.data.RoomNote
+import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomNote
 
 sealed class NoteListViewState {
     object ShowNoNotesSavedYetPrompt : NoteListViewState()

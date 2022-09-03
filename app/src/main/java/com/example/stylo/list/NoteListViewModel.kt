@@ -10,6 +10,4 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
         NoteListViewState.ShowBasicListState(repository.getAll())
     )
     val uiState = _uiState.asStateFlow()
-
-
 }

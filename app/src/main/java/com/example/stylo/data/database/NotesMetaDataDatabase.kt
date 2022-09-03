@@ -1,7 +1,10 @@
-package com.example.stylo.data
+package com.example.stylo.data.database
 
 import android.content.Context
 import androidx.room.*
+import com.example.stylo.data.model.BelongsTo
+import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomNote
 
 @Database(entities = [RoomNote::class, RoomFolder::class, BelongsTo::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)

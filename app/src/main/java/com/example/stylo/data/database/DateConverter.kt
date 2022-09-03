@@ -1,4 +1,4 @@
-package com.example.stylo.data
+package com.example.stylo.data.database
 
 import androidx.room.TypeConverter
 import java.util.*
