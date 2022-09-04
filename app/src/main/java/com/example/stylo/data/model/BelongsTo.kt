@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
     ForeignKey(entity = RoomNote::class, parentColumns = arrayOf("uid"), childColumns = arrayOf("note"), onDelete = CASCADE),
     ForeignKey(entity = RoomFolder::class, parentColumns = arrayOf("uid"), childColumns = arrayOf("folder"))
 ])
-data class BelongsTo @JvmOverloads constructor(
-    @PrimaryKey(autoGenerate = true) var id: Int,
-    var note: String,
-    var folder: String
+data class BelongsTo constructor(
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    val note: String,
+    val folder: String
 )

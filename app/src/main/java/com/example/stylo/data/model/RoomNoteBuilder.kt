@@ -5,7 +5,7 @@ import java.util.*
 const val DEFAULT_NEW_NOTE_TITLE = "New Journal"
 
 class RoomNoteBuilder {
-    private var uid = -1;
+    private var uid = 0
     private var title = DEFAULT_NEW_NOTE_TITLE
     private var content = ""
     private var filePath = ""
@@ -42,5 +42,7 @@ class RoomNoteBuilder {
         return this
     }
 
-    fun create() = RoomNote(uid, title, content, filePath, dateCreated, dateLastModified)
+    fun create() : RoomNote{
+        return RoomNote(uid, title, content, filePath, dateCreated, dateLastModified)
+    }
 }
