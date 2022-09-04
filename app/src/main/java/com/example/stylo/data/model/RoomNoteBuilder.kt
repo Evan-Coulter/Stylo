@@ -42,7 +42,7 @@ class RoomNoteBuilder {
         return this
     }
 
-    fun create() : RoomNote{
+    fun build() : RoomNote{
         return RoomNote(uid, title, content, filePath, dateCreated, dateLastModified)
     }
 }

@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 data class RoomNote @JvmOverloads constructor(
-    @PrimaryKey(autoGenerate = true) var uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int,
     val title: String,
     @Ignore val content: String = "",
     val filePath: String,

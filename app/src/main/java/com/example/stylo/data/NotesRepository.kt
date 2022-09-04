@@ -12,7 +12,7 @@ class NotesRepository (private val dao: NotesMetaDataDao) {
     }
 
     fun delete(note: RoomNote) {
-        dao.delete(note.uid)
+        dao.deleteNote(note.uid)
     }
 
     fun getAll() : List<RoomNote>{

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
     private val viewModel: NoteEditorViewModel by viewModels {
-        NoteEditorViewModelFactory(RoomNoteBuilder().create(), (requireActivity().application as MainApplication).notesRepository)
+        NoteEditorViewModelFactory(RoomNoteBuilder().build(), (requireActivity().application as MainApplication).notesRepository)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
