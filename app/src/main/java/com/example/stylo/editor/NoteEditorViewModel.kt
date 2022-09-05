@@ -46,6 +46,6 @@ class NoteEditorViewModel(private val currentNote: RoomNote, private val reposit
 
     fun onEditorClosed() {
         onSaveFinished(currentNote.title)
-        repository.add(currentNote)
+        repository.addNote(currentNote)
     }
 }

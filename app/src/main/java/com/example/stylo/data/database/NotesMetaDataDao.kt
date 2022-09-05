@@ -1,6 +1,7 @@
 package com.example.stylo.data.database
 
 import androidx.room.*
+import com.example.stylo.data.model.BelongsTo
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
 
@@ -23,4 +24,13 @@ interface NotesMetaDataDao {
 
     @Query("SELECT * FROM roomfolder")
     fun getAllFolders(): List<RoomFolder>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(belongsTo: BelongsTo)
+
+    @Query("DELETE FROM belongsto WHERE id = :id")
+    fun deleteBelongsTo(id: Int)
+
+    @Query("SELECT * FROM belongsto")
+    fun getAllBelongsTo() : List<BelongsTo>
 }

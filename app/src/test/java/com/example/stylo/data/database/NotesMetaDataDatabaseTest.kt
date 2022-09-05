@@ -3,6 +3,8 @@ package com.example.stylo.data.database
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.example.stylo.data.model.BelongsToBuilder
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNoteBuilder
 import org.junit.After
@@ -59,7 +61,6 @@ class NotesMetaDataDatabaseTest {
     @Test
     fun `test insert then update and get`() {
         //Given one unique entry
-        val currentTime = Calendar.getInstance().time
         val builder = RoomNoteBuilder()
             .setTitle("Entry")
         var note = builder.build()
@@ -78,8 +79,6 @@ class NotesMetaDataDatabaseTest {
         note = notes.first()
         assertEquals("New Title", note.title)
     }
-
-
 
     @Test
     fun `test insert and get multiple entries`() {
@@ -134,14 +133,82 @@ class NotesMetaDataDatabaseTest {
         notesMetaDataDao.insert(RoomFolderBuilder().setName("Two").build())
 
         //When deleting one
-        val noteToDelete = notesMetaDataDao.getAllFolders().filter {
-            it.name == "One"
-        }.first()
+        val noteToDelete = notesMetaDataDao.getAllFolders().first { it.name == "One" }
         notesMetaDataDao.deleteFolder(noteToDelete.uid)
 
         //Then expect to only have one entry left
         val notes = notesMetaDataDao.getAllFolders()
         assertEquals(1, notes.size)
         assertEquals("Two", notes.first().name)
+    }
+
+    @Test
+    fun `test add note to folder`() {
+        //Given 1 note and 1 folder
+        notesMetaDataDao.insert(RoomNoteBuilder().setTitle("Cool Note").build())
+        val note = notesMetaDataDao.getAllNotes().first()
+        notesMetaDataDao.insert(RoomFolderBuilder().setName("All Folders").build())
+        val folder = notesMetaDataDao.getAllFolders().first()
+
+        //When that note belongs to that folder
+        notesMetaDataDao.insert(
+            BelongsToBuilder()
+                .setNote(note.uid)
+                .setFolder(folder.uid)
+                .build()
+        )
+
+        //Then we can retrieve our belongs to relationship between the note and folder
+        val belongsToRelationship = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(1, belongsToRelationship.size)
+        val recoveredNoteID = belongsToRelationship.first().note
+        val recoveredFolderID = belongsToRelationship.first().folder
+        val recoveredNote = notesMetaDataDao.getAllNotes().first { it.uid == recoveredNoteID }
+        val recoveredFolder = notesMetaDataDao.getAllFolders().first { it.uid == recoveredFolderID }
+        assertEquals("Cool Note", recoveredNote.title)
+        assertEquals("All Folders", recoveredFolder.name)
+    }
+
+    @Test
+    fun `test one note belongs to many folders`() {
+        //Given 1 note and 5 folders
+        val currentTime = Calendar.getInstance().time
+        val note = RoomNoteBuilder().setTitle("My Note")
+            .setDateCreated(currentTime)
+            .setDateLastModified(currentTime)
+            .build()
+        val folders : MutableList<RoomFolder> = mutableListOf()
+        for (i in 1..5) {
+            folders.add(RoomFolderBuilder().setName(i.toString()).build())
+        }
+        notesMetaDataDao.insert(note)
+        folders.forEach {
+            notesMetaDataDao.insert(it)
+        }
+
+        //When that note belongs to each folder
+        val recoveredNote = notesMetaDataDao.getAllNotes().also {
+            assertEquals(1, it.size)
+        }.first()
+        val recoveredFolders = notesMetaDataDao.getAllFolders()
+        assertEquals(5, recoveredFolders.size)
+        recoveredFolders.forEach {
+            notesMetaDataDao.insert(
+                BelongsToBuilder()
+                    .setNote(recoveredNote.uid)
+                    .setFolder(it.uid)
+                    .build()
+            )
+        }
+
+        //Then we expect to be able to recover a belongs to relation ship for each folder to this note
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(5, belongsTo.size)
+        belongsTo.forEach { relation ->
+            val belongsToNote = notesMetaDataDao.getAllNotes().first { it.uid == relation.note }
+            val belongsToFolder = notesMetaDataDao.getAllFolders().first { it.uid == relation.folder }
+            assertEquals("My Note", belongsToNote.title)
+            assertEquals(true, listOf(1, 2, 3, 4, 5).contains(belongsToFolder.name.toInt()))
+        }
     }
 }

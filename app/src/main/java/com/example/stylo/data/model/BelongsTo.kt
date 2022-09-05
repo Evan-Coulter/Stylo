@@ -11,6 +11,6 @@ import androidx.room.PrimaryKey
 ])
 data class BelongsTo constructor(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val note: String,
-    val folder: String
+    val note: Int,
+    val folder: Int
 )

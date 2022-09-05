@@ -1,27 +1,27 @@
 package com.example.stylo.data
 
 import com.example.stylo.data.database.NotesMetaDataDao
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
 import java.util.*
 
 class NotesRepository (private val dao: NotesMetaDataDao) {
 
-    fun add(note: RoomNote) {
+    fun addNote(note: RoomNote) {
         saveToFile(note)
         dao.insert(note)
+    }
+
+    fun addNoteToFolder(note: RoomNote, folder: RoomFolder) {
+
     }
 
     fun delete(note: RoomNote) {
         dao.deleteNote(note.uid)
     }
 
-    fun getAll() : List<RoomNote>{
-        //return dao.getAll()
-        return listOf(
-            RoomNote(0, "Journal 1", "","/file", Calendar.getInstance().time, Calendar.getInstance().time),
-            RoomNote(1, "Journal 2", "","/file", Calendar.getInstance().time, Calendar.getInstance().time),
-            RoomNote(2, "Journal 3", "","/file", Calendar.getInstance().time, Calendar.getInstance().time)
-        )
+    fun getAllNotes() : List<RoomNote>{
+        return dao.getAllNotes()
     }
 
     private fun saveToFile(note: RoomNote) {

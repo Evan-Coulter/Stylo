@@ -43,6 +43,6 @@ class RoomNoteBuilder {
     }
 
     fun build() : RoomNote{
-        return RoomNote(uid, title, content, filePath, dateCreated, dateLastModified)
+        return RoomNote(uid, title, filePath, dateCreated, dateLastModified, content)
     }
 }

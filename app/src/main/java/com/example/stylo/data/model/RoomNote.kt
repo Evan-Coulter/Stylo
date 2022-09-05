@@ -9,8 +9,8 @@ import java.util.*
 data class RoomNote @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true) val uid: Int,
     val title: String,
-    @Ignore val content: String = "",
     val filePath: String,
     val dateCreated: Date,
     val dateLastSaved: Date,
+    @Ignore val content: String = ""
 )

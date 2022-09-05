@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
     private var _uiState: MutableStateFlow<NoteListViewState> = MutableStateFlow(
-        NoteListViewState.ShowBasicListState(repository.getAll())
+        NoteListViewState.ShowBasicListState(repository.getAllNotes())
     )
     val uiState = _uiState.asStateFlow()
 }
