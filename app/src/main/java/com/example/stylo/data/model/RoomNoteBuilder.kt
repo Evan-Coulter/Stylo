@@ -3,14 +3,22 @@ package com.example.stylo.data.model
 import java.util.*
 
 const val DEFAULT_NEW_NOTE_TITLE = "New Journal"
+const val DEFAULT_NEW_NOTE_CONTENT = ""
+const val DEFAULT_NEW_NOTE_FILE_PATH = "new_file"
 
 class RoomNoteBuilder {
-    private var uid = 0
-    private var title = DEFAULT_NEW_NOTE_TITLE
-    private var content = ""
-    private var filePath = ""
-    private var dateCreated = Calendar.getInstance().time
-    private var dateLastModified = Calendar.getInstance().time
+    var uid = 0
+        private set
+    var title = DEFAULT_NEW_NOTE_TITLE
+        private set
+    var content = DEFAULT_NEW_NOTE_CONTENT
+        private set
+    var filePath = DEFAULT_NEW_NOTE_FILE_PATH
+        private set
+    var dateCreated: Date = Calendar.getInstance().time
+        private set
+    var dateLastModified: Date = Calendar.getInstance().time
+        private set
 
     fun setUID(id: Int) : RoomNoteBuilder {
         this.uid = id

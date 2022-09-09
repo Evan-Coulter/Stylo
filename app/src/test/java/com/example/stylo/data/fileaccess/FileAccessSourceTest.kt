@@ -19,7 +19,7 @@ class FileAccessSourceTest {
     @Test
     fun `test store and retrieve file`() {
         //Given one saved unique file
-        fileAccessor.createFile("file_name", "This is the contents of the file")
+        fileAccessor.saveFile("file_name", "This is the contents of the file")
 
         //Then we expect to be able to retrieve that file
         val fileContents = fileAccessor.getFileContents("file_name")
@@ -29,9 +29,9 @@ class FileAccessSourceTest {
     @Test
     fun `test store and delete files`() {
         //Given 3 saved files
-        fileAccessor.createFile("my_file_1", "One")
-        fileAccessor.createFile("my_file_2", "Two")
-        fileAccessor.createFile("my_file_3", "Three")
+        fileAccessor.saveFile("my_file_1", "One")
+        fileAccessor.saveFile("my_file_2", "Two")
+        fileAccessor.saveFile("my_file_3", "Three")
 
 
         //When 2 are deleted

@@ -81,4 +81,9 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
         super.onResume()
         viewModel.onResume()
     }
+
+    override fun onPause() {
+        viewModel.onEditorClosed()
+        super.onPause()
+    }
 }

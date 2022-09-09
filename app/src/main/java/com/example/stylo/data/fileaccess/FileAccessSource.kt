@@ -11,7 +11,7 @@ class FileAccessSource (private val context: Context) {
         context.deleteFile(fileName)
     }
 
-    fun createFile(fileName: String, contents: String) {
+    fun saveFile(fileName: String, contents: String) {
         context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
             it.write(contents.toByteArray())
         }
