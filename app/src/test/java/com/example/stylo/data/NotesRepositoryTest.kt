@@ -132,4 +132,45 @@ class NotesRepositoryTest {
             assertEquals(note.content, retrievedNote.content)
         }
     }
+
+
+    @Test
+    fun `test delete one note`() {
+        fail()
+    }
+
+    @Test
+    fun `test delete multiple notes`() {
+        fail()
+    }
+
+    @Test
+    fun `test add one note to one folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test add one note to multiple folders`() {
+        fail()
+    }
+
+    @Test
+    fun `test add many notes to one folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test add many notes to many folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test add one note to one folder then delete folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test add one note to many folder then delete one folder`() {
+        fail()
+    }
 }
