@@ -2,7 +2,6 @@ package com.example.stylo.editor
 
 import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
-import com.example.stylo.data.model.DEFAULT_NEW_NOTE_FILE_PATH
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,7 @@ class NoteEditorViewModel(currentNote: RoomNote, private val repository: NotesRe
         .setTitle(currentNote.title)
         .setContent(currentNote.content)
         .setUID(currentNote.uid)
-        .setFilePath(currentNote.filePath)
+        .setFileName(currentNote.filePath)
         .setDateCreated(currentNote.dateCreated)
         .setDateLastModified(currentNote.dateLastSaved)
 
@@ -47,12 +46,6 @@ class NoteEditorViewModel(currentNote: RoomNote, private val repository: NotesRe
         currentNoteBuilder
             .setTitle(title)
             .setDateLastModified(Calendar.getInstance().time)
-        val newFileName = if (currentNoteBuilder.filePath == DEFAULT_NEW_NOTE_FILE_PATH) {
-            repository.generateNewFileName(currentNoteBuilder.build())
-        } else {
-            currentNoteBuilder.filePath
-        }
-        currentNoteBuilder.setFilePath(newFileName)
         repository.addNote(currentNoteBuilder.build())
     }
 

@@ -4,7 +4,7 @@ import java.util.*
 
 const val DEFAULT_NEW_NOTE_TITLE = "New Journal"
 const val DEFAULT_NEW_NOTE_CONTENT = ""
-const val DEFAULT_NEW_NOTE_FILE_PATH = "new_file"
+const val DEFAULT_NEW_NOTE_FILE_NAME = "new_file"
 
 class RoomNoteBuilder {
     var uid = 0
@@ -13,7 +13,7 @@ class RoomNoteBuilder {
         private set
     var content = DEFAULT_NEW_NOTE_CONTENT
         private set
-    var filePath = DEFAULT_NEW_NOTE_FILE_PATH
+    var fileName = DEFAULT_NEW_NOTE_FILE_NAME
         private set
     var dateCreated: Date = Calendar.getInstance().time
         private set
@@ -35,8 +35,8 @@ class RoomNoteBuilder {
         return this
     }
 
-    fun setFilePath(filePath: String) : RoomNoteBuilder {
-        this.filePath = filePath
+    fun setFileName(filePath: String) : RoomNoteBuilder {
+        this.fileName = filePath
         return this
     }
 
@@ -50,7 +50,18 @@ class RoomNoteBuilder {
         return this
     }
 
-    fun build() : RoomNote{
-        return RoomNote(uid, title, filePath, dateCreated, dateLastModified, content)
+    fun build() : RoomNote {
+        return RoomNote(uid, title, fileName, dateCreated, dateLastModified, content)
+    }
+
+
+    fun clone(note: RoomNote) : RoomNoteBuilder {
+        this.uid = note.uid
+        this.content = note.content
+        this.title = note.title
+        this.fileName = note.filePath
+        this.dateCreated = note.dateCreated
+        this.dateLastModified = note.dateLastSaved
+        return this
     }
 }

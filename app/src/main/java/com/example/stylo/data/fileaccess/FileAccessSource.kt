@@ -2,6 +2,10 @@ package com.example.stylo.data.fileaccess
 
 import android.content.Context
 
+/**
+ * @throws IOException
+ */
+@Suppress("KDocUnresolvedReference")
 class FileAccessSource (private val context: Context) {
     fun getAllFilesNames() : Array<String> {
         return context.fileList()

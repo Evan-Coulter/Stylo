@@ -2,9 +2,7 @@ package com.example.stylo.data
 
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.fileaccess.FileAccessSource
-import com.example.stylo.data.model.BelongsToBuilder
-import com.example.stylo.data.model.RoomFolder
-import com.example.stylo.data.model.RoomNote
+import com.example.stylo.data.model.*
 
 //Is actually 127 but keeping it safe.
 private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
@@ -31,23 +29,32 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun getAllNotes() : List<RoomNote>{
-        return dao.getAllNotes()
+        val notes = dao.getAllNotes().map { note ->
+            val fileContent = fileAccessor.getFileContents(note.filePath)
+            RoomNoteBuilder().clone(note)
+                .setContent(fileContent)
+                .build()
+        }
+        return notes
     }
 
     private fun saveToFile(note: RoomNote) {
-        fileAccessor.saveFile(note.title, note.content)
+        fileAccessor.saveFile(note.filePath, note.content)
     }
 
-    fun generateNewFileName(note: RoomNote) : String {
-        val fileNames = fileAccessor.getAllFilesNames()
-        val newFileName = CharArray(ANDROID_FILE_NAME_LENGTH_LIMIT)
-        StringBuilder(note.title.filter { !it.isWhitespace() })
-            .getChars(0, ANDROID_FILE_NAME_LENGTH_LIMIT, newFileName, 0)
-        var counter = '1'
-        do {
-            newFileName[newFileName.size-1] = counter
-            counter++
-        } while(fileNames.contains(newFileName.toString()))
-        return newFileName.toString()
+    fun getCurrentOrGenerateNewFileName(note: RoomNote) : String {
+        return if (note.filePath == DEFAULT_NEW_NOTE_FILE_NAME) {
+            val fileNames = fileAccessor.getAllFilesNames()
+            val newFileName = StringBuilder(note.title)
+            var counter = '1'
+            newFileName.append(counter)
+            do {
+                newFileName[newFileName.length-1] = counter
+                counter++
+            } while(fileNames.contains(newFileName.toString()))
+            newFileName.toString()
+        } else {
+            note.filePath
+        }
     }
 }

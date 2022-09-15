@@ -42,7 +42,7 @@ class NotesMetaDataDatabaseTest {
             .setTitle("My Awesome Note")
             .setDateCreated(currentTime)
             .setDateLastModified(currentTime)
-            .setFilePath("/filepath")
+            .setFileName("/filepath")
             .build()
 
         //When inserted and retrieved
