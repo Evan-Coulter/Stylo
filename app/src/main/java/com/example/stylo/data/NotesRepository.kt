@@ -26,6 +26,7 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
 
     fun delete(note: RoomNote) {
         dao.deleteNote(note.uid)
+        fileAccessor.deleteFile(note.filePath)
     }
 
     fun getAllNotes() : List<RoomNote>{

@@ -136,7 +136,21 @@ class NotesRepositoryTest {
 
     @Test
     fun `test delete one note`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        repository.addNote(noteBuilder.build())
+        var retrievedNotes = repository.getAllNotes()
+        assertEquals(1, retrievedNotes.size)
+        assertEquals(1, fileAccessor.getAllFilesNames().size)
+        assertEquals(retrievedNotes[0].filePath, fileAccessor.getAllFilesNames()[0])
+        assertEquals("Hello", retrievedNotes[0].title)
+        assertEquals("World", retrievedNotes[0].content)
+        repository.delete(retrievedNotes[0])
+        retrievedNotes = repository.getAllNotes()
+        assertEquals(0, retrievedNotes.size)
+        assertEquals(0, fileAccessor.getAllFilesNames().size)
     }
 
     @Test
