@@ -1,6 +1,7 @@
 package com.example.stylo.data
 
 import com.example.stylo.data.database.NotesMetaDataDao
+import com.example.stylo.data.exceptions.FilePathNotSetException
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.*
 
@@ -10,6 +11,9 @@ private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 
     fun addNote(note: RoomNote) {
+        if (note.filePath.isEmpty()) {
+            throw FilePathNotSetException()
+        }
         //Save as file
         saveToFile(note)
         //Save file meta data in database

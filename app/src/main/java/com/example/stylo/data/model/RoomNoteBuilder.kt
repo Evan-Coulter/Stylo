@@ -4,7 +4,7 @@ import java.util.*
 
 const val DEFAULT_NEW_NOTE_TITLE = "New Journal"
 const val DEFAULT_NEW_NOTE_CONTENT = ""
-const val DEFAULT_NEW_NOTE_FILE_NAME = "new_file"
+const val DEFAULT_NEW_NOTE_FILE_NAME = ""
 
 class RoomNoteBuilder {
     var uid = 0

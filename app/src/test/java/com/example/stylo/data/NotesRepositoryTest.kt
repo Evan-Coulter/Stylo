@@ -5,10 +5,12 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
+import com.example.stylo.data.exceptions.FilePathNotSetException
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before
@@ -52,7 +54,7 @@ class NotesRepositoryTest {
 
         try {
             //When inserted into repository
-            builder.setTitle(repository.getCurrentOrGenerateNewFileName(builder.build()))
+            builder.setFileName(repository.getCurrentOrGenerateNewFileName(builder.build()))
             val note = builder.build()
             repository.addNote(note)
 
@@ -133,6 +135,20 @@ class NotesRepositoryTest {
         }
     }
 
+    @Test
+    fun `test insert one note without a filepath`() {
+        val note = RoomNoteBuilder()
+            .setTitle("Hello World!")
+            .setContent("Hello World!")
+            .build()
+        try {
+            repository.addNote(note)
+            fail()
+        } catch (t: FilePathNotSetException) {
+            //pass
+        }
+    }
+
 
     @Test
     fun `test delete one note`() {
@@ -155,7 +171,29 @@ class NotesRepositoryTest {
 
     @Test
     fun `test delete multiple notes`() {
-        fail()
+        val notesBuilders = mutableListOf<RoomNoteBuilder>()
+        notesBuilders.add(RoomNoteBuilder().setTitle("Hello").setContent("World 1"))
+        notesBuilders.add(RoomNoteBuilder().setTitle("Goodbye").setContent("World 2"))
+        notesBuilders.add(RoomNoteBuilder().setTitle("Greetings").setContent("World 3"))
+        notesBuilders.add(RoomNoteBuilder().setTitle("Salutations").setContent("World 4"))
+        notesBuilders.add(RoomNoteBuilder().setTitle("Hey").setContent("World 5"))
+        notesBuilders.forEach {
+            it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+            repository.addNote(it.build())
+        }
+        assertEquals(5, repository.getAllNotes().size)
+        assertEquals(5, fileAccessor.getAllFilesNames().size)
+        val note2 = repository.getAllNotes().first { it.title == "Goodbye" && it.content == "World 2" }
+        val note4 = repository.getAllNotes().first { it.title == "Salutations" && it.content == "World 4" }
+        repository.delete(note2)
+        repository.delete(note4)
+        assertEquals(3, repository.getAllNotes().size)
+        assertEquals(3, fileAccessor.getAllFilesNames().size)
+        Assert.assertFalse(repository.getAllNotes().map { it.title }.contains("Goodbye"))
+        Assert.assertFalse(repository.getAllNotes().map { it.title }.contains("Salutations"))
+        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Hello"))
+        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Greetings"))
+        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Hey"))
     }
 
     @Test
