@@ -2,6 +2,8 @@ package com.example.stylo.data
 
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.exceptions.FilePathNotSetException
+import com.example.stylo.data.exceptions.FolderNotFoundException
+import com.example.stylo.data.exceptions.FolderNotInitializedException
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.*
 
@@ -10,7 +12,7 @@ private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
 
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 
-    fun addNote(note: RoomNote) {
+    fun add(note: RoomNote) {
         if (note.filePath.isEmpty()) {
             throw FilePathNotSetException()
         }
@@ -18,6 +20,13 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         saveToFile(note)
         //Save file meta data in database
         dao.insert(note)
+    }
+
+    fun add(folder: RoomFolder) {
+        if (folder.name.isEmpty() || folder.color.isEmpty()) {
+            throw FolderNotInitializedException()
+        }
+        dao.insert(folder)
     }
 
     fun addNoteToFolder(note: RoomNote, folder: RoomFolder) {
@@ -28,9 +37,21 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         dao.insert(belongsTo)
     }
 
+    fun removeNoteFromFolder(note: RoomNote, folder: RoomFolder) {
+        val belongsTo = dao.getAllBelongsTo().first { it.folder == folder.uid && it.note == folder.uid }
+        dao.deleteBelongsTo(belongsTo.id)
+    }
+
     fun delete(note: RoomNote) {
         dao.deleteNote(note.uid)
         fileAccessor.deleteFile(note.filePath)
+    }
+
+    fun delete(folder: RoomFolder) {
+        if (!getAllFolders().contains(folder)) {
+            throw FolderNotFoundException()
+        }
+        dao.deleteFolder(folder.uid)
     }
 
     fun getAllNotes() : List<RoomNote>{
@@ -41,6 +62,10 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
                 .build()
         }
         return notes
+    }
+
+    fun getAllFolders() : List<RoomFolder> {
+        return dao.getAllFolders()
     }
 
     private fun saveToFile(note: RoomNote) {

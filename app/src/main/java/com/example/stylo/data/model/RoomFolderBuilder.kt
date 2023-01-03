@@ -2,8 +2,8 @@ package com.example.stylo.data.model
 
 class RoomFolderBuilder {
     private var uid: Int = 0
-    private var name: String = "New Journal"
-    private var color: String = "White"
+    private var name: String = ""
+    private var color: String = ""
 
     fun setUID(id: Int) : RoomFolderBuilder {
         this.uid = id

@@ -6,13 +6,14 @@ import androidx.test.core.app.ApplicationProvider
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.exceptions.FilePathNotSetException
+import com.example.stylo.data.exceptions.FolderNotFoundException
+import com.example.stylo.data.exceptions.FolderNotInitializedException
 import com.example.stylo.data.fileaccess.FileAccessSource
+import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
 import org.junit.After
-import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,7 +57,7 @@ class NotesRepositoryTest {
             //When inserted into repository
             builder.setFileName(repository.getCurrentOrGenerateNewFileName(builder.build()))
             val note = builder.build()
-            repository.addNote(note)
+            repository.add(note)
 
             //Then we should be able to recover this note from repository with all fields intact
             val retrievedNote = repository.getAllNotes().also {
@@ -86,7 +87,7 @@ class NotesRepositoryTest {
             //When inserted into repository
             notes.forEach {
                 builder.clone(it).setFileName(repository.getCurrentOrGenerateNewFileName(builder.build()))
-                repository.addNote(builder.build())
+                repository.add(builder.build())
             }
 
             //Then expect to be able to retrieve all our notes
@@ -120,7 +121,7 @@ class NotesRepositoryTest {
 
         //When inserted into repository
         notes.forEach {
-            repository.addNote(RoomNoteBuilder().clone(it).setFileName(
+            repository.add(RoomNoteBuilder().clone(it).setFileName(
                 repository.getCurrentOrGenerateNewFileName(it)
             ).build())
         }
@@ -142,7 +143,7 @@ class NotesRepositoryTest {
             .setContent("Hello World!")
             .build()
         try {
-            repository.addNote(note)
+            repository.add(note)
             fail()
         } catch (t: FilePathNotSetException) {
             //pass
@@ -156,7 +157,7 @@ class NotesRepositoryTest {
             .setTitle("Hello")
             .setContent("World")
         noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-        repository.addNote(noteBuilder.build())
+        repository.add(noteBuilder.build())
         var retrievedNotes = repository.getAllNotes()
         assertEquals(1, retrievedNotes.size)
         assertEquals(1, fileAccessor.getAllFilesNames().size)
@@ -179,7 +180,7 @@ class NotesRepositoryTest {
         notesBuilders.add(RoomNoteBuilder().setTitle("Hey").setContent("World 5"))
         notesBuilders.forEach {
             it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
-            repository.addNote(it.build())
+            repository.add(it.build())
         }
         assertEquals(5, repository.getAllNotes().size)
         assertEquals(5, fileAccessor.getAllFilesNames().size)
@@ -189,11 +190,75 @@ class NotesRepositoryTest {
         repository.delete(note4)
         assertEquals(3, repository.getAllNotes().size)
         assertEquals(3, fileAccessor.getAllFilesNames().size)
-        Assert.assertFalse(repository.getAllNotes().map { it.title }.contains("Goodbye"))
-        Assert.assertFalse(repository.getAllNotes().map { it.title }.contains("Salutations"))
-        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Hello"))
-        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Greetings"))
-        Assert.assertTrue(repository.getAllNotes().map { it.title }.contains("Hey"))
+        assertFalse(repository.getAllNotes().map { it.title }.contains("Goodbye"))
+        assertFalse(repository.getAllNotes().map { it.title }.contains("Salutations"))
+        assertTrue(repository.getAllNotes().map { it.title }.contains("Hello"))
+        assertTrue(repository.getAllNotes().map { it.title }.contains("Greetings"))
+        assertTrue(repository.getAllNotes().map { it.title }.contains("Hey"))
+    }
+
+    @Test
+    fun `test attempt to create uninitialized note`() {
+        fail()
+    }
+
+    @Test
+    fun `test attempt to delete missing note`() {
+        fail()
+    }
+
+    @Test
+    fun `test create new folder`() {
+        val folder = RoomFolderBuilder()
+            .setColor("Blue")
+            .setName("Homework")
+            .build()
+        repository.add(folder)
+        val folders = repository.getAllFolders()
+        assertEquals(1, folders.size)
+        assertEquals("Blue", folders[0].color)
+        assertEquals("Homework", folders[0].name)
+        assertNotEquals(0, folders[0].uid)
+    }
+
+    @Test
+    fun `test attempt to create uninitialized folder`() {
+        val folder = RoomFolderBuilder().build()
+        assertThrows(FolderNotInitializedException::class.java) {
+            repository.add(folder)
+        }
+    }
+
+    @Test
+    fun `test delete folder`() {
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Chores")
+            .setColor("Green")
+        repository.add(folderBuilder.build())
+        assertEquals(1, repository.getAllFolders().size)
+        assertEquals("Green", repository.getAllFolders()[0].color)
+        assertEquals("Chores", repository.getAllFolders()[0].name)
+        repository.delete(repository.getAllFolders()[0])
+        assertEquals(0, repository.getAllFolders().size)
+    }
+
+    @Test
+    fun `test attempt to delete missing folder`() {
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Chores")
+            .setColor("Green")
+        repository.add(folderBuilder.build())
+        assertEquals(1, repository.getAllFolders().size)
+        assertEquals("Green", repository.getAllFolders()[0].color)
+        assertEquals("Chores", repository.getAllFolders()[0].name)
+        folderBuilder.setUID(100)
+        assertThrows(FolderNotFoundException::class.java) {
+            repository.delete(folderBuilder.build())
+        }
+        assertEquals(1, repository.getAllFolders().size)
+        folderBuilder.setUID(1)
+        repository.delete(folderBuilder.build())
+        assertEquals(0, repository.getAllFolders().size)
     }
 
     @Test
@@ -223,6 +288,16 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to many folder then delete one folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test add note to missing folder`() {
+        fail()
+    }
+
+    @Test
+    fun `test delete note from missing folder`() {
         fail()
     }
 }

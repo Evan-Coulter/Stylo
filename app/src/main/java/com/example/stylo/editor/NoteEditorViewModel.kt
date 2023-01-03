@@ -46,7 +46,7 @@ class NoteEditorViewModel(currentNote: RoomNote, private val repository: NotesRe
         currentNoteBuilder
             .setTitle(title)
             .setDateLastModified(Calendar.getInstance().time)
-        repository.addNote(currentNoteBuilder.build())
+        repository.add(currentNoteBuilder.build())
     }
 
     fun onSaveCanceled() {
