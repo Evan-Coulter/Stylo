@@ -1,13 +1,12 @@
 package com.example.stylo.data
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
-import com.example.stylo.data.exceptions.FilePathNotSetException
-import com.example.stylo.data.exceptions.FolderNotFoundException
-import com.example.stylo.data.exceptions.FolderNotInitializedException
+import com.example.stylo.data.exceptions.*
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNote
@@ -22,7 +21,8 @@ import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class NotesRepositoryTest {
-    private lateinit var notesMetaDataDao: NotesMetaDataDao
+    @VisibleForTesting
+    lateinit var notesMetaDataDao: NotesMetaDataDao
     private lateinit var database: NotesMetaDataDatabase
     private lateinit var repository: NotesRepository
     private lateinit var fileAccessor: FileAccessSource
@@ -142,11 +142,8 @@ class NotesRepositoryTest {
             .setTitle("Hello World!")
             .setContent("Hello World!")
             .build()
-        try {
+        assertThrows(FilePathNotSetException::class.java) {
             repository.add(note)
-            fail()
-        } catch (t: FilePathNotSetException) {
-            //pass
         }
     }
 
@@ -199,12 +196,27 @@ class NotesRepositoryTest {
 
     @Test
     fun `test attempt to create uninitialized note`() {
-        fail()
+        val note = RoomNoteBuilder().build()
+        assertThrows(NoteNotInitializedException::class.java) {
+            repository.add(note)
+        }
     }
 
     @Test
     fun `test attempt to delete missing note`() {
-        fail()
+        val note = RoomNoteBuilder()
+            .setTitle("My Favourite Note")
+            .setContent("Hello World!")
+        note.setFileName(repository.getCurrentOrGenerateNewFileName(note.build()))
+        repository.add(note.build())
+        note.setUID(1000)
+        assertThrows(NoteNotFoundException::class.java) {
+            repository.delete(note.build())
+        }
+        assertEquals(1, repository.getAllNotes().size)
+        note.setUID(1)
+        repository.delete(note.build())
+        assertEquals(0, repository.getAllNotes().size)
     }
 
     @Test
@@ -263,6 +275,45 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to one folder`() {
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hi")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Notes")
+            .setColor("Blue")
+        val noteId = repository.add(noteBuilder.build()).toInt()
+        val folderId = repository.add(folderBuilder.build()).toInt()
+        val note = repository.getAllNotes().first { it.uid == noteId }
+        val folder = repository.getAllFolders().first { it.uid == folderId }
+        repository.addNoteToFolder(note, folder)
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(1, belongsTo.size)
+    }
+
+    @Test
+    fun `test attempt to add missing note to folder`() {
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hi")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Notes")
+            .setColor("Blue")
+        val folderId = repository.add(folderBuilder.build()).toInt()
+        val folder = repository.getAllFolders().first { it.uid == folderId }
+        assertThrows(NoteNotFoundException::class.java) {
+            repository.addNoteToFolder(noteBuilder.build(), folder)
+        }
+        assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
+        val noteId = repository.add(noteBuilder.build()).toInt()
+        val note = repository.getAllNotes().first { it.uid == noteId }
+        repository.addNoteToFolder(note, folder)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
+    }
+
+    @Test
+    fun `test attempt to add note to missing folder`() {
         fail()
     }
 
@@ -288,11 +339,6 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to many folder then delete one folder`() {
-        fail()
-    }
-
-    @Test
-    fun `test add note to missing folder`() {
         fail()
     }
 

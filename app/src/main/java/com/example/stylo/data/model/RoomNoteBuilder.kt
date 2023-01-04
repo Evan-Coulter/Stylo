@@ -2,7 +2,7 @@ package com.example.stylo.data.model
 
 import java.util.*
 
-const val DEFAULT_NEW_NOTE_TITLE = "New Journal"
+const val DEFAULT_NEW_NOTE_TITLE = ""
 const val DEFAULT_NEW_NOTE_CONTENT = ""
 const val DEFAULT_NEW_NOTE_FILE_NAME = ""
 

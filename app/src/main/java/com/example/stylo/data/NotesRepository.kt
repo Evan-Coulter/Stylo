@@ -1,9 +1,7 @@
 package com.example.stylo.data
 
 import com.example.stylo.data.database.NotesMetaDataDao
-import com.example.stylo.data.exceptions.FilePathNotSetException
-import com.example.stylo.data.exceptions.FolderNotFoundException
-import com.example.stylo.data.exceptions.FolderNotInitializedException
+import com.example.stylo.data.exceptions.*
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.*
 
@@ -12,29 +10,35 @@ private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
 
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 
-    fun add(note: RoomNote) {
+    fun add(note: RoomNote): Long {
+        if (note.title.isEmpty() || note.content.isEmpty()) {
+            throw NoteNotInitializedException()
+        }
         if (note.filePath.isEmpty()) {
             throw FilePathNotSetException()
         }
         //Save as file
         saveToFile(note)
         //Save file meta data in database
-        dao.insert(note)
+        return dao.insert(note)
     }
 
-    fun add(folder: RoomFolder) {
+    fun add(folder: RoomFolder): Long {
         if (folder.name.isEmpty() || folder.color.isEmpty()) {
             throw FolderNotInitializedException()
         }
-        dao.insert(folder)
+        return dao.insert(folder)
     }
 
-    fun addNoteToFolder(note: RoomNote, folder: RoomFolder) {
+    fun addNoteToFolder(note: RoomNote, folder: RoomFolder): Long {
+        if (!getAllNotes().contains(note)) {
+            throw NoteNotFoundException()
+        }
         val belongsTo = BelongsToBuilder()
             .setFolder(folder.uid)
             .setNote(note.uid)
             .build()
-        dao.insert(belongsTo)
+        return dao.insert(belongsTo)
     }
 
     fun removeNoteFromFolder(note: RoomNote, folder: RoomFolder) {
@@ -43,6 +47,9 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun delete(note: RoomNote) {
+        if (!getAllNotes().contains(note)) {
+            throw NoteNotFoundException()
+        }
         dao.deleteNote(note.uid)
         fileAccessor.deleteFile(note.filePath)
     }

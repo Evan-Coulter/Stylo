@@ -8,7 +8,7 @@ import com.example.stylo.data.model.RoomNote
 @Dao
 interface NotesMetaDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(note: RoomNote)
+    fun insert(note: RoomNote): Long
 
     @Query("DELETE FROM roomnote WHERE uid = :id")
     fun deleteNote(id: Int)
@@ -17,7 +17,7 @@ interface NotesMetaDataDao {
     fun getAllNotes(): List<RoomNote>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(folder: RoomFolder)
+    fun insert(folder: RoomFolder): Long
 
     @Query("DELETE FROM roomfolder WHERE uid = :id")
     fun deleteFolder(id: Int)
@@ -26,7 +26,7 @@ interface NotesMetaDataDao {
     fun getAllFolders(): List<RoomFolder>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(belongsTo: BelongsTo)
+    fun insert(belongsTo: BelongsTo): Long
 
     @Query("DELETE FROM belongsto WHERE id = :id")
     fun deleteBelongsTo(id: Int)
