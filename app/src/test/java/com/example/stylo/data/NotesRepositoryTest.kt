@@ -8,7 +8,6 @@ import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.exceptions.*
 import com.example.stylo.data.fileaccess.FileAccessSource
-import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
