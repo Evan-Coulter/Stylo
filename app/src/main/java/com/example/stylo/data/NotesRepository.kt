@@ -34,6 +34,9 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         if (!getAllNotes().contains(note)) {
             throw NoteNotFoundException()
         }
+        if (!getAllFolders().contains(folder)) {
+            throw FolderNotFoundException()
+        }
         val belongsTo = BelongsToBuilder()
             .setFolder(folder.uid)
             .setNote(note.uid)

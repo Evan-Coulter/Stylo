@@ -8,6 +8,7 @@ import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.exceptions.*
 import com.example.stylo.data.fileaccess.FileAccessSource
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
@@ -314,7 +315,23 @@ class NotesRepositoryTest {
 
     @Test
     fun `test attempt to add note to missing folder`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hi")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Notes")
+            .setColor("Blue")
+        val noteId = repository.add(noteBuilder.build()).toInt()
+        val note = repository.getAllNotes().first { it.uid == noteId }
+        assertThrows(FolderNotFoundException::class.java) {
+            repository.addNoteToFolder(note, folderBuilder.build())
+        }
+        assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
+        val folderId = repository.add(folderBuilder.build()).toInt()
+        val folder = repository.getAllFolders().first { it.uid == folderId }
+        repository.addNoteToFolder(note, folder)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
     }
 
     @Test
