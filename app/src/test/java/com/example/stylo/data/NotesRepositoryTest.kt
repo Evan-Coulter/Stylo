@@ -8,6 +8,7 @@ import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.exceptions.*
 import com.example.stylo.data.fileaccess.FileAccessSource
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
@@ -335,7 +336,30 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to multiple folders`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello World!")
+            .setContent("My Note")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val noteID = repository.add(noteBuilder.build()).toInt()
+        val note = repository.getAllNotes().first { it.uid == noteID }
+        val folders = mutableListOf<RoomFolder>()
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Folder 1")
+            .setColor("Blue")
+        folders.add(folderBuilder.build())
+        folderBuilder.setName("Folder 2")
+        folderBuilder.setColor("Green")
+        folders.add(folderBuilder.build())
+        folderBuilder.setName("Folder 3")
+        folderBuilder.setColor("Red")
+        folders.add(folderBuilder.build())
+        folders.forEach {
+            val folderID = repository.add(it).toInt()
+            val folder = repository.getAllFolders().first { it.uid == folderID }
+            repository.addNoteToFolder(note, folder)
+        }
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(3, belongsTo.size)
     }
 
     @Test
