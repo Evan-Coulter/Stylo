@@ -135,6 +135,8 @@ class NotesRepositoryTest {
             val retrievedNote = retrievedNotes.first { it.title == i.toString() }
             assertEquals(note.content, retrievedNote.content)
         }
+        fail()
+        //TODO: check that all filenames are unique
     }
 
     @Test
@@ -364,7 +366,36 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add many notes to one folder`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+        val notes = mutableListOf<RoomNote>()
+
+        noteBuilder.setTitle("Hello").setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        var noteID = repository.add(noteBuilder.build()).toInt()
+        notes.add(repository.getAllNotes().first { it.uid ==  noteID})
+
+        noteBuilder.setTitle("Goodbye").setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        noteID = repository.add(noteBuilder.build()).toInt()
+        notes.add(repository.getAllNotes().first { it.uid ==  noteID})
+
+        noteBuilder.setTitle("Greetings").setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        noteID = repository.add(noteBuilder.build()).toInt()
+        notes.add(repository.getAllNotes().first { it.uid ==  noteID})
+
+        val folderBuilder = RoomFolderBuilder()
+            .setName("My Notes")
+            .setColor("Green")
+        val folderID = repository.add(folderBuilder.build()).toInt()
+        val folder = repository.getAllFolders().first { it.uid == folderID }
+        notes.forEach {
+            repository.addNoteToFolder(it, folder)
+        }
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        val retrievedNotes = repository.getAllNotes()
+        assertEquals(3, belongsTo.size)
+        assertEquals(3, retrievedNotes.size)
     }
 
     @Test
