@@ -400,7 +400,36 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add many notes to many folder`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+        val notes = mutableListOf<RoomNote>()
+        for (i in 0..4) {
+            noteBuilder.setTitle(i.toString())
+            noteBuilder.setContent(i.toString())
+            noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+            val noteID = repository.add(noteBuilder.build()).toInt()
+            val note = repository.getAllNotes().first { it.uid == noteID }
+            notes.add(note)
+        }
+        val folderBuilder = RoomFolderBuilder()
+        val folders = mutableListOf<RoomFolder>()
+        notes.forEachIndexed { i: Int, roomNote: RoomNote ->
+            folderBuilder.setColor(i.toString())
+            folderBuilder.setName(i.toString())
+            val folderID = repository.add(folderBuilder.build()).toInt()
+            val folder = repository.getAllFolders().first { it.uid == folderID }
+            folders.add(folder)
+            notes.forEach { note ->
+                //TODO fix this, is throwing error b/c filePath for every note is the same.
+                repository.addNoteToFolder(note, folder)
+            }
+        }
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(5, belongsTo.size)
+        for (i in 0..4) {
+            belongsTo.filter { it.note == i }.size.apply {
+                assertEquals(5, this)
+            }
+        }
     }
 
     @Test
