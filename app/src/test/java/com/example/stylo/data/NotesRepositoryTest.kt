@@ -135,7 +135,7 @@ class NotesRepositoryTest {
             val retrievedNote = retrievedNotes.first { it.title == i.toString() }
             assertEquals(note.content, retrievedNote.content)
         }
-        fail()
+        assertEquals(100, retrievedNotes.map{it.filePath}.distinct().size)
         //TODO: check that all filenames are unique
     }
 
@@ -400,9 +400,9 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add many notes to many folder`() {
-        val noteBuilder = RoomNoteBuilder()
         val notes = mutableListOf<RoomNote>()
         for (i in 0..4) {
+            val noteBuilder = RoomNoteBuilder()
             noteBuilder.setTitle(i.toString())
             noteBuilder.setContent(i.toString())
             noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
@@ -412,6 +412,7 @@ class NotesRepositoryTest {
         }
         val folderBuilder = RoomFolderBuilder()
         val folders = mutableListOf<RoomFolder>()
+        assertEquals(5, repository.getAllNotes().map{it.filePath}.distinct().size)
         notes.forEachIndexed { i: Int, roomNote: RoomNote ->
             folderBuilder.setColor(i.toString())
             folderBuilder.setName(i.toString())
@@ -424,8 +425,8 @@ class NotesRepositoryTest {
             }
         }
         val belongsTo = notesMetaDataDao.getAllBelongsTo()
-        assertEquals(5, belongsTo.size)
-        for (i in 0..4) {
+        assertEquals(25, belongsTo.size)
+        for (i in 1..5) {
             belongsTo.filter { it.note == i }.size.apply {
                 assertEquals(5, this)
             }
