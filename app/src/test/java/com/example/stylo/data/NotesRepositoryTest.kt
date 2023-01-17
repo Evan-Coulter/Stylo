@@ -45,6 +45,31 @@ class NotesRepositoryTest {
     }
 
     @Test
+    fun `test get note by ID`() {
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello World")
+            .setContent("Goodbye World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val noteID = repository.add(noteBuilder.build())
+        val note = repository.getNote(noteID)
+        assertEquals("Hello World", note.title)
+        assertEquals("Goodbye World", note.content)
+        assertEquals("Hello World1", note.filePath)
+    }
+
+    @Test
+    fun `test get folder by ID`() {
+        val folderBuilder = RoomFolderBuilder()
+            .setColor("Blue")
+            .setName("Hi")
+        val folderID = repository.add(folderBuilder.build())
+        val folder = repository.getFolder(folderID)
+        assertEquals(1, folder.uid)
+        assertEquals("Blue", folder.color)
+        assertEquals("Hi", folder.name)
+    }
+
+    @Test
     fun `test add and retrieve new note with its content`() {
         //Given a new note with content that we want to add to repository
         val currentTime = Calendar.getInstance().time
@@ -285,8 +310,8 @@ class NotesRepositoryTest {
         val folderBuilder = RoomFolderBuilder()
             .setName("Notes")
             .setColor("Blue")
-        val noteId = repository.add(noteBuilder.build()).toInt()
-        val folderId = repository.add(folderBuilder.build()).toInt()
+        val noteId = repository.add(noteBuilder.build())
+        val folderId = repository.add(folderBuilder.build())
         val note = repository.getAllNotes().first { it.uid == noteId }
         val folder = repository.getAllFolders().first { it.uid == folderId }
         repository.addNoteToFolder(note, folder)
@@ -303,13 +328,13 @@ class NotesRepositoryTest {
         val folderBuilder = RoomFolderBuilder()
             .setName("Notes")
             .setColor("Blue")
-        val folderId = repository.add(folderBuilder.build()).toInt()
+        val folderId = repository.add(folderBuilder.build())
         val folder = repository.getAllFolders().first { it.uid == folderId }
         assertThrows(NoteNotFoundException::class.java) {
             repository.addNoteToFolder(noteBuilder.build(), folder)
         }
         assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
-        val noteId = repository.add(noteBuilder.build()).toInt()
+        val noteId = repository.add(noteBuilder.build())
         val note = repository.getAllNotes().first { it.uid == noteId }
         repository.addNoteToFolder(note, folder)
         assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
@@ -324,13 +349,13 @@ class NotesRepositoryTest {
         val folderBuilder = RoomFolderBuilder()
             .setName("Notes")
             .setColor("Blue")
-        val noteId = repository.add(noteBuilder.build()).toInt()
+        val noteId = repository.add(noteBuilder.build())
         val note = repository.getAllNotes().first { it.uid == noteId }
         assertThrows(FolderNotFoundException::class.java) {
             repository.addNoteToFolder(note, folderBuilder.build())
         }
         assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
-        val folderId = repository.add(folderBuilder.build()).toInt()
+        val folderId = repository.add(folderBuilder.build())
         val folder = repository.getAllFolders().first { it.uid == folderId }
         repository.addNoteToFolder(note, folder)
         assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
@@ -342,7 +367,7 @@ class NotesRepositoryTest {
             .setTitle("Hello World!")
             .setContent("My Note")
         noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-        val noteID = repository.add(noteBuilder.build()).toInt()
+        val noteID = repository.add(noteBuilder.build())
         val note = repository.getAllNotes().first { it.uid == noteID }
         val folders = mutableListOf<RoomFolder>()
         val folderBuilder = RoomFolderBuilder()
@@ -356,8 +381,8 @@ class NotesRepositoryTest {
         folderBuilder.setColor("Red")
         folders.add(folderBuilder.build())
         folders.forEach {
-            val folderID = repository.add(it).toInt()
-            val folder = repository.getAllFolders().first { it.uid == folderID }
+            val folderID = repository.add(it)
+            val folder = repository.getAllFolders().first { fd -> fd.uid == folderID }
             repository.addNoteToFolder(note, folder)
         }
         val belongsTo = notesMetaDataDao.getAllBelongsTo()
@@ -371,23 +396,23 @@ class NotesRepositoryTest {
 
         noteBuilder.setTitle("Hello").setContent("World")
         noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-        var noteID = repository.add(noteBuilder.build()).toInt()
+        var noteID = repository.add(noteBuilder.build())
         notes.add(repository.getAllNotes().first { it.uid ==  noteID})
 
         noteBuilder.setTitle("Goodbye").setContent("World")
         noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-        noteID = repository.add(noteBuilder.build()).toInt()
+        noteID = repository.add(noteBuilder.build())
         notes.add(repository.getAllNotes().first { it.uid ==  noteID})
 
         noteBuilder.setTitle("Greetings").setContent("World")
         noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-        noteID = repository.add(noteBuilder.build()).toInt()
+        noteID = repository.add(noteBuilder.build())
         notes.add(repository.getAllNotes().first { it.uid ==  noteID})
 
         val folderBuilder = RoomFolderBuilder()
             .setName("My Notes")
             .setColor("Green")
-        val folderID = repository.add(folderBuilder.build()).toInt()
+        val folderID = repository.add(folderBuilder.build())
         val folder = repository.getAllFolders().first { it.uid == folderID }
         notes.forEach {
             repository.addNoteToFolder(it, folder)
@@ -406,17 +431,17 @@ class NotesRepositoryTest {
             noteBuilder.setTitle(i.toString())
             noteBuilder.setContent(i.toString())
             noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
-            val noteID = repository.add(noteBuilder.build()).toInt()
+            val noteID = repository.add(noteBuilder.build())
             val note = repository.getAllNotes().first { it.uid == noteID }
             notes.add(note)
         }
         val folderBuilder = RoomFolderBuilder()
         val folders = mutableListOf<RoomFolder>()
         assertEquals(5, repository.getAllNotes().map{it.filePath}.distinct().size)
-        notes.forEachIndexed { i: Int, roomNote: RoomNote ->
+        notes.forEachIndexed { i: Int, _: RoomNote ->
             folderBuilder.setColor(i.toString())
             folderBuilder.setName(i.toString())
-            val folderID = repository.add(folderBuilder.build()).toInt()
+            val folderID = repository.add(folderBuilder.build())
             val folder = repository.getAllFolders().first { it.uid == folderID }
             folders.add(folder)
             notes.forEach { note ->
@@ -435,7 +460,28 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to one folder then delete folder`() {
-        fail()
+        //Given a note added to a single folder
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val folderBuilder = RoomFolderBuilder()
+            .setColor("Blue")
+            .setName("Homework")
+        val noteID = repository.add(noteBuilder.build())
+        val folderID = repository.add(folderBuilder.build())
+        val note = repository.getNote(noteID)
+        val folder = repository.getFolder(folderID)
+        repository.addNoteToFolder(note, folder)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo()[0].note)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo()[0].folder)
+        assertEquals(1, repository.getAllFolders().size)
+        //When folder is deleted
+        repository.delete(folder)
+        //Then we don't have any belongsTo relations anymore and folder table is empty
+        assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
+        assertEquals(0, repository.getAllFolders().size)
     }
 
     @Test
@@ -446,5 +492,40 @@ class NotesRepositoryTest {
     @Test
     fun `test delete note from missing folder`() {
         fail()
+    }
+
+    @Test
+    fun `test delete one note from folder`() {
+
+    }
+
+    @Test
+    fun `test delete many notes from folder`() {
+
+    }
+
+
+    @Test
+    fun `test edit and save note`() {
+        //Given a note that was previously inserted
+        //When note had content and title changed and wait 2 seconds
+        //Then expect note to have the same file name, date created, and repository to have correct number of saved items.
+        fail()
+    }
+
+    @Test
+    fun `test edit and save folder`() {
+        //Given a folder that was previously saved
+        //When folder had colour and title changed
+        //Then folder should be the same in DB just with different title and colour.
+        fail()
+    }
+
+    @Test
+    fun `test attempt to add note with filename longer than allowed limit`() {
+        //Given a new note with a too long title
+        //When attempting to insert it
+        //Then repository throws an error.
+
     }
 }

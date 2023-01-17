@@ -10,7 +10,15 @@ private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
 
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 
-    fun add(note: RoomNote): Long {
+    fun getNote(id: Int) : RoomNote {
+        return getAllNotes().first { id == it.uid }
+    }
+
+    fun getFolder(id: Int) : RoomFolder {
+        return getAllFolders().first { id == it.uid }
+    }
+
+    fun add(note: RoomNote): Int {
         if (note.title.isEmpty() || note.content.isEmpty()) {
             throw NoteNotInitializedException()
         }
@@ -20,14 +28,14 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         //Save as file
         saveToFile(note)
         //Save file meta data in database
-        return dao.insert(note)
+        return dao.insert(note).toInt()
     }
 
-    fun add(folder: RoomFolder): Long {
+    fun add(folder: RoomFolder): Int {
         if (folder.name.isEmpty() || folder.color.isEmpty()) {
             throw FolderNotInitializedException()
         }
-        return dao.insert(folder)
+        return dao.insert(folder).toInt()
     }
 
     fun addNoteToFolder(note: RoomNote, folder: RoomFolder): Long {
@@ -45,7 +53,7 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun removeNoteFromFolder(note: RoomNote, folder: RoomFolder) {
-        val belongsTo = dao.getAllBelongsTo().first { it.folder == folder.uid && it.note == folder.uid }
+        val belongsTo = dao.getAllBelongsTo().first { it.folder == folder.uid && it.note == note.uid }
         dao.deleteBelongsTo(belongsTo.id)
     }
 
