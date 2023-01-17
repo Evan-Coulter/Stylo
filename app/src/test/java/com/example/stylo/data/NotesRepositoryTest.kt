@@ -161,7 +161,6 @@ class NotesRepositoryTest {
             assertEquals(note.content, retrievedNote.content)
         }
         assertEquals(100, retrievedNotes.map{it.filePath}.distinct().size)
-        //TODO: check that all filenames are unique
     }
 
     @Test
@@ -445,7 +444,6 @@ class NotesRepositoryTest {
             val folder = repository.getAllFolders().first { it.uid == folderID }
             folders.add(folder)
             notes.forEach { note ->
-                //TODO fix this, is throwing error b/c filePath for every note is the same.
                 repository.addNoteToFolder(note, folder)
             }
         }
@@ -496,12 +494,12 @@ class NotesRepositoryTest {
 
     @Test
     fun `test delete one note from folder`() {
-
+        fail()
     }
 
     @Test
     fun `test delete many notes from folder`() {
-
+        fail()
     }
 
 
@@ -526,6 +524,6 @@ class NotesRepositoryTest {
         //Given a new note with a too long title
         //When attempting to insert it
         //Then repository throws an error.
-
+        fail()
     }
 }
