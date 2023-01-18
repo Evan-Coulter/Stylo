@@ -91,6 +91,9 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun getCurrentOrGenerateNewFileName(note: RoomNote) : String {
+        if (note.title.length > ANDROID_FILE_NAME_LENGTH_LIMIT) {
+            throw TitleTooLongException()
+        }
         return if (note.filePath == DEFAULT_NEW_NOTE_FILE_NAME) {
             val fileNames = fileAccessor.getAllFilesNames()
             val newFileName = StringBuilder(note.title)

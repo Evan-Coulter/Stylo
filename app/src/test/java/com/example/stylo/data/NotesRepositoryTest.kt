@@ -559,7 +559,6 @@ class NotesRepositoryTest {
         newFolderBuilder.setName("Notes").setColor("Green")
         val newFolderID = repository.add(newFolderBuilder.build())
         //Then folder should be the same in DB just with different title and colour.
-        val newFolder = repository.getFolder(newFolderID)
         assertEquals(folder.uid, newFolderID)
         assertEquals(1, repository.getAllFolders().size)
         assertEquals("Notes", repository.getAllFolders()[0].name)
@@ -569,8 +568,17 @@ class NotesRepositoryTest {
     @Test
     fun `test attempt to add note with filename longer than allowed limit`() {
         //Given a new note with a too long title
-        //When attempting to insert it
+        val noteBuilder = RoomNoteBuilder()
+            .setContent("World")
+        for (i in 1..200) {
+            noteBuilder.setTitle(noteBuilder.title + "Wow")
+        }
+        //When attempting to generate filename
+        val runnable = { noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build())) }
         //Then repository throws an error.
-        fail()
+        assertThrows(TitleTooLongException::class.java) {
+            runnable.invoke()
+        }
+        assertEquals(0, repository.getAllNotes().size)
     }
 }
