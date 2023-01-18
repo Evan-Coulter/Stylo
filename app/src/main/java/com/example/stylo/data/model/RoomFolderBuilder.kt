@@ -23,4 +23,11 @@ class RoomFolderBuilder {
     fun build() : RoomFolder {
         return RoomFolder(uid, name, color)
     }
+
+    fun clone(folder: RoomFolder) : RoomFolderBuilder {
+        return RoomFolderBuilder()
+            .setUID(folder.uid)
+            .setName(folder.name)
+            .setColor(folder.color)
+    }
 }

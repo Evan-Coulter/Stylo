@@ -527,17 +527,43 @@ class NotesRepositoryTest {
     @Test
     fun `test edit and save note`() {
         //Given a note that was previously inserted
-        //When note had content and title changed and wait 2 seconds
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val noteID = repository.add(noteBuilder.build())
+        val note = repository.getNote(noteID)
+        //When note had content and title changed
+        val newNoteBuilder = RoomNoteBuilder().clone(note)
+        newNoteBuilder.setTitle("Goodbye").setContent("World!!!")
+        val newNoteID = repository.add(newNoteBuilder.build())
+        val newNote = repository.getNote(newNoteID)
         //Then expect note to have the same file name, date created, and repository to have correct number of saved items.
-        fail()
+        assertEquals(noteID, newNoteID)
+        assertEquals(1, repository.getAllNotes().size)
+        assertEquals("Goodbye", repository.getAllNotes()[0].title)
+        assertEquals("World!!!", repository.getAllNotes()[0].content)
+        assertEquals(note.filePath, newNote.filePath)
     }
 
     @Test
     fun `test edit and save folder`() {
         //Given a folder that was previously saved
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Hello")
+            .setColor("Blue")
+        val folderID = repository.add(folderBuilder.build())
+        val folder = repository.getFolder(folderID)
         //When folder had colour and title changed
+        val newFolderBuilder = RoomFolderBuilder().clone(folder)
+        newFolderBuilder.setName("Notes").setColor("Green")
+        val newFolderID = repository.add(newFolderBuilder.build())
         //Then folder should be the same in DB just with different title and colour.
-        fail()
+        val newFolder = repository.getFolder(newFolderID)
+        assertEquals(folder.uid, newFolderID)
+        assertEquals(1, repository.getAllFolders().size)
+        assertEquals("Notes", repository.getAllFolders()[0].name)
+        assertEquals("Green", repository.getAllFolders()[0].color)
     }
 
     @Test
