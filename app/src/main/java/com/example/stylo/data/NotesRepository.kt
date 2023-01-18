@@ -52,7 +52,7 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         return dao.insert(belongsTo)
     }
 
-    fun removeNoteFromFolder(note: RoomNote, folder: RoomFolder) {
+    fun deleteNoteFromFolder(note: RoomNote, folder: RoomFolder) {
         val belongsTo = dao.getAllBelongsTo().first { it.folder == folder.uid && it.note == note.uid }
         dao.deleteBelongsTo(belongsTo.id)
     }

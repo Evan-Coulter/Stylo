@@ -484,24 +484,45 @@ class NotesRepositoryTest {
 
     @Test
     fun `test add one note to many folder then delete one folder`() {
-        fail()
-    }
-
-    @Test
-    fun `test delete note from missing folder`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val noteID = repository.add(noteBuilder.build())
+        val note = repository.getNote(noteID)
+        val folderBuilder = RoomFolderBuilder()
+        for (i in 1..5) {
+            folderBuilder.setColor(i.toString())
+            folderBuilder.setName(i.toString())
+            val folderID = repository.add(folderBuilder.build())
+            val folder = repository.getFolder(folderID)
+            repository.addNoteToFolder(note, folder)
+        }
+        assertEquals(5, notesMetaDataDao.getAllBelongsTo().size)
+        assertEquals(listOf(1, 2, 3, 4, 5), notesMetaDataDao.getAllBelongsTo().map { it.folder })
+        repository.delete(repository.getFolder(3))
+        assertEquals(4, notesMetaDataDao.getAllBelongsTo().size)
+        assertEquals(listOf(1, 2, 4, 5), notesMetaDataDao.getAllBelongsTo().map { it.folder })
     }
 
     @Test
     fun `test delete one note from folder`() {
-        fail()
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Hello")
+            .setContent("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        val noteID = repository.add(noteBuilder.build())
+        val note = repository.getNote(noteID)
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Notes")
+            .setColor("Blue")
+        val folderID = repository.add(folderBuilder.build())
+        val folder = repository.getFolder(folderID)
+        repository.addNoteToFolder(note, folder)
+        assertEquals(1, notesMetaDataDao.getAllBelongsTo().size)
+        repository.deleteNoteFromFolder(note, folder)
+        assertEquals(0, notesMetaDataDao.getAllBelongsTo().size)
     }
-
-    @Test
-    fun `test delete many notes from folder`() {
-        fail()
-    }
-
 
     @Test
     fun `test edit and save note`() {
