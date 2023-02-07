@@ -48,7 +48,6 @@ class NoteListFragment : Fragment() {
     private fun onNewState(newState : NoteListViewState) {
         when (newState) {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.list)
-            is NoteListViewState.ShowNoNotesSavedYetPrompt -> showEmptyListState()
             is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
             is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDialog()
             is NoteListViewState.ShowEditFolderNameOrColorDialog -> showEditFolderDialog()
@@ -56,7 +55,6 @@ class NoteListFragment : Fragment() {
     }
 
     private fun showBasicListState(list: List<RoomNote>) {}
-    private fun showEmptyListState() {}
     private fun showFoldersTrayDialog() {}
     private fun showRenameNoteDialog() {}
     private fun showEditFolderDialog() {}
