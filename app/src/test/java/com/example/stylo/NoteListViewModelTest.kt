@@ -8,13 +8,21 @@ import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.fileaccess.FileAccessSource
+import com.example.stylo.list.NoteListEvent
 import com.example.stylo.list.NoteListViewModel
+import com.example.stylo.list.NoteListViewState
+import com.example.stylo.list.StateAndEventLog
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class NoteListViewModelTest {
     @VisibleForTesting
@@ -23,7 +31,7 @@ class NoteListViewModelTest {
     private lateinit var repository: NotesRepository
     private lateinit var fileAccessor: FileAccessSource
 
-    private lateinit var viewModel: NoteListViewModel
+    lateinit var viewModel: NoteListViewModel
 
     @Before
     fun setUp() {
@@ -44,7 +52,24 @@ class NoteListViewModelTest {
 
 
     @Test
-    fun `test load initial empty list state`() {}
+    fun `test load initial empty list state`() {
+        runTest {
+            //Given note list just opened for the first time
+            viewModel._eventListener.value = NoteListEvent.PageLoaded
+            //Then we should have seen loading and done loading (basic list state) states
+            StateAndEventLog.states.values.let {
+                assertEquals(2, it.size)
+                assertTrue(it.contains(NoteListViewState.LoadingState))
+                var containsBasicListViewState = false
+                it.forEach { state ->
+                    if (state is NoteListViewState.ShowBasicListState) {
+                        containsBasicListViewState = true
+                    }
+                }
+                assertTrue(containsBasicListViewState)
+            }
+        }
+    }
 
     @Test
     fun `test load initial full list state`() {}

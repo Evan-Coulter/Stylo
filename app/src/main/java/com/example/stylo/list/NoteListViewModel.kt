@@ -18,8 +18,12 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
     val eventListener = _eventListener.asStateFlow()
 
     init {
+        val initialState = NoteListViewState.LoadingState
+        log(initialState)
+        _uiState = MutableStateFlow(initialState)
         viewModelScope.launch {
             eventListener.collect {
+                log(it)
                 when (it) {
                     is NoteListEvent.PageLoaded -> displayBasicListState()
                     is NoteListEvent.HelpPushed -> showHelpDialog()
@@ -37,51 +41,56 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
 
     private fun displayBasicListState() {
         val notes = repository.getAllNotes()
-        _uiState.value = NoteListViewState.ShowBasicListState(notes, isListView)
+        postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
     }
 
     private fun showHelpDialog() {
-        _uiState.value = NoteListViewState.ShowHelpDialog
+        postNewState(NoteListViewState.ShowHelpDialog)
     }
 
     private fun showLogoEffect() {
-        _uiState.value = NoteListViewState.ShowLogoEffect
+        postNewState(NoteListViewState.ShowLogoEffect)
     }
 
     private fun showFolderTray() {
         val folders = repository.getAllFolders()
-        _uiState.value = NoteListViewState.ShowFoldersTray(folders)
+        postNewState(NoteListViewState.ShowFoldersTray(folders))
     }
 
     private fun showSearchBar() {
-        _uiState.value = NoteListViewState.ShowSearchBar
+        postNewState(NoteListViewState.ShowSearchBar)
     }
 
     private fun switchCardListView() {
         isListView = !isListView
         val notes = repository.getAllNotes()
-        _uiState.value = NoteListViewState.ShowBasicListState(notes, isListView)
+        postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
     }
 
     private fun openNoteEditor(notePushed: NoteListEvent.NotePushed) {
-        _uiState.value = NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID))
+        postNewState(NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID)))
     }
 
     private fun displaySearchResults(searchEvent: NoteListEvent.SearchCompleted) {
-        _uiState.value = NoteListViewState.LoadingState
+        postNewState(NoteListViewState.LoadingState)
         val notes = repository.getAllNotes().filter {
             it.title.lowercase().contains(searchEvent.query.lowercase())
             || it.content.lowercase().contains(searchEvent.query)
         }
         if (notes.isEmpty()) {
-            _uiState.value = NoteListViewState.ShowEmptySearchResult
+            postNewState(NoteListViewState.ShowEmptySearchResult)
         } else {
-            _uiState.value = NoteListViewState.ShowBasicListState(notes, isListView)
+            postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
         }
     }
 
     private fun openRenameNoteDialog(clickedNote: NoteListEvent.EditNoteButtonPushed) {
         val note = repository.getNote(clickedNote.noteID)
-        _uiState.value = NoteListViewState.ShowRenameNoteDialog(note)
+        postNewState(NoteListViewState.ShowRenameNoteDialog(note))
+    }
+
+    private fun postNewState(state: NoteListViewState) {
+        log(state)
+        _uiState.value = state
     }
 }
