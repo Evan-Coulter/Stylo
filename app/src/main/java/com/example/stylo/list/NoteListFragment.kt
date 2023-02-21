@@ -28,12 +28,8 @@ class NoteListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    onNewState(it)
-                }
-            }
+        viewModel.uiState.observe(viewLifecycleOwner) {
+            onNewState(it)
         }
         return view
     }

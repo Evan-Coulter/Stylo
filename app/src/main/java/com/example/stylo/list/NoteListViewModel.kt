@@ -1,42 +1,47 @@
 package com.example.stylo.list
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.stylo.data.NotesRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
     //TODO: store in shared preferences
     private var isListView = true
 
-    private var _uiState: MutableStateFlow<NoteListViewState> = MutableStateFlow(NoteListViewState.LoadingState)
-    val uiState = _uiState.asStateFlow()
+    private var _uiState: MutableLiveData<NoteListViewState> = MutableLiveData()
+    val uiState: LiveData<NoteListViewState> = _uiState
 
-    var _eventListener: MutableStateFlow<NoteListEvent> = MutableStateFlow(NoteListEvent.PageLoaded)
-    val eventListener = _eventListener.asStateFlow()
+    var _eventListener: MutableLiveData<NoteListEvent> = MutableLiveData()
+    val eventListener: LiveData<NoteListEvent> = _eventListener
+
+    private var eventListenerObserver = Observer<NoteListEvent> {
+        log(it)
+        when (it) {
+            is NoteListEvent.PageLoaded -> displayBasicListState()
+            is NoteListEvent.HelpPushed -> showHelpDialog()
+            is NoteListEvent.LogoPushed -> showLogoEffect()
+            is NoteListEvent.FolderButtonPushed -> showFolderTray()
+            is NoteListEvent.SearchButtonPushed -> showSearchBar()
+            is NoteListEvent.CardListViewSwitchPushed -> switchCardListView()
+            is NoteListEvent.NotePushed -> openNoteEditor(it)
+            is NoteListEvent.SearchCompleted -> displaySearchResults(it)
+            is NoteListEvent.EditNoteButtonPushed -> openRenameNoteDialog(it)
+        }
+
+    }
 
     init {
         val initialState = NoteListViewState.LoadingState
         log(initialState)
-        _uiState = MutableStateFlow(initialState)
-        viewModelScope.launch {
-            eventListener.collect {
-                log(it)
-                when (it) {
-                    is NoteListEvent.PageLoaded -> displayBasicListState()
-                    is NoteListEvent.HelpPushed -> showHelpDialog()
-                    is NoteListEvent.LogoPushed -> showLogoEffect()
-                    is NoteListEvent.FolderButtonPushed -> showFolderTray()
-                    is NoteListEvent.SearchButtonPushed -> showSearchBar()
-                    is NoteListEvent.CardListViewSwitchPushed -> switchCardListView()
-                    is NoteListEvent.NotePushed -> openNoteEditor(it)
-                    is NoteListEvent.SearchCompleted -> displaySearchResults(it)
-                    is NoteListEvent.EditNoteButtonPushed -> openRenameNoteDialog(it)
-                }
-            }
-        }
+        _uiState.value = initialState
+        eventListener.observeForever(eventListenerObserver)
+    }
+
+    override fun onCleared() {
+        eventListener.removeObserver(eventListenerObserver)
+        super.onCleared()
     }
 
     private fun displayBasicListState() {

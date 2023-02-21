@@ -1,5 +1,6 @@
 package com.example.stylo
 
+import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
@@ -8,16 +9,16 @@ import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
 import com.example.stylo.data.fileaccess.FileAccessSource
+import com.example.stylo.data.model.RoomNoteBuilder
 import com.example.stylo.list.NoteListEvent
 import com.example.stylo.list.NoteListViewModel
 import com.example.stylo.list.NoteListViewState
-import com.example.stylo.list.StateAndEventLog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,6 +33,10 @@ class NoteListViewModelTest {
     private lateinit var fileAccessor: FileAccessSource
 
     lateinit var viewModel: NoteListViewModel
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
 
     @Before
     fun setUp() {
@@ -53,26 +58,29 @@ class NoteListViewModelTest {
 
     @Test
     fun `test load initial empty list state`() {
-        runTest {
-            //Given note list just opened for the first time
-            viewModel._eventListener.value = NoteListEvent.PageLoaded
-            //Then we should have seen loading and done loading (basic list state) states
-            StateAndEventLog.states.values.let {
-                assertEquals(2, it.size)
-                assertTrue(it.contains(NoteListViewState.LoadingState))
-                var containsBasicListViewState = false
-                it.forEach { state ->
-                    if (state is NoteListViewState.ShowBasicListState) {
-                        containsBasicListViewState = true
-                    }
-                }
-                assertTrue(containsBasicListViewState)
-            }
-        }
+        assertTrue(viewModel.uiState.value is NoteListViewState.LoadingState)
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
     }
 
     @Test
-    fun `test load initial full list state`() {}
+    fun `test load initial full list state`() {
+        //Given a single note has been added to our repository already
+        val noteBuilder = RoomNoteBuilder()
+            .setContent("Hello")
+            .setTitle("World")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        repository.add(noteBuilder.build())
+        //When the note list fragment has loaded.
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //Then we should expect to retrieve that note when the page.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(1, state.list.size)
+        assertEquals("World", state.list[0].title)
+        assertEquals("Hello", state.list[0].content)
+        assertEquals(1, state.list[0].uid)
+    }
 
     @Test
     fun `test help button pushed should show help dialog`() {}
