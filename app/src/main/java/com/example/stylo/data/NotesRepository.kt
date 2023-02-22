@@ -7,6 +7,8 @@ import com.example.stylo.data.model.*
 
 //Is actually 127 but keeping it safe.
 private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
+const val DEFAULT_FOLDER_NAME = "All Notes"
+const val DEFAULT_FOLDER_COLOR = "Pink"
 
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 
@@ -107,5 +109,12 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         } else {
             note.filePath
         }
+    }
+
+    fun getDefaultFolder(): RoomFolder {
+        return RoomFolderBuilder()
+            .setName(DEFAULT_FOLDER_NAME)
+            .setColor(DEFAULT_FOLDER_COLOR)
+            .build()
     }
 }

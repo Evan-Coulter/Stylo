@@ -581,4 +581,11 @@ class NotesRepositoryTest {
         }
         assertEquals(0, repository.getAllNotes().size)
     }
+
+    @Test
+    fun `test get default folder`() {
+        val folder = repository.getDefaultFolder()
+        assertEquals(DEFAULT_FOLDER_NAME, folder.name)
+        assertEquals(DEFAULT_FOLDER_COLOR, folder.color)
+    }
 }

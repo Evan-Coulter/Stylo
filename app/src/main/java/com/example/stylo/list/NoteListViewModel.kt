@@ -5,10 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
+import com.example.stylo.data.model.RoomFolder
 
 class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
-    //TODO: store in shared preferences
+    //TODO: store in shared preferences and test to check value is the same when fragment goes out and back into lifecycle
     private var isListView = true
+    //TODO: store in shared preferences and test to check value is the same when fragment goes out and back into lifecycle
+    private val folder: RoomFolder = repository.getDefaultFolder()
+
 
     private var _uiState: MutableLiveData<NoteListViewState> = MutableLiveData()
     val uiState: LiveData<NoteListViewState> = _uiState
@@ -46,7 +50,7 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
 
     private fun displayBasicListState() {
         val notes = repository.getAllNotes()
-        postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
+        postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
 
     private fun showHelpDialog() {
@@ -69,7 +73,7 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
     private fun switchCardListView() {
         isListView = !isListView
         val notes = repository.getAllNotes()
-        postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
+        postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
 
     private fun openNoteEditor(notePushed: NoteListEvent.NotePushed) {
@@ -85,7 +89,7 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
         if (notes.isEmpty()) {
             postNewState(NoteListViewState.ShowEmptySearchResult)
         } else {
-            postNewState(NoteListViewState.ShowBasicListState(notes, isListView))
+            postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
         }
     }
 
