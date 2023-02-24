@@ -76,10 +76,10 @@ class NoteListViewModelTest {
         //Then we should expect to retrieve that note when the page.
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
         val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
-        assertEquals(1, state.list.size)
-        assertEquals("World", state.list[0].title)
-        assertEquals("Hello", state.list[0].content)
-        assertEquals(1, state.list[0].uid)
+        assertEquals(1, state.notes.size)
+        assertEquals("World", state.notes[0].title)
+        assertEquals("Hello", state.notes[0].content)
+        assertEquals(1, state.notes[0].uid)
     }
 
     @Test
@@ -108,9 +108,9 @@ class NoteListViewModelTest {
         //Then expect we're in the showing basic list state and can retrieve all our notes and their folder relations
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
         val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
-        assertEquals(5, state.list.size)
+        assertEquals(5, state.notes.size)
         for (i in 0..4) {
-            val note = state.list[i]
+            val note = state.notes[i]
             assertEquals(i+1, note.uid)
             assertEquals(i.toString(), note.title)
             assertEquals(i.toString(), note.content)
@@ -128,7 +128,77 @@ class NoteListViewModelTest {
 
     @Test
     fun `test switching folder changes visible notes`() {
-        fail()
+        //Given 2 notes in a chores folder.
+        var folderBuilder = RoomFolderBuilder()
+            .setName("Chores")
+            .setColor("Green")
+        var folderID = repository.add(folderBuilder.build())
+        var folder = repository.getFolder(folderID)
+        var noteBuilder = RoomNoteBuilder()
+            .setTitle("Chores 1")
+            .setContent("Chores 1 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        var note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+        noteBuilder = RoomNoteBuilder()
+            .setTitle("Chores 2")
+            .setContent("Chores 2 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+
+        //And given 2 notes in a homework folder.
+        folderBuilder = RoomFolderBuilder()
+            .setName("Homework")
+            .setColor("Blue")
+        folderID = repository.add(folderBuilder.build())
+        folder = repository.getFolder(folderID)
+        noteBuilder = RoomNoteBuilder()
+            .setTitle("Homework 1")
+            .setContent("Homework 1 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+        noteBuilder = RoomNoteBuilder()
+            .setTitle("Homework 2")
+            .setContent("Homework 2 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+
+        //When we first open the note list fragment
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //Then expect to be in basic list state with All Folders selected and we can see all 4 notes
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        var state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(4, state.notes.size)
+        assertEquals(DEFAULT_FOLDER_NAME, state.folder.name)
+        assertEquals(DEFAULT_FOLDER_COLOR, state.folder.color)
+
+        //When we change to the chores folder
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(1)
+
+        //Then expect to be in basic list state with Chores selected and we can see 2 notes
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(2, state.notes.size)
+        assertEquals("Chores", state.folder.name)
+        assertEquals("Green", state.folder.color)
+        assertTrue(state.notes.map{it.title}.contains("Chores 1"))
+        assertTrue(state.notes.map{it.title}.contains("Chores 2"))
+
+        //When we change to the chores folder
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(2)
+
+        //Then expect to be in basic list state with Homework selected and we can see 2 notes
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(2, state.notes.size)
+        assertEquals("Homework", state.folder.name)
+        assertEquals("Blue", state.folder.color)
+        assertTrue(state.notes.map{it.title}.contains("Homework 1"))
+        assertTrue(state.notes.map{it.title}.contains("Homework 2"))
     }
 
     @Test

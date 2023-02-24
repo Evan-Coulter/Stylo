@@ -32,6 +32,7 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
             is NoteListEvent.NotePushed -> openNoteEditor(it)
             is NoteListEvent.SearchCompleted -> displaySearchResults(it)
             is NoteListEvent.EditNoteButtonPushed -> openRenameNoteDialog(it)
+            is NoteListEvent.ChangeFolderButtonPushed -> changeSelectedFolder(it)
         }
 
     }
@@ -96,6 +97,13 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
     private fun openRenameNoteDialog(clickedNote: NoteListEvent.EditNoteButtonPushed) {
         val note = repository.getNote(clickedNote.noteID)
         postNewState(NoteListViewState.ShowRenameNoteDialog(note))
+    }
+
+    private fun changeSelectedFolder(folderButtonPushed: NoteListEvent.ChangeFolderButtonPushed) {
+        postNewState(NoteListViewState.LoadingState)
+        val retrievedFolder = repository.getFolder(folderButtonPushed.folderID)
+        val notesInFolder = repository.getNotesInFolder(retrievedFolder.uid)
+        postNewState(NoteListViewState.ShowBasicListState(notesInFolder, retrievedFolder, isListView))
     }
 
     private fun postNewState(state: NoteListViewState) {

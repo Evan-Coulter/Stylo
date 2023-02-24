@@ -588,4 +588,40 @@ class NotesRepositoryTest {
         assertEquals(DEFAULT_FOLDER_NAME, folder.name)
         assertEquals(DEFAULT_FOLDER_COLOR, folder.color)
     }
+
+    @Test
+    fun `test get notes in folder`() {
+        //Given 3 notes, 2 of which are in the homework folder
+        val folder = repository.getFolder(repository.add(RoomFolderBuilder().setName("Homework").setColor("Green").build()))
+        var noteBuilder = RoomNoteBuilder()
+            .setTitle("Homework 1")
+            .setContent("Homework 1 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        var note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+
+        noteBuilder = RoomNoteBuilder()
+            .setTitle("Some Other Note")
+            .setContent("Some Other Note Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        repository.add(noteBuilder.build())
+
+        noteBuilder = RoomNoteBuilder()
+            .setTitle("Homework 2")
+            .setContent("Homework 2 Content")
+        noteBuilder.setFileName(repository.getCurrentOrGenerateNewFileName(noteBuilder.build()))
+        note = repository.getNote(repository.add(noteBuilder.build()))
+        repository.addNoteToFolder(note, folder)
+
+        //Then we should be able to retrieve 3 notes and check that 2 of them are in the homework folder.
+        val notes = repository.getAllNotes()
+        assertEquals(3, notes.size)
+
+        val homeworkNotes = repository.getNotesInFolder(1)
+        assertEquals(2, homeworkNotes.size)
+        assertTrue(homeworkNotes.map{it.title}.contains("Homework 1"))
+        assertTrue(homeworkNotes.map{it.title}.contains("Homework 2"))
+        assertTrue(homeworkNotes.map{it.content}.contains("Homework 1 Content"))
+        assertTrue(homeworkNotes.map{it.content}.contains("Homework 2 Content"))
+    }
 }

@@ -14,4 +14,5 @@ sealed class NoteListEvent {
     object CardListViewSwitchPushed : NoteListEvent()
     data class NotePushed(val noteID: Int) : NoteListEvent()
     data class EditNoteButtonPushed(val noteID: Int) : NoteListEvent()
+    data class ChangeFolderButtonPushed(val folderID: Int) : NoteListEvent()
 }

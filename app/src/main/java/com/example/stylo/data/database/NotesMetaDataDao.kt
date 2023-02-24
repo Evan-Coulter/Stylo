@@ -33,4 +33,9 @@ interface NotesMetaDataDao {
 
     @Query("SELECT * FROM belongsto")
     fun getAllBelongsTo() : List<BelongsTo>
+
+    @Query("SELECT * FROM roomnote WHERE roomnote.uid IN " +
+            "(SELECT note FROM belongsto INNER JOIN roomfolder ON " +
+            "belongsto.folder = :folderid)")
+    fun getAllNotesInFolder(folderid: Int) : List<RoomNote>
 }

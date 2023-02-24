@@ -9,14 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomNote
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.launch
 
 class NoteListFragment : Fragment() {
     private val viewModel: NoteListViewModel by viewModels {
@@ -43,7 +39,7 @@ class NoteListFragment : Fragment() {
 
     private fun onNewState(newState : NoteListViewState) {
         when (newState) {
-            is NoteListViewState.ShowBasicListState -> showBasicListState(newState.list)
+            is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
             is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
             is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDialog()
             is NoteListViewState.ShowEditFolderNameOrColorDialog -> showEditFolderDialog()

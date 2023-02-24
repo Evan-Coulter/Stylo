@@ -3,12 +3,10 @@ package com.example.stylo.data.database
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.example.stylo.data.model.BelongsToBuilder
-import com.example.stylo.data.model.RoomFolder
-import com.example.stylo.data.model.RoomFolderBuilder
-import com.example.stylo.data.model.RoomNoteBuilder
+import com.example.stylo.data.model.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -210,5 +208,65 @@ class NotesMetaDataDatabaseTest {
             assertEquals("My Note", belongsToNote.title)
             assertEquals(true, listOf(1, 2, 3, 4, 5).contains(belongsToFolder.name.toInt()))
         }
+    }
+
+    @Test
+    fun `test get all notes belonging to a folder`() {
+        //Given 1 new note added to a new homework folder
+        val folderBuilder = RoomFolderBuilder()
+            .setName("Homework")
+            .setColor("Blue")
+        val folderID = notesMetaDataDao.insert(folderBuilder.build()).toInt()
+        val folder = notesMetaDataDao.getAllFolders().first { it.uid == folderID }
+        val noteBuilder = RoomNoteBuilder()
+            .setTitle("Homework")
+        val noteID = notesMetaDataDao.insert(noteBuilder.build()).toInt()
+        val note = notesMetaDataDao.getAllNotes().first { it.uid == noteID }
+
+        val belongsToBuilder = BelongsToBuilder()
+            .setFolder(folder.uid)
+            .setNote(note.uid)
+        notesMetaDataDao.insert(belongsToBuilder.build())
+
+
+        //And given 3 new notes added to an other stuff folder
+        folderBuilder.setName("Other Stuff").setColor("Red")
+        noteBuilder.setTitle("Chores")
+        notesMetaDataDao.insert(
+            belongsToBuilder
+                .setFolder(notesMetaDataDao.insert(folderBuilder.build()).toInt().also{folderBuilder.setUID(it)})
+                .setNote(notesMetaDataDao.insert(noteBuilder.build()).toInt())
+                .build()
+        )
+        noteBuilder.setTitle("Other Stuff 2")
+        notesMetaDataDao.insert(
+            belongsToBuilder
+                .setNote(notesMetaDataDao.insert(noteBuilder.build()).toInt())
+                .build()
+        )
+        noteBuilder.setTitle("One more random note")
+        notesMetaDataDao.insert(
+            belongsToBuilder
+                .setNote(notesMetaDataDao.insert(noteBuilder.build()).toInt())
+                .build()
+        )
+
+        //Then expect to be able to retrieve those relations
+        val notes = notesMetaDataDao.getAllNotes()
+        assertEquals(4, notes.size)
+        val folders = notesMetaDataDao.getAllFolders()
+        assertEquals(2, folders.size)
+        val belongsTo = notesMetaDataDao.getAllBelongsTo()
+        assertEquals(4, belongsTo.size)
+
+        val homeworkNotes = notesMetaDataDao.getAllNotesInFolder(1)
+        assertEquals(1, homeworkNotes.size)
+        assertEquals("Homework", homeworkNotes[0].title)
+
+        val otherStuffNotes = notesMetaDataDao.getAllNotesInFolder(2)
+        assertEquals(3, otherStuffNotes.size)
+        assertTrue(otherStuffNotes.map{ it.title }.contains("Chores"))
+        assertTrue(otherStuffNotes.map{ it.title }.contains("Other Stuff 2"))
+        assertTrue(otherStuffNotes.map{ it.title }.contains("One more random note"))
     }
 }

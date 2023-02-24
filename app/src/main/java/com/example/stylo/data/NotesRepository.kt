@@ -117,4 +117,10 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
             .setColor(DEFAULT_FOLDER_COLOR)
             .build()
     }
+
+    fun getNotesInFolder(folderID: Int): List<RoomNote> {
+        val notesInFolder = dao.getAllNotesInFolder(folderID).map { it.uid }
+        return getAllNotes().filter { it.uid in notesInFolder }
+    }
+
 }
