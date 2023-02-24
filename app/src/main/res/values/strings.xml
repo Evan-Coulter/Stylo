@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Stylo</string>
+    <string name="com.example.stylo.PREFERENCE_FILE_KEY">STYLO_APP_PREFERENCE_FILE_KEY</string>
 </resources>

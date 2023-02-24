@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class NoteListViewModelTest {
@@ -47,7 +48,7 @@ class NoteListViewModelTest {
         notesMetaDataDao = database.notesMetaDataDao()
         fileAccessor = FileAccessSource(ApplicationProvider.getApplicationContext())
         repository = NotesRepository(notesMetaDataDao, fileAccessor)
-        viewModel = NoteListViewModel(repository)
+        viewModel = NoteListViewModel(repository, RuntimeEnvironment.getApplication().getSharedPreferences("test", Context.MODE_PRIVATE))
     }
 
     @After
@@ -204,6 +205,7 @@ class NoteListViewModelTest {
     @Test
     fun `test when app is closed and reopened, previously selected folder is still open`() {
         //TODO implement lifecycle handling of private state values in view model
+        //TODO this can be tested by creating a new view model instance with the same shared preferences reference.
         fail()
     }
 
@@ -215,6 +217,7 @@ class NoteListViewModelTest {
     @Test
     fun `test when app is closed and reopened, previously selected card or list view switch is still open`() {
         //TODO implement lifecycle handling of private state values in view model
+        //TODO this can be tested by creating a new view model instance with the same shared preferences reference.
         fail()
     }
 

@@ -1,5 +1,6 @@
 package com.example.stylo.list
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -7,9 +8,11 @@ import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.model.RoomFolder
 
-class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
-    //TODO: store in shared preferences and test to check value is the same when fragment goes out and back into lifecycle
-    private var isListView = true
+
+private const val SHARED_PREF_LIST_CARD_SWITCH = "shared_pref_list_card_switch"
+
+class NoteListViewModel(private val repository: NotesRepository, private val sharedPreferences: SharedPreferences) : ViewModel() {
+    private var isListView: Boolean = true
     //TODO: store in shared preferences and test to check value is the same when fragment goes out and back into lifecycle
     private val folder: RoomFolder = repository.getDefaultFolder()
 
@@ -34,14 +37,17 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
             is NoteListEvent.EditNoteButtonPushed -> openRenameNoteDialog(it)
             is NoteListEvent.ChangeFolderButtonPushed -> changeSelectedFolder(it)
         }
-
     }
 
     init {
+        //Setup view state and event listener
         val initialState = NoteListViewState.LoadingState
         log(initialState)
         _uiState.value = initialState
         eventListener.observeForever(eventListenerObserver)
+
+        //Setup shared preferences to get saved settings
+        isListView = sharedPreferences.getBoolean(SHARED_PREF_LIST_CARD_SWITCH, true)
     }
 
     override fun onCleared() {
@@ -73,6 +79,7 @@ class NoteListViewModel(private val repository: NotesRepository) : ViewModel() {
 
     private fun switchCardListView() {
         isListView = !isListView
+        sharedPreferences.edit().putBoolean(SHARED_PREF_LIST_CARD_SWITCH, isListView).apply()
         val notes = repository.getAllNotes()
         postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }

@@ -16,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class NoteListFragment : Fragment() {
     private val viewModel: NoteListViewModel by viewModels {
-        NoteListViewModelFactory((requireActivity().application as MainApplication).notesRepository)
+        NoteListViewModelFactory((requireActivity().application as MainApplication).notesRepository, activity?.application)
     }
 
     override fun onCreateView(
