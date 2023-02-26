@@ -10,11 +10,11 @@ import com.example.stylo.data.model.RoomFolder
 
 
 private const val SHARED_PREF_LIST_CARD_SWITCH = "shared_pref_list_card_switch"
+private const val SHARED_PREF_FOLDER_ID = "shared_pref_folder_id"
 
 class NoteListViewModel(private val repository: NotesRepository, private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var isListView: Boolean = true
-    //TODO: store in shared preferences and test to check value is the same when fragment goes out and back into lifecycle
-    private val folder: RoomFolder = repository.getDefaultFolder()
+    private var folder: RoomFolder = repository.getDefaultFolder()
 
 
     private var _uiState: MutableLiveData<NoteListViewState> = MutableLiveData()
@@ -48,6 +48,13 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
 
         //Setup shared preferences to get saved settings
         isListView = sharedPreferences.getBoolean(SHARED_PREF_LIST_CARD_SWITCH, true)
+        folder = try {
+            repository.getFolder(sharedPreferences.getInt(SHARED_PREF_FOLDER_ID, 1))
+        } catch (e: NoSuchElementException) {
+            val folderID = repository.add(repository.getDefaultFolder())
+            repository.getFolder(folderID)
+        }
+
     }
 
     override fun onCleared() {
@@ -108,9 +115,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
 
     private fun changeSelectedFolder(folderButtonPushed: NoteListEvent.ChangeFolderButtonPushed) {
         postNewState(NoteListViewState.LoadingState)
-        val retrievedFolder = repository.getFolder(folderButtonPushed.folderID)
-        val notesInFolder = repository.getNotesInFolder(retrievedFolder.uid)
-        postNewState(NoteListViewState.ShowBasicListState(notesInFolder, retrievedFolder, isListView))
+        folder = repository.getFolder(folderButtonPushed.folderID)
+        sharedPreferences.edit().putInt(SHARED_PREF_FOLDER_ID, folder.uid).apply()
+        val notesInFolder = repository.getNotesInFolder(folder.uid)
+        postNewState(NoteListViewState.ShowBasicListState(notesInFolder, folder, isListView))
     }
 
     private fun postNewState(state: NoteListViewState) {

@@ -2,6 +2,7 @@ package com.example.stylo
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -32,6 +33,7 @@ class NoteListViewModelTest {
     private lateinit var database: NotesMetaDataDatabase
     private lateinit var repository: NotesRepository
     private lateinit var fileAccessor: FileAccessSource
+    private lateinit var sharedPreferences: SharedPreferences
 
     lateinit var viewModel: NoteListViewModel
 
@@ -48,7 +50,8 @@ class NoteListViewModelTest {
         notesMetaDataDao = database.notesMetaDataDao()
         fileAccessor = FileAccessSource(ApplicationProvider.getApplicationContext())
         repository = NotesRepository(notesMetaDataDao, fileAccessor)
-        viewModel = NoteListViewModel(repository, RuntimeEnvironment.getApplication().getSharedPreferences("test", Context.MODE_PRIVATE))
+        sharedPreferences = RuntimeEnvironment.getApplication().getSharedPreferences("test", Context.MODE_PRIVATE)
+        viewModel = NoteListViewModel(repository, sharedPreferences)
     }
 
     @After
@@ -86,7 +89,7 @@ class NoteListViewModelTest {
     @Test
     fun `test load initial full list state with multiple notes and folders`() {
         //Given 5 new notes added to the All Notes folder
-        val folderBuilder = RoomFolderBuilder().clone(repository.getDefaultFolder())
+        val folderBuilder = RoomFolderBuilder().clone(repository.getDefaultFolder()).setUID(1)
         var folderID = repository.add(folderBuilder.build())
         var folder = repository.getFolder(folderID)
         for (i in 0..4) {
@@ -100,12 +103,14 @@ class NoteListViewModelTest {
         }
         //And given 1 of those notes added to the Homework folder
         val noteID2 = repository.getNote(2)
-        folderBuilder.setName("Homework").setColor("Green")
+        folderBuilder.setName("Homework").setColor("Green").setUID(0)
         folderID = repository.add(folderBuilder.build())
         folder = repository.getFolder(folderID)
         repository.addNoteToFolder(noteID2, folder)
+
         //When note list fragment is loaded
         viewModel._eventListener.value = NoteListEvent.PageLoaded
+
         //Then expect we're in the showing basic list state and can retrieve all our notes and their folder relations
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
         val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
@@ -178,7 +183,7 @@ class NoteListViewModelTest {
         assertEquals(DEFAULT_FOLDER_COLOR, state.folder.color)
 
         //When we change to the chores folder
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(1)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(2)
 
         //Then expect to be in basic list state with Chores selected and we can see 2 notes
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
@@ -190,7 +195,7 @@ class NoteListViewModelTest {
         assertTrue(state.notes.map{it.title}.contains("Chores 2"))
 
         //When we change to the chores folder
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(2)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(3)
 
         //Then expect to be in basic list state with Homework selected and we can see 2 notes
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
@@ -204,13 +209,30 @@ class NoteListViewModelTest {
 
     @Test
     fun `test when app is closed and reopened, previously selected folder is still open`() {
-        //TODO implement lifecycle handling of private state values in view model
-        //TODO this can be tested by creating a new view model instance with the same shared preferences reference.
-        fail()
+        //Given 3 folders in our repository
+        repository.add(RoomFolderBuilder()
+            .setName("Homework")
+            .setColor("Green")
+            .build())
+        val folderID = repository.add(RoomFolderBuilder()
+            .setName("Chores")
+            .setColor("Blue")
+            .build())
+
+        //When we switch the selected folder and the "restart" the app
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(folderID)
+        val newViewModel = NoteListViewModel(repository, sharedPreferences)
+        newViewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //Then expect when we open to the app that the new folder is still selected
+        assertTrue(newViewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        val state = newViewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals("Chores", state.folder.name)
+        assertEquals("Blue", state.folder.color)
     }
 
     @Test
-    fun `test card list switch view button pushed`() {
+    fun `test when app starts we have the All Notes folder already saved`() {
         fail()
     }
 
