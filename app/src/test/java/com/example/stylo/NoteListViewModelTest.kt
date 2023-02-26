@@ -232,30 +232,88 @@ class NoteListViewModelTest {
     }
 
     @Test
-    fun `test when app starts we have the All Notes folder already saved`() {
-        fail()
+    fun `test when app starts we have the All Notes folder already visible`() {
+        //Given app just started
+        //When note list fragment is first loaded for the first time.
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //Then we should see All Notes folder with no notes saved and isListView = True.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(repository.getDefaultFolder().name, state.folder.name)
+        assertEquals(repository.getDefaultFolder().color, state.folder.color)
+        assertEquals(0, state.notes.size)
+        assertEquals(true, state.isListView)
     }
 
     @Test
     fun `test when app is closed and reopened, previously selected card or list view switch is still open`() {
-        //TODO implement lifecycle handling of private state values in view model
-        //TODO this can be tested by creating a new view model instance with the same shared preferences reference.
-        fail()
+        //Given two notes in the homework folder.
+        val homeworkFolder = repository.getFolder(repository.add(RoomFolderBuilder()
+            .setName("Homework").setColor("Green").build()))
+        for (i in 0..1) {
+            val noteBuilder = RoomNoteBuilder()
+                .setTitle("$i homework title")
+                .setContent("$i homework content")
+                .also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+            val note = repository.getNote(repository.add(noteBuilder.build()))
+            repository.addNoteToFolder(note, homeworkFolder)
+        }
+        //And Given two notes in the chores folder
+        val choresFolder = repository.getFolder(repository.add(RoomFolderBuilder()
+            .setName("Chores").setColor("Blue").build()))
+        for (i in 2..3) {
+            val noteBuilder = RoomNoteBuilder()
+                .setTitle("$i chores title")
+                .setContent("$i chores content")
+                .also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+            val note = repository.getNote(repository.add(noteBuilder.build()))
+            repository.addNoteToFolder(note, choresFolder)
+        }
+        //When we start the app, switch to the chores folder, and the "restart" the app.
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(choresFolder.uid)
+        viewModel._eventListener.value = NoteListEvent.CardListViewSwitchPushed
+        val newViewModelInstance = NoteListViewModel(repository, sharedPreferences)
+        newViewModelInstance._eventListener.value = NoteListEvent.PageLoaded
+        //Then expect that the chores folder is still open and we're still in card view.
+        assertTrue(newViewModelInstance.uiState.value is NoteListViewState.ShowBasicListState)
+        val state = newViewModelInstance.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals("Chores", state.folder.name)
+        assertEquals("Blue", state.folder.color)
+        assertEquals(2, state.notes.size)
+        assertEquals(false, state.isListView)
     }
 
     @Test
     fun `test help button pushed should show help dialog`() {
-        fail()
-    }
-
-    @Test
-    fun `test logo button pushed should show cool effect`() {
-        fail()
+        //Given view model is in show basic list state
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //When help button is pushed
+        viewModel._eventListener.value = NoteListEvent.HelpPushed
+        //Then assert we're in show help dialog state
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowHelpDialog)
     }
 
     @Test
     fun `test folder button with no folders saved pushed should open side tab with all notes folder`() {
-        fail()
+        //Given vew model is in show basic list state and we have 4 folders saved already
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //All Notes folder is already saved.
+        repository.add(RoomFolderBuilder().setName("2").setColor("2").build())
+        repository.add(RoomFolderBuilder().setName("3").setColor("3").build())
+        repository.add(RoomFolderBuilder().setName("4").setColor("4").build())
+
+        //When folder side tray button is pushed
+        viewModel._eventListener.value = NoteListEvent.FolderButtonPushed
+
+        //Then assert we are in the Show Folder Tray state with 4 possible options.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowFoldersTray)
+        val state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(4, state.folders.size)
+        assertTrue(state.folders.map{it.name}.contains(repository.getDefaultFolder().name))
+        assertTrue(state.folders.map{it.name}.contains("2"))
+        assertTrue(state.folders.map{it.name}.contains("3"))
+        assertTrue(state.folders.map{it.name}.contains("4"))
+
     }
 
     @Test
@@ -275,7 +333,7 @@ class NoteListViewModelTest {
     }
 
     @Test
-    fun `test fab pushed`() {
+    fun `test add note button pushed`() {
         fail()
     }
 }

@@ -63,7 +63,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     }
 
     private fun displayBasicListState() {
-        val notes = repository.getAllNotes()
+        val notes = if (folder.uid == 1) repository.getAllNotes() else repository.getNotesInFolder(folder.uid)
         postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
 
