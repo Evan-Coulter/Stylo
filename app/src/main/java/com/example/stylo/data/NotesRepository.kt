@@ -34,8 +34,11 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun add(folder: RoomFolder): Int {
-        if (folder.name.isEmpty() || folder.color.isEmpty()) {
-            throw FolderNotInitializedException()
+        if (folder.name.isEmpty()){
+            throw FolderSavingError(FOLDER_TITLE_ERROR_MESSAGE)
+        }
+        if (folder.color.isEmpty()) {
+            throw FolderSavingError(FOLDER_COLOR_ERROR_MESSAGE)
         }
         return dao.insert(folder).toInt()
     }

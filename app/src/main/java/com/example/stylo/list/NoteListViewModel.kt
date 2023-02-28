@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
+import com.example.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
+import com.example.stylo.data.exceptions.FolderSavingError
 import com.example.stylo.data.model.RoomFolder
 
 
@@ -27,15 +29,17 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         log(it)
         when (it) {
             is NoteListEvent.PageLoaded -> displayBasicListState()
-            is NoteListEvent.HelpPushed -> showHelpDialog()
-            is NoteListEvent.LogoPushed -> showLogoEffect()
-            is NoteListEvent.FolderButtonPushed -> showFolderTray()
-            is NoteListEvent.SearchButtonPushed -> showSearchBar()
-            is NoteListEvent.CardListViewSwitchPushed -> switchCardListView()
-            is NoteListEvent.NotePushed -> openNoteEditor(it)
+            is NoteListEvent.HelpButtonClicked -> showHelpDialog()
+            is NoteListEvent.LogoButtonClicked -> showLogoEffect()
+            is NoteListEvent.FolderTrayButtonClicked -> showFolderTray()
+            is NoteListEvent.SearchButtonClicked -> showSearchBar()
+            is NoteListEvent.CardListViewSwitchClicked -> switchCardListView()
+            is NoteListEvent.NoteClicked -> openNoteEditor(it)
             is NoteListEvent.SearchCompleted -> displaySearchResults(it)
-            is NoteListEvent.EditNoteButtonPushed -> openRenameNoteDialog(it)
-            is NoteListEvent.ChangeFolderButtonPushed -> changeSelectedFolder(it)
+            is NoteListEvent.EditNoteButtonClicked -> openRenameNoteDialog(it)
+            is NoteListEvent.ChangeFolderButtonClicked -> changeSelectedFolder(it)
+            is NoteListEvent.AddNewFolderButtonClicked -> openCreateNewFolderDialog()
+            is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
         }
     }
 
@@ -91,7 +95,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
 
-    private fun openNoteEditor(notePushed: NoteListEvent.NotePushed) {
+    private fun openNoteEditor(notePushed: NoteListEvent.NoteClicked) {
         postNewState(NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID)))
     }
 
@@ -108,17 +112,35 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         }
     }
 
-    private fun openRenameNoteDialog(clickedNote: NoteListEvent.EditNoteButtonPushed) {
+    private fun openRenameNoteDialog(clickedNote: NoteListEvent.EditNoteButtonClicked) {
         val note = repository.getNote(clickedNote.noteID)
         postNewState(NoteListViewState.ShowRenameNoteDialog(note))
     }
 
-    private fun changeSelectedFolder(folderButtonPushed: NoteListEvent.ChangeFolderButtonPushed) {
+    private fun changeSelectedFolder(folderButtonPushed: NoteListEvent.ChangeFolderButtonClicked) {
         postNewState(NoteListViewState.LoadingState)
         folder = repository.getFolder(folderButtonPushed.folderID)
         sharedPreferences.edit().putInt(SHARED_PREF_FOLDER_ID, folder.uid).apply()
         val notesInFolder = repository.getNotesInFolder(folder.uid)
         postNewState(NoteListViewState.ShowBasicListState(notesInFolder, folder, isListView))
+    }
+
+    private fun openCreateNewFolderDialog() {
+        postNewState(NoteListViewState.ShowCreateFolderDialog)
+    }
+
+    private fun attemptToSaveNewFolder(attemptToAddNewFolder: NoteListEvent.AttemptToAddNewFolder) {
+        postNewState(NoteListViewState.LoadingState)
+        try {
+            val alreadySavedFolders = repository.getAllFolders()
+            if (attemptToAddNewFolder.folder.name in alreadySavedFolders.map { it.name }) {
+                throw FolderSavingError(FOLDER_ALREADY_EXISTS_MESSAGE)
+            }
+            repository.add(attemptToAddNewFolder.folder)
+            postNewState(NoteListViewState.ShowCreateFolderSuccessMessage)
+        } catch (e: FolderSavingError) {
+            postNewState(NoteListViewState.ShowCreateFolderErrorMessage(e.errorMessage))
+        }
     }
 
     private fun postNewState(state: NoteListViewState) {

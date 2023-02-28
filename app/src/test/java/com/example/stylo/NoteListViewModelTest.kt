@@ -11,6 +11,8 @@ import com.example.stylo.data.DEFAULT_FOLDER_NAME
 import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.database.NotesMetaDataDao
 import com.example.stylo.data.database.NotesMetaDataDatabase
+import com.example.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
+import com.example.stylo.data.exceptions.FOLDER_TITLE_ERROR_MESSAGE
 import com.example.stylo.data.fileaccess.FileAccessSource
 import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNoteBuilder
@@ -183,7 +185,7 @@ class NoteListViewModelTest {
         assertEquals(DEFAULT_FOLDER_COLOR, state.folder.color)
 
         //When we change to the chores folder
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(2)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(2)
 
         //Then expect to be in basic list state with Chores selected and we can see 2 notes
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
@@ -195,7 +197,7 @@ class NoteListViewModelTest {
         assertTrue(state.notes.map{it.title}.contains("Chores 2"))
 
         //When we change to the chores folder
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(3)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(3)
 
         //Then expect to be in basic list state with Homework selected and we can see 2 notes
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
@@ -220,7 +222,7 @@ class NoteListViewModelTest {
             .build())
 
         //When we switch the selected folder and the "restart" the app
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(folderID)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(folderID)
         val newViewModel = NoteListViewModel(repository, sharedPreferences)
         newViewModel._eventListener.value = NoteListEvent.PageLoaded
 
@@ -270,8 +272,8 @@ class NoteListViewModelTest {
             repository.addNoteToFolder(note, choresFolder)
         }
         //When we start the app, switch to the chores folder, and the "restart" the app.
-        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonPushed(choresFolder.uid)
-        viewModel._eventListener.value = NoteListEvent.CardListViewSwitchPushed
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(choresFolder.uid)
+        viewModel._eventListener.value = NoteListEvent.CardListViewSwitchClicked
         val newViewModelInstance = NoteListViewModel(repository, sharedPreferences)
         newViewModelInstance._eventListener.value = NoteListEvent.PageLoaded
         //Then expect that the chores folder is still open and we're still in card view.
@@ -288,7 +290,7 @@ class NoteListViewModelTest {
         //Given view model is in show basic list state
         viewModel._eventListener.value = NoteListEvent.PageLoaded
         //When help button is pushed
-        viewModel._eventListener.value = NoteListEvent.HelpPushed
+        viewModel._eventListener.value = NoteListEvent.HelpButtonClicked
         //Then assert we're in show help dialog state
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowHelpDialog)
     }
@@ -303,7 +305,7 @@ class NoteListViewModelTest {
         repository.add(RoomFolderBuilder().setName("4").setColor("4").build())
 
         //When folder side tray button is pushed
-        viewModel._eventListener.value = NoteListEvent.FolderButtonPushed
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
 
         //Then assert we are in the Show Folder Tray state with 4 possible options.
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowFoldersTray)
@@ -318,8 +320,78 @@ class NoteListViewModelTest {
 
     @Test
     fun `test add folder button clicked should show create new folder dialog`() {
-        fail()
+        //Given folder tray is open
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        //When we push the add new folder button
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+        //Then assert we're showing the add new folder dialog
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowCreateFolderDialog)
     }
+
+    @Test
+    fun `test success case when adding new folder`() {
+        //And Given we're trying in the create new folder dialog
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+
+        //When we try to add a new folder
+        val newFolder = RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(newFolder)
+
+        //Then assert we get a success response from repository and can see our new folder is saved.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowCreateFolderSuccessMessage)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowFoldersTray)
+        val state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, state.folders.size)
+        assertTrue(state.folders.map{it.name}.contains("Homework"))
+        assertTrue(state.folders.map{it.color}.contains("Green"))
+        assertTrue(state.folders.map{it.name}.contains(repository.getDefaultFolder().name))
+        assertTrue(state.folders.map{it.color}.contains(repository.getDefaultFolder().color))
+    }
+
+    @Test
+    fun `test fail save duplicate case when adding new folder`() {
+        //Given we already have a homework folder saved.
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+        val folder = RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(folder)
+
+        //When we try to add a new folder with the same name.
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+        val newFolder = RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(newFolder)
+
+        //Then assert we received an error message
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowCreateFolderErrorMessage)
+        var state : NoteListViewState = viewModel.uiState.value as NoteListViewState.ShowCreateFolderErrorMessage
+        assertEquals(FOLDER_ALREADY_EXISTS_MESSAGE, (state as NoteListViewState.ShowCreateFolderErrorMessage).errorMessage)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, state.folders.size)
+    }
+
+    @Test
+    fun `test fail save uninitialized case when adding new folder`() {
+        //And Given we're trying in the create new folder dialog
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+
+        //When the new folder is not fully initialized (no title)
+        val newFolder = RoomFolderBuilder().setColor("Green").build()
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(newFolder)
+
+        //Then assert we receive error messages.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowCreateFolderErrorMessage)
+        var state : NoteListViewState = viewModel.uiState.value as NoteListViewState.ShowCreateFolderErrorMessage
+        assertEquals(FOLDER_TITLE_ERROR_MESSAGE, (state as NoteListViewState.ShowCreateFolderErrorMessage).errorMessage)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(1, state.folders.size)
+    }
+
 
     @Test
     fun `test search button pushed`() {
@@ -333,7 +405,7 @@ class NoteListViewModelTest {
     }
 
     @Test
-    fun `test add note button pushed`() {
+    fun `test add new note button pushed`() {
         fail()
     }
 }

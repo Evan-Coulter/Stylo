@@ -42,7 +42,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
             is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
             is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDialog()
-            is NoteListViewState.ShowEditFolderNameOrColorDialog -> showEditFolderDialog()
+            is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog()
         }
     }
 

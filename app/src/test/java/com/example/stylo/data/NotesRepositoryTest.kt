@@ -263,7 +263,7 @@ class NotesRepositoryTest {
     @Test
     fun `test attempt to create uninitialized folder`() {
         val folder = RoomFolderBuilder().build()
-        assertThrows(FolderNotInitializedException::class.java) {
+        assertThrows(FolderSavingError::class.java) {
             repository.add(folder)
         }
     }
