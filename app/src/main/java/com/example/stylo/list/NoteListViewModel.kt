@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
 import com.example.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
+import com.example.stylo.data.exceptions.FolderNotFoundException
 import com.example.stylo.data.exceptions.FolderSavingError
 import com.example.stylo.data.model.RoomFolder
 
@@ -39,7 +40,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.EditNoteButtonClicked -> openRenameNoteDialog(it)
             is NoteListEvent.ChangeFolderButtonClicked -> changeSelectedFolder(it)
             is NoteListEvent.AddNewFolderButtonClicked -> openCreateNewFolderDialog()
+            is NoteListEvent.EditFolderButtonClicked -> openEditFolderDialog(it)
             is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
+            is NoteListEvent.DeleteFolderButtonClicked -> deleteFolder(it)
+            else -> throw NotImplementedError(it.toString())
         }
     }
 
@@ -140,6 +144,32 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             postNewState(NoteListViewState.ShowCreateFolderSuccessMessage)
         } catch (e: FolderSavingError) {
             postNewState(NoteListViewState.ShowCreateFolderErrorMessage(e.errorMessage))
+        }
+    }
+
+    private fun openEditFolderDialog(event: NoteListEvent.EditFolderButtonClicked) {
+        postNewState(NoteListViewState.LoadingState)
+        try {
+            val folder = repository.getFolder(event.folderID)
+            postNewState(NoteListViewState.ShowEditFolderDialog(folder))
+        } catch (e : FolderNotFoundException) {
+            displayBasicListState()
+        } catch (e : Throwable) {
+            displayBasicListState()
+        }
+    }
+
+    private fun deleteFolder(event: NoteListEvent.DeleteFolderButtonClicked) {
+        postNewState(NoteListViewState.LoadingState)
+        try {
+            if (folder.uid == 1) {
+                showFolderTray()
+            }
+            val folder = repository.getFolder(event.folderID)
+            repository.delete(folder)
+            showFolderTray()
+        } catch (e : Throwable) {
+            displayBasicListState()
         }
     }
 

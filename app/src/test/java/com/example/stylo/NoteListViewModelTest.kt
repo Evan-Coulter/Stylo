@@ -427,7 +427,69 @@ class NoteListViewModelTest {
     }
 
     @Test
-    fun `test add new note button pushed`() {
+    fun `test open folder editor dialog`() {
+        //Given we're in the folder editor dialog and we have 1 folder saved (in addition to all folders)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Red").build()
+        )
+        //When we click on the homework folder's edit button
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(2)
+        //Then we should be seeing the edit folder button dialog with homework folder details.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditFolderDialog)
+        val state = viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog
+        assertEquals("Homework", state.folder.name)
+        assertEquals("Red", state.folder.color)
+    }
+
+    @Test
+    fun `test delete folder button is pushed from edit folder dialog`() {
+        //Given we have two folders saved and we're in the side folder tray.
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Chores").setColor("Blue").build()
+        )
+        //When we click on the chores folder edit button and click delete.
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(3)
+        viewModel._eventListener.value = NoteListEvent.DeleteFolderButtonClicked(3)
+        //Then assert that folder doesn't exist anymore
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowFoldersTray)
+        val state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, state.folders.size)
+        assertFalse(state.folders.map { it.name }.contains("Chores"))
+    }
+
+    @Test
+    fun `test edit folder title from edit folder dialog`() {
+        fail()
+    }
+
+    @Test
+    fun `test edit folder color from edit folder dialog`() {
+        fail()
+    }
+
+    @Test
+    fun `test edit note button is pushed`() {
+        fail()
+    }
+
+    @Test
+    fun `test delete note from note editor dialog`() {
+        fail()
+    }
+
+    @Test
+    fun `test change note's folder from note editor dialog`() {
+        fail()
+    }
+
+    @Test
+    fun `test change note title from note editor dialog`() {
         fail()
     }
 }
