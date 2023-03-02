@@ -395,13 +395,35 @@ class NoteListViewModelTest {
 
     @Test
     fun `test search button pushed`() {
-        fail()
+        //Given we're in basic list state
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //When search button is clicked
+        viewModel._eventListener.value = NoteListEvent.SearchButtonClicked
+        //Then assert we're seeing the search bar is open.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowSearchBar)
     }
 
 
     @Test
     fun `test note pushed`() {
-        fail()
+        //Given we have 3 notes saved and we're in basic list state
+        for (i in 0..2) {
+            val note = RoomNoteBuilder()
+                .setTitle("$i title")
+                .setContent("$i content")
+                .also {it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+                .build()
+            repository.add(note)
+        }
+        //When a note is pushed
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.NoteClicked(noteID = 2)
+        //Then assert we're about to open the note editor for that note.
+        assertTrue(viewModel.uiState.value is NoteListViewState.OpenNoteEditor)
+        val state = viewModel.uiState.value as NoteListViewState.OpenNoteEditor
+        assertEquals("1 title", state.note.title)
+        assertEquals("1 content", state.note.content)
+
     }
 
     @Test
