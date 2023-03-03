@@ -465,6 +465,25 @@ class NoteListViewModelTest {
 
     @Test
     fun `test edit folder title from edit folder dialog`() {
+        //Given we're in the edit folder details dialog
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(RoomFolderBuilder()
+            .setName("Homework").setColor("Green").build())
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(folderID = 2)
+        //When we try to edit the details of the homework folder
+        viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(
+            RoomFolderBuilder().clone(repository.getFolder(2)).setName("Chores").setColor("Blue").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        //Then assert we're back in the folder tray and the folder's details have been updates
+        val state = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, state.folders.size)
+        val folder = state.folders[1]
+        assertEquals("Chores", folder.name)
+        assertEquals("Blue", folder.color)
+    }
+
+    @Test
+    fun `test edit folder title from edit folder dialog failure case`() {
         fail()
     }
 
@@ -475,7 +494,25 @@ class NoteListViewModelTest {
 
     @Test
     fun `test edit note button is pushed`() {
-        fail()
+        //Given we're in basic list state with 2 folders saved
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        repository.add(RoomNoteBuilder()
+            .setTitle("Note 1")
+            .setContent("Note 1 Content")
+            .also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+            .build())
+        repository.add(RoomNoteBuilder()
+            .setTitle("Note 2")
+            .setContent("Note 2 Content")
+            .also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+            .build())
+        //Given we click the edit folder button on the second folder
+        viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(2)
+        //Then assert we're viewing the edit folder dialog
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditNoteDetailsOptions)
+        val state = viewModel.uiState.value as NoteListViewState.ShowEditNoteDetailsOptions
+        assertEquals("Note 2", state.note.title)
+        assertEquals("Note 2 Content", state.note.content)
     }
 
     @Test
@@ -490,6 +527,11 @@ class NoteListViewModelTest {
 
     @Test
     fun `test change note title from note editor dialog`() {
+        fail()
+    }
+
+    @Test
+    fun `test note editor is launched from note details editor options list`() {
         fail()
     }
 }

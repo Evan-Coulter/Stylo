@@ -41,14 +41,14 @@ class NoteListFragment : Fragment() {
         when (newState) {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
             is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
-            is NoteListViewState.ShowRenameNoteDialog -> showRenameNoteDialog()
+            is NoteListViewState.ShowEditNoteDetailsOptions -> showEditNoteDetailsOptions()
             is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog()
         }
     }
 
     private fun showBasicListState(list: List<RoomNote>) {}
     private fun showFoldersTrayDialog() {}
-    private fun showRenameNoteDialog() {}
+    private fun showEditNoteDetailsOptions() {}
     private fun showEditFolderDialog() {}
 
 

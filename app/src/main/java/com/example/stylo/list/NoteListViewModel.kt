@@ -37,12 +37,13 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.CardListViewSwitchClicked -> switchCardListView()
             is NoteListEvent.NoteClicked -> openNoteEditor(it)
             is NoteListEvent.SearchCompleted -> displaySearchResults(it)
-            is NoteListEvent.EditNoteButtonClicked -> openRenameNoteDialog(it)
+            is NoteListEvent.EditNoteButtonClicked -> openEditNoteDetailsOptions(it)
             is NoteListEvent.ChangeFolderButtonClicked -> changeSelectedFolder(it)
             is NoteListEvent.AddNewFolderButtonClicked -> openCreateNewFolderDialog()
             is NoteListEvent.EditFolderButtonClicked -> openEditFolderDialog(it)
             is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
             is NoteListEvent.DeleteFolderButtonClicked -> deleteFolder(it)
+            is NoteListEvent.AttemptToEditFolder -> attemptToEditFolder(it)
             else -> throw NotImplementedError(it.toString())
         }
     }
@@ -116,9 +117,9 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         }
     }
 
-    private fun openRenameNoteDialog(clickedNote: NoteListEvent.EditNoteButtonClicked) {
+    private fun openEditNoteDetailsOptions(clickedNote: NoteListEvent.EditNoteButtonClicked) {
         val note = repository.getNote(clickedNote.noteID)
-        postNewState(NoteListViewState.ShowRenameNoteDialog(note))
+        postNewState(NoteListViewState.ShowEditNoteDetailsOptions(note))
     }
 
     private fun changeSelectedFolder(folderButtonPushed: NoteListEvent.ChangeFolderButtonClicked) {
@@ -170,6 +171,19 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             showFolderTray()
         } catch (e : Throwable) {
             displayBasicListState()
+        }
+    }
+
+    private fun attemptToEditFolder(event: NoteListEvent.AttemptToEditFolder) {
+        postNewState(NoteListViewState.LoadingState)
+        try {
+            if (folder.uid == 1) {
+                showFolderTray()
+            }
+            repository.add(event.folder)
+            postNewState(NoteListViewState.ShowEditFolderSuccessMessage)
+        } catch (e: FolderSavingError) {
+            postNewState(NoteListViewState.ShowEditFolderErrorMessage(e.errorMessage))
         }
     }
 
