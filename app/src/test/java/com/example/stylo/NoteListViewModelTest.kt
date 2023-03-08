@@ -484,12 +484,64 @@ class NoteListViewModelTest {
 
     @Test
     fun `test edit folder title from edit folder dialog failure case`() {
-        fail()
+        //Given we're in the edit folder details dialog
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(2)
+
+        //When we attempt to save an invalid name
+        var folder = (viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog).folder
+        var newFolderBuilder = RoomFolderBuilder().clone(folder)
+        newFolderBuilder.setName("")
+        viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(newFolderBuilder.build())
+
+        //Then assert we're seeing a folder saving error
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditFolderErrorMessage)
+        var state = viewModel.uiState.value as NoteListViewState.ShowEditFolderErrorMessage
+        assertEquals(FOLDER_TITLE_ERROR_MESSAGE, state.errorMessage)
+
+        //And when we're back in the edit folder dialog and we try another invalid name.
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(2)
+        folder = (viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog).folder
+        newFolderBuilder = RoomFolderBuilder().clone(folder)
+        newFolderBuilder.setName(repository.getDefaultFolder().name)
+        viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(newFolderBuilder.build())
+
+        //Then assert we're seeing a folder saving error and that we still only have 2 folders saved
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditFolderErrorMessage)
+        state = viewModel.uiState.value as NoteListViewState.ShowEditFolderErrorMessage
+        assertEquals(FOLDER_ALREADY_EXISTS_MESSAGE, state.errorMessage)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        val newState = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, newState.folders.size)
+        assertEquals(repository.getDefaultFolder().name, newState.folders[0].name)
+        assertEquals(repository.getDefaultFolder().color, newState.folders[0].color)
+        assertEquals("Homework", newState.folders[1].name)
+        assertEquals("Green", newState.folders[1].color)
     }
 
     @Test
     fun `test edit folder color from edit folder dialog`() {
-        fail()
+        //Given we're in the edit folder details dialog
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(2)
+
+        //When we try to edit a folder's color
+        var state = viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog
+        val folderBuilder = RoomFolderBuilder().clone(state.folder)
+        folderBuilder.setColor("Blue")
+        viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(folderBuilder.build())
+
+        //Then assert the folder has the new color
+        var newState = viewModel.uiState.value
+        assertTrue(newState is NoteListViewState.ShowEditFolderSuccessMessage)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        newState = viewModel.uiState.value as NoteListViewState.ShowFoldersTray
+        assertEquals(2, newState.folders.size)
+        assertEquals("Blue", newState.folders.find { it.name == "Homework" }?.color)
     }
 
     @Test

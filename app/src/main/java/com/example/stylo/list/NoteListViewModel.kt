@@ -177,8 +177,16 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun attemptToEditFolder(event: NoteListEvent.AttemptToEditFolder) {
         postNewState(NoteListViewState.LoadingState)
         try {
-            if (folder.uid == 1) {
+            if (event.folder.uid == 1 || event.folder.uid == 0) {
+                //We technically shouldn't ever reach here if fragment layout is done properly.
                 showFolderTray()
+            }
+            val anotherFolderAlreadyHasThatTitle = repository.getAllFolders()
+                .filter { it.uid != event.folder.uid }
+                .map { it.name }
+                .contains(event.folder.name)
+            if (anotherFolderAlreadyHasThatTitle) {
+                throw FolderSavingError(FOLDER_ALREADY_EXISTS_MESSAGE)
             }
             repository.add(event.folder)
             postNewState(NoteListViewState.ShowEditFolderSuccessMessage)
