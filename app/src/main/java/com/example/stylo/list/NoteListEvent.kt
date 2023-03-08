@@ -29,5 +29,6 @@ sealed class NoteListEvent {
 
     data class EditNoteButtonClicked(val noteID: Int) : NoteListEvent() //Opens note editor dialog
     data class DeleteNoteButtonClicked(val noteID : Int) : NoteListEvent() //Is used within edit note dialog
+    data class ChangeNoteFolderMembershipButtonClicked(val noteID: Int, val newFolderMembership: List<Int>) : NoteListEvent()
     object AddNewNoteButtonClicked : NoteListEvent() //Opens create new note dialog.
 }

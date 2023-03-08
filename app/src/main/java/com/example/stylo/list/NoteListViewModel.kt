@@ -44,6 +44,8 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
             is NoteListEvent.DeleteFolderButtonClicked -> deleteFolder(it)
             is NoteListEvent.AttemptToEditFolder -> attemptToEditFolder(it)
+            is NoteListEvent.DeleteNoteButtonClicked -> deleteNote(it)
+            is NoteListEvent.ChangeNoteFolderMembershipButtonClicked -> changeNoteFolderMembership(it)
             else -> throw NotImplementedError(it.toString())
         }
     }
@@ -193,6 +195,33 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         } catch (e: FolderSavingError) {
             postNewState(NoteListViewState.ShowEditFolderErrorMessage(e.errorMessage))
         }
+    }
+
+    private fun deleteNote(event: NoteListEvent.DeleteNoteButtonClicked) {
+        postNewState(NoteListViewState.LoadingState)
+        repository.delete(repository.getNote(event.noteID))
+        displayBasicListState()
+    }
+
+    private fun changeNoteFolderMembership(event: NoteListEvent.ChangeNoteFolderMembershipButtonClicked) {
+        postNewState(NoteListViewState.LoadingState)
+        val note = repository.getNote(event.noteID)
+        //Get all folders that this note is in (other than default folder)
+        val folders = repository.getAllFolders().filter {
+            repository.getNotesInFolder(it.uid).map {
+                roomNote ->  roomNote.uid
+            }.contains(note.uid) && it.uid != 1
+        }
+        //Remove the note from all those folders
+        folders.forEach {
+            repository.deleteNoteFromFolder(note, it)
+        }
+        //Add the note to all valid folders that have remain in the event.folders list.
+        val foldersToAdd = event.newFolderMembership.map { repository.getFolder(it) }
+        foldersToAdd.forEach {
+            repository.addNoteToFolder(note, it)
+        }
+        displayBasicListState()
     }
 
     private fun postNewState(state: NoteListViewState) {

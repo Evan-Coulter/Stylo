@@ -568,12 +568,71 @@ class NoteListViewModelTest {
     }
 
     @Test
-    fun `test delete note from note editor dialog`() {
-        fail()
+    fun `test delete note from note details editor dialog`() {
+        //Given we have one note saved and we're in the basic list state
+        val noteID = repository.add(
+            RoomNoteBuilder().setTitle("homework 1").setContent("homework 1 content").also {
+                it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+            }.build()
+        )
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //When we click the edit note details button
+        viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(noteID)
+
+        //Then assert we can see the note details dialog
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditNoteDetailsOptions)
+
+        //And when we click delete and go back to the basic list state
+        viewModel._eventListener.value = NoteListEvent.DeleteNoteButtonClicked(noteID)
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //Then assert the note is actually deleted
+        assertEquals(0, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).notes.size)
     }
 
     @Test
-    fun `test change note's folder from note editor dialog`() {
+    fun `test add note to folder from note editor dialog`() {
+        //Given we have one note saved and three folders saved and we're in the basic list state
+        val noteID = repository.add(
+            RoomNoteBuilder().setTitle("homework 1").setContent("homework 1 content").also {
+                it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+            }.build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Chores").setColor("Blue").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Other Stuff").setColor("Red").build()
+        )
+        //When we open the edit note details button and try to add that note to two folders
+        viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(1)
+        viewModel._eventListener.value = NoteListEvent.ChangeNoteFolderMembershipButtonClicked(
+            noteID, listOf(2, 4)
+        )
+
+        //Then assert the note is a part of the two new folders and all notes, and is not a part of the chores folder.
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        assertEquals(1, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).notes.size)
+        assertEquals(repository.getDefaultFolder().name, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).folder.name)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(2)
+        assertEquals(1, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).notes.size)
+        assertEquals("Homework", (viewModel.uiState.value as NoteListViewState.ShowBasicListState).folder.name)
+        viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(4)
+        assertEquals(1, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).notes.size)
+        assertEquals("Other Stuff", (viewModel.uiState.value as NoteListViewState.ShowBasicListState).folder.name)
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(3)
+        assertEquals(0, (viewModel.uiState.value as NoteListViewState.ShowBasicListState).notes.size)
+        assertEquals("Chores", (viewModel.uiState.value as NoteListViewState.ShowBasicListState).folder.name)
+    }
+
+    @Test
+    fun `test remove note from folder from note editor dialog`() {
         fail()
     }
 
