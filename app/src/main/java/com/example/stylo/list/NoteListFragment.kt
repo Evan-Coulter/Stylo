@@ -32,6 +32,11 @@ class NoteListFragment : Fragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initTextViews(view)
@@ -65,6 +70,7 @@ class NoteListFragment : Fragment() {
         val recyclerView: RecyclerView = requireView().findViewById(R.id.list)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
+            list.toTypedArray(),
             onClickNote = { id -> Toast.makeText(context, "$id note clicked", Toast.LENGTH_SHORT).show() },
             onClickNoteEditDetails = { id -> Toast.makeText(context, "$id note edit details button clicked", Toast.LENGTH_SHORT).show() }
         )
