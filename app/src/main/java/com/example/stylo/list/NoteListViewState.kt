@@ -22,5 +22,7 @@ sealed class NoteListViewState {
     data class ShowCreateFolderErrorMessage(val errorMessage: String) : NoteListViewState()
     object ShowEditFolderSuccessMessage : NoteListViewState()
     data class ShowEditFolderErrorMessage(val errorMessage: String) : NoteListViewState()
+    object ShowRenameNoteSuccessMessage : NoteListViewState()
+    data class ShowRenameNoteErrorMessage(val errorMessage: String) : NoteListViewState()
     data class OpenNoteEditor(val note: RoomNote) : NoteListViewState()
 }

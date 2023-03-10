@@ -10,6 +10,7 @@ import com.example.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
 import com.example.stylo.data.exceptions.FolderNotFoundException
 import com.example.stylo.data.exceptions.FolderSavingError
 import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomNoteBuilder
 
 
 private const val SHARED_PREF_LIST_CARD_SWITCH = "shared_pref_list_card_switch"
@@ -33,10 +34,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.HelpButtonClicked -> showHelpDialog()
             is NoteListEvent.LogoButtonClicked -> showLogoEffect()
             is NoteListEvent.FolderTrayButtonClicked -> showFolderTray()
-            is NoteListEvent.SearchButtonClicked -> showSearchBar()
             is NoteListEvent.CardListViewSwitchClicked -> switchCardListView()
             is NoteListEvent.NoteClicked -> openNoteEditor(it)
             is NoteListEvent.SearchCompleted -> displaySearchResults(it)
+            is NoteListEvent.SearchClosed -> displayBasicListState()
             is NoteListEvent.EditNoteButtonClicked -> openEditNoteDetailsOptions(it)
             is NoteListEvent.ChangeFolderButtonClicked -> changeSelectedFolder(it)
             is NoteListEvent.AddNewFolderButtonClicked -> openCreateNewFolderDialog()
@@ -46,6 +47,8 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.AttemptToEditFolder -> attemptToEditFolder(it)
             is NoteListEvent.DeleteNoteButtonClicked -> deleteNote(it)
             is NoteListEvent.ChangeNoteFolderMembershipButtonClicked -> changeNoteFolderMembership(it)
+            is NoteListEvent.AttemptToRenameNote -> renameNote(it)
+            is NoteListEvent.AddNewNoteButtonClicked -> addNewNote(it)
             else -> throw NotImplementedError(it.toString())
         }
     }
@@ -89,10 +92,6 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun showFolderTray() {
         val folders = repository.getAllFolders()
         postNewState(NoteListViewState.ShowFoldersTray(folders))
-    }
-
-    private fun showSearchBar() {
-        postNewState(NoteListViewState.ShowSearchBar)
     }
 
     private fun switchCardListView() {
@@ -222,6 +221,25 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             repository.addNoteToFolder(note, it)
         }
         displayBasicListState()
+    }
+
+    private fun renameNote(event: NoteListEvent.AttemptToRenameNote) {
+        postNewState(NoteListViewState.LoadingState)
+        try {
+            repository.add(event.note)
+            postNewState(NoteListViewState.ShowRenameNoteSuccessMessage)
+        } catch (error: Throwable) {
+            postNewState(NoteListViewState.ShowRenameNoteErrorMessage("Sorry that title is not valid"))
+        }
+    }
+
+    private fun addNewNote(event: NoteListEvent.AddNewNoteButtonClicked) {
+        postNewState(NoteListViewState.LoadingState)
+        val noteID = repository.add(RoomNoteBuilder().setTitle("New Note").setContent("").also {
+            it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+        }.build())
+        val note = repository.getNote(noteID)
+        postNewState(NoteListViewState.OpenNoteEditor(note))
     }
 
     private fun postNewState(state: NoteListViewState) {

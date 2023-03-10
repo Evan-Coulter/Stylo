@@ -21,7 +21,7 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
     }
 
     fun add(note: RoomNote): Int {
-        if (note.title.isEmpty() || note.content.isEmpty()) {
+        if (note.title.isEmpty()) {
             throw NoteNotInitializedException()
         }
         if (note.filePath.isEmpty()) {

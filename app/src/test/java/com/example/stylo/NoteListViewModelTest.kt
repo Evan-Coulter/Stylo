@@ -394,17 +394,6 @@ class NoteListViewModelTest {
 
 
     @Test
-    fun `test search button pushed`() {
-        //Given we're in basic list state
-        viewModel._eventListener.value = NoteListEvent.PageLoaded
-        //When search button is clicked
-        viewModel._eventListener.value = NoteListEvent.SearchButtonClicked
-        //Then assert we're seeing the search bar is open.
-        assertTrue(viewModel.uiState.value is NoteListViewState.ShowSearchBar)
-    }
-
-
-    @Test
     fun `test note pushed`() {
         //Given we have 3 notes saved and we're in basic list state
         for (i in 0..2) {
@@ -530,7 +519,7 @@ class NoteListViewModelTest {
         viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(2)
 
         //When we try to edit a folder's color
-        var state = viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog
+        val state = viewModel.uiState.value as NoteListViewState.ShowEditFolderDialog
         val folderBuilder = RoomFolderBuilder().clone(state.folder)
         folderBuilder.setColor("Blue")
         viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(folderBuilder.build())
@@ -633,16 +622,213 @@ class NoteListViewModelTest {
 
     @Test
     fun `test remove note from folder from note editor dialog`() {
-        fail()
+        //Given we have one note saved and two folders saved (the note belongs to only one of the folders)
+        val noteID = repository.add(
+            RoomNoteBuilder().setTitle("homework 1").setContent("homework 1 content").also {
+                it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+            }.build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Green").build()
+        )
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Chores").setColor("Blue").build()
+        )
+        repository.addNoteToFolder(repository.getNote(noteID), repository.getFolder(3))
+        repository.addNoteToFolder(repository.getNote(noteID), repository.getFolder(1))
+
+
+        //First assert that the note is in that folder
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(2)
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        var state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals("Homework", state.folder.name)
+        assertEquals(0, state.notes.size)
+
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(3)
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals("Chores", state.folder.name)
+        assertEquals(1, state.notes.size)
+
+        //Then when we delete that note from the folder
+        viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(1)
+        viewModel._eventListener.value = NoteListEvent.ChangeNoteFolderMembershipButtonClicked(1, listOf())
+
+        //Assert the note has been removed from the folder.
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(3)
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals("Chores", state.folder.name)
+        assertEquals(0, state.notes.size)
+
+        //And assert it is still in the all notes folder
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(1)
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(repository.getDefaultFolder().name, state.folder.name)
+        assertEquals(1, state.notes.size)
     }
 
     @Test
     fun `test change note title from note editor dialog`() {
-        fail()
+        //Given we have one note saved and are in show basic list state.
+        val noteID = repository.add(
+            RoomNoteBuilder()
+                .setTitle("Hello")
+                .setContent("World")
+                .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                .build()
+        )
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //When we edit the notes title
+        val newNoteBuilder = RoomNoteBuilder().clone(repository.getNote(noteID)).setTitle("Goodbye")
+        viewModel._eventListener.value = NoteListEvent.AttemptToRenameNote(newNoteBuilder.build())
+
+        //Then assert the note has changed title.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowRenameNoteSuccessMessage)
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(1, state.notes.size)
+        assertEquals("World", state.notes[0].content)
+        assertEquals("Goodbye", state.notes[0].title)
+    }
+
+    @Test
+    fun `test change note title from note editor dialog fail case`() {
+        //Given we have one note saved and are in show basic list state.
+        val noteID = repository.add(
+            RoomNoteBuilder()
+                .setTitle("Hello")
+                .setContent("World")
+                .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                .build()
+        )
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //When we edit the notes title
+        val newNoteBuilder = RoomNoteBuilder().clone(repository.getNote(noteID)).setTitle("")
+        viewModel._eventListener.value = NoteListEvent.AttemptToRenameNote(newNoteBuilder.build())
+
+        //Then assert the note has changed title.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowRenameNoteErrorMessage)
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(1, state.notes.size)
+        assertEquals("World", state.notes[0].content)
+        assertEquals("Hello", state.notes[0].title)
     }
 
     @Test
     fun `test note editor is launched from note details editor options list`() {
-        fail()
+        //Given we're in the basic list state with one note saved.
+        repository.add(
+            RoomNoteBuilder()
+                .setTitle("Hello")
+                .setContent("World")
+                .also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}
+                .build()
+        )
+
+        //When we open the note details editor options list and click edit note.
+        viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(1)
+        viewModel._eventListener.value = NoteListEvent.NoteClicked(1)
+
+        //Then assert we're now in the note editor
+        assertTrue(viewModel.uiState.value is NoteListViewState.OpenNoteEditor)
+        val state = viewModel.uiState.value as NoteListViewState.OpenNoteEditor
+        assertEquals(1, state.note.uid)
+        assertEquals("Hello", state.note.title)
+        assertEquals("World", state.note.content)
+    }
+
+    @Test
+    fun `add new note button clicked`() {
+        //Given we're in the basic list state
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        //When we click on the add new note button
+        viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
+        //Then assert we have a new empty note (it should be ok to have an empty note but it should have at least a title.)
+        assertTrue(viewModel.uiState.value is NoteListViewState.OpenNoteEditor)
+        val state = viewModel.uiState.value as NoteListViewState.OpenNoteEditor
+        assertEquals(1, state.note.uid)
+        assertEquals("New Note", state.note.title)
+        assertEquals("", state.note.content)
+        assertTrue(state.note.filePath.isNotEmpty())
+    }
+
+    @Test
+    fun `add new note button clicked 3 times check note title is unique for each note`() {
+        //Given we're in the basic list state
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //When we click on the add new note button 3 times to create 3 new notes
+        viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+        //Then assert we have 3 new empty notes
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(3, state.notes.size)
+        assertEquals("New Note", state.notes[0].title)
+        assertEquals("New Note", state.notes[1].title)
+        assertEquals("New Note", state.notes[2].title)
+    }
+
+    @Test
+    fun `test search for note and cancel search`() {
+        //Given we have 10 notes saved total and 6 in the homework folder
+        //and we're in the homework folder.
+        repository.add(RoomNoteBuilder().setTitle("1").setContent("1").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("2").setContent("2").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+
+        repository.add(RoomNoteBuilder().setTitle("Math 1").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("English 1").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("Math 2").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("English 2").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("English 3").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("English 4").setContent("").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+
+        repository.add(RoomNoteBuilder().setTitle("9").setContent("9").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+        repository.add(RoomNoteBuilder().setTitle("10").setContent("10").also{it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))}.build())
+
+        viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(
+            RoomFolderBuilder().setName("Homework").setColor("Blue").build()
+        )
+
+        for (i in 3..8) {
+            repository.addNoteToFolder(repository.getNote(i), repository.getFolder(2))
+        }
+
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(2)
+
+        //When we search for a given note
+        viewModel._eventListener.value = NoteListEvent.SearchCompleted("Math")
+
+        //Then only notes with the search words in the title are returned
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        var state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(2, state.notes.size)
+        assertEquals("Math 1", state.notes[0].title)
+        assertEquals("Math 2", state.notes[1].title)
+
+        //And When we cancel the search mode
+        viewModel._eventListener.value = NoteListEvent.SearchClosed
+
+        //Then we see all our 6 homework folder notes again.
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowBasicListState)
+        state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(6, state.notes.size)
+        assertTrue("Math 1" in state.notes.map{it.title})
+        assertTrue("Math 2" in state.notes.map{it.title})
+        assertTrue("English 1" in state.notes.map{it.title})
+        assertTrue("English 2" in state.notes.map{it.title})
+        assertTrue("English 3" in state.notes.map{it.title})
+        assertTrue("English 4" in state.notes.map{it.title})
     }
 }

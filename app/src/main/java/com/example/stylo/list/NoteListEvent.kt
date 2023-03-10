@@ -1,6 +1,7 @@
 package com.example.stylo.list
 
 import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomNote
 
 /**
  * Events from activity or fragment such as a button press which
@@ -23,12 +24,12 @@ sealed class NoteListEvent {
     data class AttemptToAddNewFolder(val folder: RoomFolder) : NoteListEvent() //Is used within create folder dialog.
 
 
-    object SearchButtonClicked : NoteListEvent() //To open search bar.
-    object SearchCanceled : NoteListEvent() //Is used while search bar is open
     data class SearchCompleted(val query: String) : NoteListEvent() //Is used to close search bar.
+    object SearchClosed : NoteListEvent()
 
     data class EditNoteButtonClicked(val noteID: Int) : NoteListEvent() //Opens note editor dialog
     data class DeleteNoteButtonClicked(val noteID : Int) : NoteListEvent() //Is used within edit note dialog
+    data class AttemptToRenameNote(val note: RoomNote) : NoteListEvent() //Is used within edit note dialog
     data class ChangeNoteFolderMembershipButtonClicked(val noteID: Int, val newFolderMembership: List<Int>) : NoteListEvent()
     object AddNewNoteButtonClicked : NoteListEvent() //Opens create new note dialog.
 }
