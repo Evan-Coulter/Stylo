@@ -7,7 +7,8 @@
         <entry key="app/src/main/res/drawable/ic_abstract_list_item.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.28807632925541815" />
         <entry key="app/src/main/res/layout/fragment_note_editor.xml" value="0.3940379381421369" />
-        <entry key="app/src/main/res/layout/fragment_note_list.xml" value="0.3574768066406251" />
+        <entry key="app/src/main/res/layout/fragment_note_list.xml" value="0.2016143798828125" />
+        <entry key="app/src/main/res/layout/note_list_card_item.xml" value="0.1703125" />
       </map>
     </option>
   </component>

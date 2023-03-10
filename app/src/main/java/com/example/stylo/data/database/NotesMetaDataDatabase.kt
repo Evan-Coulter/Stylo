@@ -21,7 +21,8 @@ abstract class NotesMetaDataDatabase : RoomDatabase() {
                     context.applicationContext,
                     NotesMetaDataDatabase::class.java,
                     "notes_database"
-                ).build()
+                ).allowMainThreadQueries()
+                .build()
                 instance = database
                 return database
             }
