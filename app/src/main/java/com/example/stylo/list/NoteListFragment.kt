@@ -41,15 +41,14 @@ class NoteListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initTextViews(view)
         initButtons(view)
-        initRecyclerView(view)
     }
 
     private fun onNewState(newState : NoteListViewState) {
         when (newState) {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
-            is NoteListViewState.ShowFoldersTray -> showFoldersTrayDialog()
-            is NoteListViewState.ShowEditNoteDetailsOptions -> showEditNoteDetailsOptions()
-            is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog()
+            is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.notes)
+            is NoteListViewState.ShowEditNoteDetailsOptions -> TODO()
+            is NoteListViewState.ShowEditFolderDialog -> TODO()
             is NoteListViewState.LoadingState -> Toast.makeText(context, "Loading TODO", Toast.LENGTH_SHORT).show()
             is NoteListViewState.OpenNoteEditor -> TODO()
             is NoteListViewState.ShowCreateFolderDialog -> TODO()
@@ -77,11 +76,6 @@ class NoteListFragment : Fragment() {
         recyclerView.adapter = adapter
     }
 
-    private fun showFoldersTrayDialog() {}
-    private fun showEditNoteDetailsOptions() {}
-    private fun showEditFolderDialog() {}
-
-
     private fun initTextViews(view: View) {
         view.findViewById<TextView>(R.id.title).text = "All Notes"
     }
@@ -97,7 +91,7 @@ class NoteListFragment : Fragment() {
         }
     }
 
-    private fun initRecyclerView(view: View) {
-
+    private fun showFoldersTray() {
+        TODO()
     }
 }
