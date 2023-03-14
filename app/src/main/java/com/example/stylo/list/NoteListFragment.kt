@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,11 +17,15 @@ import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.dialogs.RenameNoteDialog
 import com.example.stylo.editor.NoteEditorFragment
+import com.example.stylo.util.fadeInView
+import com.example.stylo.util.fadeOutView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class NoteListFragment : Fragment() {
+    private var dialogFragment: DialogFragment? = null
     private val viewModel: NoteListViewModel by viewModels {
         NoteListViewModelFactory((requireActivity().application as MainApplication).notesRepository, activity?.application)
     }
@@ -65,7 +69,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowHelpDialog -> TODO()
             is NoteListViewState.ShowLogoEffect -> TODO()
             is NoteListViewState.ShowRenameNoteErrorMessage -> TODO()
-            is NoteListViewState.ShowRenameNoteSuccessMessage -> TODO()
+            is NoteListViewState.ShowRenameNoteSuccessMessage -> displayRenameNoteSuccessMessage()
             is NoteListViewState.ShowSearchBar -> TODO()
         }
     }
@@ -77,7 +81,9 @@ class NoteListFragment : Fragment() {
     private fun initButtons(view: View) {
         view.findViewById<ImageButton>(R.id.logo).setOnClickListener { Toast.makeText(context, "Logo clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.helpButton).setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
-        view.findViewById<ImageButton>(R.id.folder).setOnClickListener { viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked }
+        view.findViewById<ImageButton>(R.id.folder).setOnClickListener {
+            viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
+        }
         view.findViewById<ImageButton>(R.id.search).setOnClickListener { Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.list_card_switch).setOnClickListener { Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
@@ -86,7 +92,7 @@ class NoteListFragment : Fragment() {
         view.findViewById<View>(R.id.note_list_fragment).setOnClickListener {
             val folderTray: View = view.findViewById(R.id.folder_tray)
             if (folderTray.isVisible) {
-                fadeOutView(folderTray)
+                fadeOutView(requireContext(), folderTray)
                 folderTray.visibility = View.GONE
             }
         }
@@ -108,10 +114,10 @@ class NoteListFragment : Fragment() {
         folderTray?.let{
             it.setOnClickListener { /*do nothing*/ }
             view?.findViewById<ImageView>(R.id.close_folder_tray_button)?.setOnClickListener { _ ->
-                fadeOutView(it)
+                fadeOutView(requireContext(), it)
                 it.visibility = View.GONE
             }
-            fadeInView(it)
+            fadeInView(requireContext(), it)
             val recyclerView: RecyclerView = requireView().findViewById(R.id.folder_list)
             recyclerView.layoutManager = LinearLayoutManager(context)
             val adapter = FolderTrayRecyclerViewAdapter(
@@ -139,7 +145,13 @@ class NoteListFragment : Fragment() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.rename_note -> {
-                    TODO()
+                    context?.let {
+                        dialogFragment = RenameNoteDialog(note) { newNote ->
+                            viewModel._eventListener.value =
+                                NoteListEvent.AttemptToRenameNote(newNote)
+                        }
+                        (dialogFragment as DialogFragment).show(parentFragmentManager, "rename_note_dialog_tag")
+                    }
                     popup.dismiss()
                     return@setOnMenuItemClickListener true
                 }
@@ -163,18 +175,19 @@ class NoteListFragment : Fragment() {
         popup.show()
     }
 
-
-    private fun fadeInView(view: View) {
-        view.visibility = View.INVISIBLE
-        val animation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
-        view.startAnimation(animation)
-        view.visibility = View.VISIBLE
+    private fun displayRenameNoteSuccessMessage() {
+        dialogFragment?.let {
+            if (it.isAdded and !it.isRemoving and (it is RenameNoteDialog)) {
+                (dialogFragment as RenameNoteDialog).displaySavedMessage()
+            }
+        }
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
     }
 
-    private fun fadeOutView(view: View) {
-        view.visibility = View.VISIBLE
-        val animation = AnimationUtils.loadAnimation(context, R.anim.fade_out)
-        view.startAnimation(animation)
-        view.visibility = View.INVISIBLE
+    override fun onDestroy() {
+        if (dialogFragment!=null) {
+            dialogFragment = null
+        }
+        super.onDestroy()
     }
 }

@@ -23,7 +23,7 @@ class NoteListAdapter(
 
     override fun onBindViewHolder(holder: NoteListRecyclerViewHolder, position: Int) {
         holder.title.text = dataset[position].title
-        holder.content.text = dataset[position].title
+        holder.content.text = dataset[position].content
         holder.fab.setOnClickListener{onClickNoteEditDetails(dataset[position], holder.fab)}
         holder.view.setOnClickListener {onClickNote(dataset[position].uid)}
     }
