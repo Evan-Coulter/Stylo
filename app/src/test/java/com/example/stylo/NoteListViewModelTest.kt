@@ -831,4 +831,37 @@ class NoteListViewModelTest {
         assertTrue("English 3" in state.notes.map{it.title})
         assertTrue("English 4" in state.notes.map{it.title})
     }
+
+
+    @Test
+    fun `test when renaming a note, note should still retain its previous folder memberships`() {
+        //Given we have 3 notes saved, 2 of which are in the homework folder.
+        val homeworkNote1Id = repository.add(RoomNoteBuilder().setTitle("Homework 1").setContent("Homework 1 Content").also{
+            it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+        }.build())
+        val homeworkNote2Id = repository.add(RoomNoteBuilder().setTitle("Homework 2").setContent("Homework 2 Content").also{
+            it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+        }.build())
+        val otherStuffId = repository.add(RoomNoteBuilder().setTitle("Other Stuff").setContent("Other Stuff Content").also{
+            it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
+        }.build())
+        val homeworkFolderId = repository.add(RoomFolderBuilder().setName("Homework").setColor("Blue").build())
+        repository.addNoteToFolder(repository.getNote(homeworkNote1Id), repository.getFolder(homeworkFolderId))
+        repository.addNoteToFolder(repository.getNote(homeworkNote2Id), repository.getFolder(homeworkFolderId))
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
+
+
+        //When we try to rename homework note 2
+        viewModel._eventListener.value = NoteListEvent.AttemptToRenameNote(
+            RoomNoteBuilder()
+                .clone(repository.getNote(homeworkNote2Id))
+                .setTitle("Second Homework Note")
+                .build()
+        )
+        viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(homeworkFolderId)
+
+        //Assert its folder memberships are the same as before
+        val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
+        assertEquals(2, state.notes.size)
+    }
 }

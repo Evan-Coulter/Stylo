@@ -54,7 +54,7 @@ class NoteListFragment : Fragment() {
 
     private fun onNewState(newState : NoteListViewState) {
         when (newState) {
-            is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
+            is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes, newState.folder, newState.isListView)
             is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders)
             is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
             is NoteListViewState.ShowEditFolderDialog -> TODO()
@@ -68,7 +68,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowEmptySearchResult -> TODO()
             is NoteListViewState.ShowHelpDialog -> TODO()
             is NoteListViewState.ShowLogoEffect -> TODO()
-            is NoteListViewState.ShowRenameNoteErrorMessage -> TODO()
+            is NoteListViewState.ShowRenameNoteErrorMessage -> displayRenameNoteSuccessMessage()
             is NoteListViewState.ShowRenameNoteSuccessMessage -> displayRenameNoteSuccessMessage()
             is NoteListViewState.ShowSearchBar -> TODO()
         }
@@ -98,7 +98,8 @@ class NoteListFragment : Fragment() {
         }
     }
 
-    private fun showBasicListState(list: List<RoomNote>) {
+    private fun showBasicListState(list: List<RoomNote>, folder: RoomFolder, isListView: Boolean) {
+        view?.findViewById<TextView>(R.id.title)?.text = folder.name
         val recyclerView: RecyclerView = requireView().findViewById(R.id.list)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
@@ -122,7 +123,10 @@ class NoteListFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(context)
             val adapter = FolderTrayRecyclerViewAdapter(
                 list.toTypedArray(),
-                onClickFolder = { id -> Toast.makeText(context, "$id folder clicked", Toast.LENGTH_SHORT).show() },
+                onClickFolder = { id ->
+                    viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
+                    fadeOutView(requireContext(), folderTray)
+                },
                 onLongPressFolder = { id -> Toast.makeText(context, "$id folder long pressed", Toast.LENGTH_SHORT).show() }
             )
             recyclerView.adapter = adapter
@@ -189,5 +193,10 @@ class NoteListFragment : Fragment() {
             dialogFragment = null
         }
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel._eventListener.value = NoteListEvent.PageLoaded
     }
 }

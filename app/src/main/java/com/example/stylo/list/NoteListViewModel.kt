@@ -10,6 +10,7 @@ import com.example.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
 import com.example.stylo.data.exceptions.FolderNotFoundException
 import com.example.stylo.data.exceptions.FolderSavingError
 import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomFolderBuilder
 import com.example.stylo.data.model.RoomNoteBuilder
 
 
@@ -69,6 +70,47 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             repository.getFolder(folderID)
         }
 
+        //TODO REMOVE
+        if (repository.getAllNotes().isEmpty()) {
+            val homeworkFolder = repository.getFolder(repository.add(RoomFolderBuilder()
+                .setName("Homework")
+                .setColor("Blue")
+                .build()))
+            val homeworkNote1 = repository.getNote(
+                repository.add(RoomNoteBuilder()
+                    .setTitle("Homework 1")
+                    .setContent("Homework 1 Content")
+                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                    .build())
+            )
+            val homeworkNote2 = repository.getNote(
+                repository.add(RoomNoteBuilder()
+                    .setTitle("Homework 2")
+                    .setContent("Homework 2 Content")
+                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                    .build())
+            )
+            val otherStuffNote = repository.getNote(
+                repository.add(RoomNoteBuilder()
+                    .setTitle("Other stuff")
+                    .setContent("Other stuff Content")
+                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                    .build())
+            )
+            val choresNote = repository.getNote(
+                repository.add(RoomNoteBuilder()
+                    .setTitle("Chores")
+                    .setContent("Chores Content")
+                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
+                    .build())
+            )
+            repository.addNoteToFolder(homeworkNote1, homeworkFolder)
+            repository.addNoteToFolder(homeworkNote1, repository.getFolder(1))
+            repository.addNoteToFolder(homeworkNote2, homeworkFolder)
+            repository.addNoteToFolder(homeworkNote2, repository.getFolder(1))
+            repository.addNoteToFolder(otherStuffNote, repository.getFolder(1))
+            repository.addNoteToFolder(choresNote, repository.getFolder(1))
+        }
     }
 
     override fun onCleared() {
@@ -189,7 +231,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             if (anotherFolderAlreadyHasThatTitle) {
                 throw FolderSavingError(FOLDER_ALREADY_EXISTS_MESSAGE)
             }
-            repository.add(event.folder)
+            repository.update(event.folder)
             postNewState(NoteListViewState.ShowEditFolderSuccessMessage)
         } catch (e: FolderSavingError) {
             postNewState(NoteListViewState.ShowEditFolderErrorMessage(e.errorMessage))
@@ -226,7 +268,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun renameNote(event: NoteListEvent.AttemptToRenameNote) {
         postNewState(NoteListViewState.LoadingState)
         try {
-            repository.add(event.note)
+            repository.update(event.note)
             postNewState(NoteListViewState.ShowRenameNoteSuccessMessage)
         } catch (error: Throwable) {
             postNewState(NoteListViewState.ShowRenameNoteErrorMessage("Sorry that title is not valid"))
@@ -239,6 +281,8 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
         }.build())
         val note = repository.getNote(noteID)
+        repository.addNoteToFolder(note, repository.getFolder(1))
+        repository.addNoteToFolder(note, folder)
         postNewState(NoteListViewState.OpenNoteEditor(note))
     }
 

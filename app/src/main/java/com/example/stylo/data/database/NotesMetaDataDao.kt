@@ -28,6 +28,12 @@ interface NotesMetaDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(belongsTo: BelongsTo): Long
 
+    @Update
+    fun update(roomNote: RoomNote): Int
+
+    @Update
+    fun update(roomFolder: RoomFolder): Int
+
     @Query("DELETE FROM belongsto WHERE id = :id")
     fun deleteBelongsTo(id: Int)
 

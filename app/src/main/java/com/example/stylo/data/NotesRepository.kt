@@ -33,6 +33,19 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         return dao.insert(note).toInt()
     }
 
+    fun update(note: RoomNote) : Int {
+        if (note.title.isEmpty()) {
+            throw NoteNotInitializedException()
+        }
+        if (note.filePath.isEmpty()) {
+            throw FilePathNotSetException()
+        }
+        //Save as file
+        saveToFile(note)
+        //Save file meta data in database
+        return dao.update(note).toInt()
+    }
+
     fun add(folder: RoomFolder): Int {
         if (folder.name.isEmpty()){
             throw FolderSavingError(FOLDER_TITLE_ERROR_MESSAGE)
@@ -42,6 +55,17 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         }
         return dao.insert(folder).toInt()
     }
+
+    fun update(folder: RoomFolder): Int {
+        if (folder.name.isEmpty()){
+            throw FolderSavingError(FOLDER_TITLE_ERROR_MESSAGE)
+        }
+        if (folder.color.isEmpty()) {
+            throw FolderSavingError(FOLDER_COLOR_ERROR_MESSAGE)
+        }
+        return dao.update(folder).toInt()
+    }
+
 
     fun addNoteToFolder(note: RoomNote, folder: RoomFolder): Long {
         if (!getAllNotes().contains(note)) {

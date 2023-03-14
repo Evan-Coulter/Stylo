@@ -22,10 +22,10 @@ class FolderTrayRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.folderButton.setOnClickListener {
-            onClickFolder(position)
+            onClickFolder(folders[position].uid)
         }
         holder.folderButton.setOnLongClickListener {
-            onLongPressFolder(position)
+            onLongPressFolder(folders[position].uid)
             true
         }
         holder.folderButton.text = folders[position].name
