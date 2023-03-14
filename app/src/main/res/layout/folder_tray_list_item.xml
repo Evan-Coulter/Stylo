@@ -20,6 +20,7 @@
         app:cornerRadius="8dp"
         android:layout_margin="12dp"
         android:ellipsize="end"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        android:letterSpacing="0"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

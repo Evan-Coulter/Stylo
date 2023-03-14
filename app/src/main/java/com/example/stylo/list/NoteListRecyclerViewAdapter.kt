@@ -12,7 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class NoteListAdapter(
     private val dataset: Array<RoomNote>,
     private val onClickNote: (Int)->Unit,
-    private val onClickNoteEditDetails: (Int)->Unit
+    private val onClickNoteEditDetails: (RoomNote, View)->Unit
 ) : RecyclerView.Adapter<NoteListAdapter.NoteListRecyclerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteListRecyclerViewHolder {
@@ -24,7 +24,7 @@ class NoteListAdapter(
     override fun onBindViewHolder(holder: NoteListRecyclerViewHolder, position: Int) {
         holder.title.text = dataset[position].title
         holder.content.text = dataset[position].title
-        holder.fab.setOnClickListener{onClickNoteEditDetails(dataset[position].uid)}
+        holder.fab.setOnClickListener{onClickNoteEditDetails(dataset[position], holder.fab)}
         holder.view.setOnClickListener {onClickNote(dataset[position].uid)}
     }
 

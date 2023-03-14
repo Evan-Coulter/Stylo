@@ -14,17 +14,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.stylo.MainApplication
 import com.example.stylo.R
+import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
 import jp.wasabeef.richeditor.RichEditor
 import kotlinx.coroutines.launch
 
-class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
+class NoteEditorFragment(private val note: RoomNote) : Fragment() {
     private val viewModel: NoteEditorViewModel by viewModels {
         NoteEditorViewModelFactory(RoomNoteBuilder().build(), (requireActivity().application as MainApplication).notesRepository)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
+        val view = inflater.inflate(R.layout.fragment_note_editor, container, false)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
@@ -39,6 +40,7 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
         super.onViewCreated(view, savedInstanceState)
         initButtons(view)
         initEditor(view)
+        Toast.makeText(context, "${note.title} is open", Toast.LENGTH_SHORT).show()
     }
 
     private fun onNewState(newState: NoteEditorViewState) {
@@ -67,23 +69,23 @@ class NoteEditorFragment : Fragment(R.layout.fragment_note_editor) {
         layout.findViewById<Button>(R.id.bold).setOnClickListener { editor.setBold() }
         layout.findViewById<Button>(R.id.underline).setOnClickListener { editor.setUnderline() }
         layout.findViewById<Button>(R.id.color).setOnClickListener { editor.setTextColor(Color.GREEN) }
-        layout.findViewById<Button>(R.id.save).setOnClickListener { viewModel.onSaveClicked(editor.html) }
+        layout.findViewById<Button>(R.id.save).setOnClickListener { /*viewModel.onSaveClicked(editor.html)*/ }
     }
 
     private fun initEditor(layout: View) {
         layout.findViewById<RichEditor>(R.id.editor).setOnTextChangeListener {
-            viewModel.onTextChanged(it)
+            //viewModel.onTextChanged(it)
         }
         layout.findViewById<RichEditor>(R.id.editor).focusEditor()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.onResume()
+        //viewModel.onResume()
     }
 
     override fun onPause() {
-        viewModel.onEditorClosed()
+        //viewModel.onEditorClosed()
         super.onPause()
     }
 }

@@ -2,13 +2,11 @@ package com.example.stylo.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,6 +17,7 @@ import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.editor.NoteEditorFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
@@ -53,10 +52,10 @@ class NoteListFragment : Fragment() {
         when (newState) {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes)
             is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders)
-            is NoteListViewState.ShowEditNoteDetailsOptions -> TODO()
+            is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
             is NoteListViewState.ShowEditFolderDialog -> TODO()
             is NoteListViewState.LoadingState -> Toast.makeText(context, "Loading TODO", Toast.LENGTH_SHORT).show()
-            is NoteListViewState.OpenNoteEditor -> TODO()
+            is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note)
             is NoteListViewState.ShowCreateFolderDialog -> TODO()
             is NoteListViewState.ShowCreateFolderErrorMessage -> TODO()
             is NoteListViewState.ShowCreateFolderSuccessMessage -> TODO()
@@ -71,17 +70,6 @@ class NoteListFragment : Fragment() {
         }
     }
 
-    private fun showBasicListState(list: List<RoomNote>) {
-        val recyclerView: RecyclerView = requireView().findViewById(R.id.list)
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
-        val adapter = NoteListAdapter(
-            list.toTypedArray(),
-            onClickNote = { id -> Toast.makeText(context, "$id note clicked", Toast.LENGTH_SHORT).show() },
-            onClickNoteEditDetails = { id -> Toast.makeText(context, "$id note edit details button clicked", Toast.LENGTH_SHORT).show() }
-        )
-        recyclerView.adapter = adapter
-    }
-
     private fun initTextViews(view: View) {
         view.findViewById<TextView>(R.id.title).text = "All Notes"
     }
@@ -93,7 +81,7 @@ class NoteListFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.search).setOnClickListener { Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.list_card_switch).setOnClickListener { Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
-            Toast.makeText(context, "Switch to editor", Toast.LENGTH_SHORT).show()
+            viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
         }
         view.findViewById<View>(R.id.note_list_fragment).setOnClickListener {
             val folderTray: View = view.findViewById(R.id.folder_tray)
@@ -102,6 +90,17 @@ class NoteListFragment : Fragment() {
                 folderTray.visibility = View.GONE
             }
         }
+    }
+
+    private fun showBasicListState(list: List<RoomNote>) {
+        val recyclerView: RecyclerView = requireView().findViewById(R.id.list)
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        val adapter = NoteListAdapter(
+            list.toTypedArray(),
+            onClickNote = { id -> viewModel._eventListener.value = NoteListEvent.NoteClicked(id) },
+            onClickNoteEditDetails = { note, rootView -> openEditNoteDetailsOptions(note, rootView) }
+        )
+        recyclerView.adapter = adapter
     }
 
     private fun showFoldersTray(list: List<RoomFolder>) {
@@ -124,6 +123,47 @@ class NoteListFragment : Fragment() {
         }
     }
 
+    private fun openNoteEditor(note: RoomNote) {
+        val transaction = parentFragmentManager.beginTransaction()
+        val editor = NoteEditorFragment(note)
+        transaction.replace(R.id.fragmentContainer, editor).addToBackStack("tag").commit()
+    }
+
+    private fun openEditNoteDetailsOptions(note: RoomNote, rootView: View) {
+        val popup = PopupMenu(context, rootView)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.open_note_editor -> {
+                    viewModel._eventListener.value = NoteListEvent.NoteClicked(note.uid)
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.rename_note -> {
+                    TODO()
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.change_folders -> {
+                    TODO()
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.delete_note -> {
+                    TODO()
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener false
+                }
+            }
+        }
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.edit_note_details_options, popup.menu)
+        popup.show()
+    }
+
+
     private fun fadeInView(view: View) {
         view.visibility = View.INVISIBLE
         val animation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
@@ -136,6 +176,5 @@ class NoteListFragment : Fragment() {
         val animation = AnimationUtils.loadAnimation(context, R.anim.fade_out)
         view.startAnimation(animation)
         view.visibility = View.INVISIBLE
-
     }
 }
