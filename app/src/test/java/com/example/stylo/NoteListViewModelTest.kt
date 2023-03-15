@@ -573,7 +573,7 @@ class NoteListViewModelTest {
         assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditNoteDetailsOptions)
 
         //And when we click delete and go back to the basic list state
-        viewModel._eventListener.value = NoteListEvent.DeleteNoteButtonClicked(noteID)
+        viewModel._eventListener.value = NoteListEvent.AttemptToDeleteNote(noteID)
         viewModel._eventListener.value = NoteListEvent.PageLoaded
 
         //Then assert the note is actually deleted
@@ -599,7 +599,7 @@ class NoteListViewModelTest {
         )
         //When we open the edit note details button and try to add that note to two folders
         viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(1)
-        viewModel._eventListener.value = NoteListEvent.ChangeNoteFolderMembershipButtonClicked(
+        viewModel._eventListener.value = NoteListEvent.AttemptToChangeNoteFolderMembership(
             noteID, listOf(2, 4)
         )
 
@@ -653,7 +653,7 @@ class NoteListViewModelTest {
 
         //Then when we delete that note from the folder
         viewModel._eventListener.value = NoteListEvent.EditNoteButtonClicked(1)
-        viewModel._eventListener.value = NoteListEvent.ChangeNoteFolderMembershipButtonClicked(1, listOf())
+        viewModel._eventListener.value = NoteListEvent.AttemptToChangeNoteFolderMembership(1, listOf())
 
         //Assert the note has been removed from the folder.
         viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(3)
@@ -687,7 +687,7 @@ class NoteListViewModelTest {
         viewModel._eventListener.value = NoteListEvent.AttemptToRenameNote(newNoteBuilder.build())
 
         //Then assert the note has changed title.
-        assertTrue(viewModel.uiState.value is NoteListViewState.ShowRenameNoteSuccessMessage)
+        assertTrue(viewModel.uiState.value is NoteListViewState.ShowEditNoteDetailsSuccessMessage)
         viewModel._eventListener.value = NoteListEvent.PageLoaded
         val state = viewModel.uiState.value as NoteListViewState.ShowBasicListState
         assertEquals(1, state.notes.size)

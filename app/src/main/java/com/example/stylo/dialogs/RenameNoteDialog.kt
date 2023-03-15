@@ -23,7 +23,7 @@ import com.google.android.material.textfield.TextInputLayout
 class RenameNoteDialog(
     private val note: RoomNote,
     private val onSave: (RoomNote)->Unit
-) : DialogFragment() {
+) : IDialog, DialogFragment() {
     private lateinit var cancelButton: Button
     private lateinit var saveButton: Button
     private lateinit var textInputLayout: TextInputLayout
@@ -34,7 +34,7 @@ class RenameNoteDialog(
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             // Get the layout inflater
-            val inflater = requireActivity().layoutInflater;
+            val inflater = requireActivity().layoutInflater
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
             val view = inflater.inflate(R.layout.rename_note_dialog_layout, null)
@@ -78,7 +78,7 @@ class RenameNoteDialog(
         }
     }
 
-    fun displaySavedMessage() {
+    override fun displaySavedMessage() {
         fadeOutView(requireContext(), title)
         fadeOutView(requireContext(), cancelButton)
         fadeOutView(requireContext(), saveButton)
@@ -90,4 +90,8 @@ class RenameNoteDialog(
             }, 800)
         }, 200)
     }
+
+    override fun iDismiss() = dismiss()
+    override fun iIsAdded(): Boolean = isAdded
+    override fun iIsRemoving(): Boolean = isRemoving
 }

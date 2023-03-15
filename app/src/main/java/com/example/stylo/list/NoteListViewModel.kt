@@ -46,11 +46,13 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
             is NoteListEvent.DeleteFolderButtonClicked -> deleteFolder(it)
             is NoteListEvent.AttemptToEditFolder -> attemptToEditFolder(it)
-            is NoteListEvent.DeleteNoteButtonClicked -> deleteNote(it)
-            is NoteListEvent.ChangeNoteFolderMembershipButtonClicked -> changeNoteFolderMembership(it)
+            is NoteListEvent.AttemptToDeleteNote -> deleteNote(it)
+            is NoteListEvent.AttemptToChangeNoteFolderMembership -> changeNoteFolderMembership(it)
             is NoteListEvent.AttemptToRenameNote -> renameNote(it)
-            is NoteListEvent.AddNewNoteButtonClicked -> addNewNote(it)
-            else -> throw NotImplementedError(it.toString())
+            is NoteListEvent.AddNewNoteButtonClicked -> addNewNote()
+            is NoteListEvent.ChangeNoteFolderMembershipButtonClicked -> showChangeNoteFolderDialog(it)
+            is NoteListEvent.DeleteNoteButtonClicked -> showDeleteNoteDialog(it)
+            is NoteListEvent.RenameNoteButtonClicked -> showRenameNoteDialog(it)
         }
     }
 
@@ -75,6 +77,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             val homeworkFolder = repository.getFolder(repository.add(RoomFolderBuilder()
                 .setName("Homework")
                 .setColor("Blue")
+                .build()))
+            val otherStuffFolder = repository.getFolder(repository.add(RoomFolderBuilder()
+                .setName("Other stuff")
+                .setColor("Green")
                 .build()))
             val homeworkNote1 = repository.getNote(
                 repository.add(RoomNoteBuilder()
@@ -109,6 +115,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             repository.addNoteToFolder(homeworkNote2, homeworkFolder)
             repository.addNoteToFolder(homeworkNote2, repository.getFolder(1))
             repository.addNoteToFolder(otherStuffNote, repository.getFolder(1))
+            repository.addNoteToFolder(otherStuffNote, otherStuffFolder)
             repository.addNoteToFolder(choresNote, repository.getFolder(1))
         }
     }
@@ -238,13 +245,13 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         }
     }
 
-    private fun deleteNote(event: NoteListEvent.DeleteNoteButtonClicked) {
+    private fun deleteNote(event: NoteListEvent.AttemptToDeleteNote) {
         postNewState(NoteListViewState.LoadingState)
         repository.delete(repository.getNote(event.noteID))
         displayBasicListState()
     }
 
-    private fun changeNoteFolderMembership(event: NoteListEvent.ChangeNoteFolderMembershipButtonClicked) {
+    private fun changeNoteFolderMembership(event: NoteListEvent.AttemptToChangeNoteFolderMembership) {
         postNewState(NoteListViewState.LoadingState)
         val note = repository.getNote(event.noteID)
         //Get all folders that this note is in (other than default folder)
@@ -262,20 +269,20 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         foldersToAdd.forEach {
             repository.addNoteToFolder(note, it)
         }
-        displayBasicListState()
+        postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
     }
 
     private fun renameNote(event: NoteListEvent.AttemptToRenameNote) {
         postNewState(NoteListViewState.LoadingState)
         try {
             repository.update(event.note)
-            postNewState(NoteListViewState.ShowRenameNoteSuccessMessage)
+            postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
         } catch (error: Throwable) {
             postNewState(NoteListViewState.ShowRenameNoteErrorMessage("Sorry that title is not valid"))
         }
     }
 
-    private fun addNewNote(event: NoteListEvent.AddNewNoteButtonClicked) {
+    private fun addNewNote() {
         postNewState(NoteListViewState.LoadingState)
         val noteID = repository.add(RoomNoteBuilder().setTitle("New Note").setContent("").also {
             it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
@@ -285,6 +292,32 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         repository.addNoteToFolder(note, folder)
         postNewState(NoteListViewState.OpenNoteEditor(note))
     }
+
+    private fun showRenameNoteDialog(event: NoteListEvent.RenameNoteButtonClicked) {
+        val note = repository.getNote(event.noteID)
+        postNewState(NoteListViewState.ShowRenameNoteDialog(note))
+    }
+
+    private fun showDeleteNoteDialog(event: NoteListEvent.DeleteNoteButtonClicked) {
+        val note = repository.getNote(event.noteID)
+        postNewState(NoteListViewState.ShowDeleteNoteDialog(note))
+    }
+
+    private fun showChangeNoteFolderDialog(event: NoteListEvent.ChangeNoteFolderMembershipButtonClicked) {
+        val note = repository.getNote(event.noteID)
+        val noteCurrentFolders = repository.getAllFolders().filter { f ->
+            note.uid in repository.getNotesInFolder(f.uid).map { n -> n.uid }
+        }
+        val allFolders = repository.getAllFolders().filter { it.uid != 0 && it.uid != 1 }
+        postNewState(
+            NoteListViewState.ShowChangeNoteFolderMembershipDialog(
+                note,
+                noteCurrentFolders,
+                allFolders
+            )
+        )
+    }
+
 
     private fun postNewState(state: NoteListViewState) {
         log(state)

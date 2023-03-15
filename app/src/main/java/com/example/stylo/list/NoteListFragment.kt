@@ -17,6 +17,8 @@ import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.dialogs.ChangeNoteFoldersDialog
+import com.example.stylo.dialogs.IDialog
 import com.example.stylo.dialogs.RenameNoteDialog
 import com.example.stylo.editor.NoteEditorFragment
 import com.example.stylo.util.fadeInView
@@ -25,7 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class NoteListFragment : Fragment() {
-    private var dialogFragment: DialogFragment? = null
+    private var dialogFragment: IDialog? = null
     private val viewModel: NoteListViewModel by viewModels {
         NoteListViewModelFactory((requireActivity().application as MainApplication).notesRepository, activity?.application)
     }
@@ -68,9 +70,11 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowEmptySearchResult -> TODO()
             is NoteListViewState.ShowHelpDialog -> TODO()
             is NoteListViewState.ShowLogoEffect -> TODO()
-            is NoteListViewState.ShowRenameNoteErrorMessage -> displayRenameNoteSuccessMessage()
-            is NoteListViewState.ShowRenameNoteSuccessMessage -> displayRenameNoteSuccessMessage()
-            is NoteListViewState.ShowSearchBar -> TODO()
+            is NoteListViewState.ShowRenameNoteErrorMessage -> dialogFragment?.iDismiss()
+            is NoteListViewState.ShowEditNoteDetailsSuccessMessage -> displaySavedMessageInDialog()
+            is NoteListViewState.ShowChangeNoteFolderMembershipDialog -> displayChangeFolderMembershipDialog(newState.note, newState.currentFolders, newState.allFolders)
+            is NoteListViewState.ShowDeleteNoteDialog -> TODO()
+            is NoteListViewState.ShowRenameNoteDialog -> displayRenameNoteDialog(newState.note)
         }
     }
 
@@ -149,24 +153,18 @@ class NoteListFragment : Fragment() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.rename_note -> {
-                    context?.let {
-                        dialogFragment = RenameNoteDialog(note) { newNote ->
-                            viewModel._eventListener.value =
-                                NoteListEvent.AttemptToRenameNote(newNote)
-                        }
-                        (dialogFragment as DialogFragment).show(parentFragmentManager, "rename_note_dialog_tag")
-                    }
                     popup.dismiss()
+                    viewModel._eventListener.value = NoteListEvent.RenameNoteButtonClicked(note.uid)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.change_folders -> {
-                    TODO()
                     popup.dismiss()
+                    viewModel._eventListener.value = NoteListEvent.ChangeNoteFolderMembershipButtonClicked(note.uid)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.delete_note -> {
-                    TODO()
                     popup.dismiss()
+                    viewModel._eventListener.value = NoteListEvent.DeleteNoteButtonClicked(note.uid)
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
@@ -179,10 +177,34 @@ class NoteListFragment : Fragment() {
         popup.show()
     }
 
-    private fun displayRenameNoteSuccessMessage() {
+    private fun displayRenameNoteDialog(note: RoomNote) {
+        context?.let {
+            dialogFragment = RenameNoteDialog(note) { newNote ->
+                viewModel._eventListener.value =
+                    NoteListEvent.AttemptToRenameNote(newNote)
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "rename_note_dialog_tag")
+        }
+    }
+
+    private fun displayChangeFolderMembershipDialog(
+        note: RoomNote,
+        currentFolders: List<RoomFolder>,
+        allFolders: List<RoomFolder>
+    ) {
+        context?.let {
+            dialogFragment = ChangeNoteFoldersDialog(note, currentFolders, allFolders) { folders ->
+                viewModel._eventListener.value = NoteListEvent.AttemptToChangeNoteFolderMembership(note.uid, folders.map {it.uid})
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "rename_note_dialog_tag")
+        }
+    }
+
+
+    private fun displaySavedMessageInDialog() {
         dialogFragment?.let {
-            if (it.isAdded and !it.isRemoving and (it is RenameNoteDialog)) {
-                (dialogFragment as RenameNoteDialog).displaySavedMessage()
+            if (it.iIsAdded() && !it.iIsRemoving()) {
+                it.displaySavedMessage()
             }
         }
         viewModel._eventListener.value = NoteListEvent.PageLoaded

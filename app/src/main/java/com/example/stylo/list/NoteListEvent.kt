@@ -28,8 +28,11 @@ sealed class NoteListEvent {
     object SearchClosed : NoteListEvent()
 
     data class EditNoteButtonClicked(val noteID: Int) : NoteListEvent() //Opens note editor dialog
-    data class DeleteNoteButtonClicked(val noteID : Int) : NoteListEvent() //Is used within edit note dialog
+    data class RenameNoteButtonClicked(val noteID: Int) : NoteListEvent()
+    data class ChangeNoteFolderMembershipButtonClicked(val noteID: Int) : NoteListEvent()
+    data class DeleteNoteButtonClicked(val noteID: Int) : NoteListEvent()
     data class AttemptToRenameNote(val note: RoomNote) : NoteListEvent() //Is used within edit note dialog
-    data class ChangeNoteFolderMembershipButtonClicked(val noteID: Int, val newFolderMembership: List<Int>) : NoteListEvent()
+    data class AttemptToChangeNoteFolderMembership(val noteID: Int, val newFolderMembership: List<Int>) : NoteListEvent()
+    data class AttemptToDeleteNote(val noteID : Int) : NoteListEvent() //Is used within edit note dialog
     object AddNewNoteButtonClicked : NoteListEvent() //Opens create new note dialog.
 }
