@@ -82,7 +82,7 @@ class ChangeNoteFoldersDialog(
         }
     }
 
-    override fun displaySavedMessage() {
+    override fun displayFinishedMessage() {
         fadeOutView(requireContext(), title)
         fadeOutView(requireContext(), noteName)
         fadeOutView(requireContext(), cancelButton)

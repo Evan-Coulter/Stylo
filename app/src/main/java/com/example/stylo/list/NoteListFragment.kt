@@ -18,6 +18,7 @@ import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.dialogs.ChangeNoteFoldersDialog
+import com.example.stylo.dialogs.DeleteNoteDialog
 import com.example.stylo.dialogs.IDialog
 import com.example.stylo.dialogs.RenameNoteDialog
 import com.example.stylo.editor.NoteEditorFragment
@@ -71,9 +72,9 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowHelpDialog -> TODO()
             is NoteListViewState.ShowLogoEffect -> TODO()
             is NoteListViewState.ShowRenameNoteErrorMessage -> dialogFragment?.iDismiss()
-            is NoteListViewState.ShowEditNoteDetailsSuccessMessage -> displaySavedMessageInDialog()
+            is NoteListViewState.ShowEditNoteDetailsSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowChangeNoteFolderMembershipDialog -> displayChangeFolderMembershipDialog(newState.note, newState.currentFolders, newState.allFolders)
-            is NoteListViewState.ShowDeleteNoteDialog -> TODO()
+            is NoteListViewState.ShowDeleteNoteDialog -> displayDeleteNoteDialog(newState.note)
             is NoteListViewState.ShowRenameNoteDialog -> displayRenameNoteDialog(newState.note)
         }
     }
@@ -196,15 +197,23 @@ class NoteListFragment : Fragment() {
             dialogFragment = ChangeNoteFoldersDialog(note, currentFolders, allFolders) { folders ->
                 viewModel._eventListener.value = NoteListEvent.AttemptToChangeNoteFolderMembership(note.uid, folders.map {it.uid})
             }
-            (dialogFragment as DialogFragment).show(parentFragmentManager, "rename_note_dialog_tag")
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "change_note_folders_dialog_tag")
         }
     }
 
+    private fun displayDeleteNoteDialog(note: RoomNote) {
+        context?.let {
+            dialogFragment = DeleteNoteDialog(note) { noteID: Int ->
+                viewModel._eventListener.value = NoteListEvent.AttemptToDeleteNote(noteID)
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "delete_note_dialog_tag")
+        }
+    }
 
-    private fun displaySavedMessageInDialog() {
+    private fun displayFinishedMessageInDialog() {
         dialogFragment?.let {
             if (it.iIsAdded() && !it.iIsRemoving()) {
-                it.displaySavedMessage()
+                it.displayFinishedMessage()
             }
         }
         viewModel._eventListener.value = NoteListEvent.PageLoaded

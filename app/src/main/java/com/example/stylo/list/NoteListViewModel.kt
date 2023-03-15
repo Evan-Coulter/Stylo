@@ -248,7 +248,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun deleteNote(event: NoteListEvent.AttemptToDeleteNote) {
         postNewState(NoteListViewState.LoadingState)
         repository.delete(repository.getNote(event.noteID))
-        displayBasicListState()
+        postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
     }
 
     private fun changeNoteFolderMembership(event: NoteListEvent.AttemptToChangeNoteFolderMembership) {
