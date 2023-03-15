@@ -33,6 +33,12 @@ class NoteListFragment : Fragment() {
         NoteListViewModelFactory((requireActivity().application as MainApplication).notesRepository, activity?.application)
     }
 
+    private lateinit var folderButton: ImageButton
+    private lateinit var searchButton: ImageButton
+    private lateinit var listCardSwitchButton: ImageButton
+    private lateinit var noteList: RecyclerView
+    private lateinit var fab: FloatingActionButton
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,7 +67,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders)
             is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
             is NoteListViewState.ShowEditFolderDialog -> TODO()
-            is NoteListViewState.LoadingState -> Toast.makeText(context, "Loading TODO", Toast.LENGTH_SHORT).show()
+            is NoteListViewState.LoadingState -> showLoadingState()
             is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note)
             is NoteListViewState.ShowCreateFolderDialog -> TODO()
             is NoteListViewState.ShowCreateFolderErrorMessage -> TODO()
@@ -86,12 +92,21 @@ class NoteListFragment : Fragment() {
     private fun initButtons(view: View) {
         view.findViewById<ImageButton>(R.id.logo).setOnClickListener { Toast.makeText(context, "Logo clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.helpButton).setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
-        view.findViewById<ImageButton>(R.id.folder).setOnClickListener {
+        noteList = view.findViewById(R.id.list)
+        folderButton = view.findViewById(R.id.folder)
+        folderButton.setOnClickListener {
             viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
         }
-        view.findViewById<ImageButton>(R.id.search).setOnClickListener { Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show() }
-        view.findViewById<ImageButton>(R.id.list_card_switch).setOnClickListener { Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show() }
-        view.findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+        searchButton = view.findViewById<ImageButton>(R.id.search)
+        searchButton.setOnClickListener {
+            Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show()
+        }
+        listCardSwitchButton = view.findViewById<ImageButton>(R.id.list_card_switch)
+        listCardSwitchButton.setOnClickListener {
+            Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show()
+        }
+        fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
             viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
         }
         view.findViewById<View>(R.id.note_list_fragment).setOnClickListener {
@@ -105,14 +120,16 @@ class NoteListFragment : Fragment() {
 
     private fun showBasicListState(list: List<RoomNote>, folder: RoomFolder, isListView: Boolean) {
         view?.findViewById<TextView>(R.id.title)?.text = folder.name
-        val recyclerView: RecyclerView = requireView().findViewById(R.id.list)
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        noteList.layoutManager = GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
             list.toTypedArray(),
             onClickNote = { id -> viewModel._eventListener.value = NoteListEvent.NoteClicked(id) },
             onClickNoteEditDetails = { note, rootView -> openEditNoteDetailsOptions(note, rootView) }
         )
-        recyclerView.adapter = adapter
+        noteList.adapter = adapter
+        if (!noteList.isVisible) {
+            fadeInView(requireContext(), noteList, 500)
+        }
     }
 
     private fun showFoldersTray(list: List<RoomFolder>) {
@@ -217,6 +234,10 @@ class NoteListFragment : Fragment() {
             }
         }
         viewModel._eventListener.value = NoteListEvent.PageLoaded
+    }
+
+    private fun showLoadingState() {
+        fadeOutView(requireContext(), noteList)
     }
 
     override fun onDestroy() {
