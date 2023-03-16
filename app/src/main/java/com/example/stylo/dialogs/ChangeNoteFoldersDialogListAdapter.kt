@@ -1,5 +1,7 @@
 package com.example.stylo.dialogs
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.util.ColorStringMap
 
 class ChangeNoteFoldersDialogListAdapter(
     private val currentFolders: Array<RoomFolder>,
-    val allFolders: Array<RoomFolder>
+    private val currentFolder: RoomFolder,
+    private val allFolders: Array<RoomFolder>
 ) : RecyclerView.Adapter<ChangeNoteFoldersDialogListAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -23,6 +27,7 @@ class ChangeNoteFoldersDialogListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.folderTitle.text = allFolders[position].name
         holder.checkBox.isChecked = allFolders[position].uid in currentFolders.map { it.uid }
+        holder.checkBox.buttonTintList = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
     }
 
     override fun getItemCount(): Int = allFolders.size

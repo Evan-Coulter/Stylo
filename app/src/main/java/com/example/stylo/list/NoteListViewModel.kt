@@ -19,7 +19,7 @@ private const val SHARED_PREF_FOLDER_ID = "shared_pref_folder_id"
 
 class NoteListViewModel(private val repository: NotesRepository, private val sharedPreferences: SharedPreferences) : ViewModel() {
     private var isListView: Boolean = true
-    private var folder: RoomFolder = repository.getDefaultFolder()
+    var folder: RoomFolder = repository.getDefaultFolder()
 
 
     private var _uiState: MutableLiveData<NoteListViewState> = MutableLiveData()
@@ -80,7 +80,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
                 .build()))
             val otherStuffFolder = repository.getFolder(repository.add(RoomFolderBuilder()
                 .setName("Other stuff")
-                .setColor("Green")
+                .setColor("Yellow")
                 .build()))
             val homeworkNote1 = repository.getNote(
                 repository.add(RoomNoteBuilder()
@@ -140,7 +140,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
 
     private fun showFolderTray() {
         val folders = repository.getAllFolders()
-        postNewState(NoteListViewState.ShowFoldersTray(folders))
+        postNewState(NoteListViewState.ShowFoldersTray(folders, folder))
     }
 
     private fun switchCardListView() {

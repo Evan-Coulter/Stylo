@@ -1,6 +1,7 @@
 package com.example.stylo.dialogs
 
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
@@ -13,8 +14,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.example.stylo.R
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
+import com.example.stylo.util.ColorStringMap
 import com.example.stylo.util.fadeInView
 import com.example.stylo.util.fadeOutView
 import com.google.android.material.textfield.TextInputLayout
@@ -22,6 +25,7 @@ import com.google.android.material.textfield.TextInputLayout
 
 class RenameNoteDialog(
     private val note: RoomNote,
+    private val currentFolder: RoomFolder,
     private val onSave: (RoomNote)->Unit
 ) : IDialog, DialogFragment() {
     private lateinit var cancelButton: Button
@@ -52,7 +56,11 @@ class RenameNoteDialog(
         title = view.findViewById(R.id.rename_note_title)
         cancelButton = view.findViewById(R.id.rename_note_cancel_button)
         saveButton = view.findViewById(R.id.rename_note_save_button)
+        cancelButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
+        saveButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
         textInputLayout = view.findViewById(R.id.rename_note_edit_text)
+        textInputLayout.defaultHintTextColor = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor("Grey")))
+        textInputLayout.boxStrokeColor = Color.parseColor(ColorStringMap.getColor(currentFolder.color))
         savedMessage = view.findViewById(R.id.rename_note_saved_message)
         textInputLayout.editText?.let { it ->
             it.setText(note.title)

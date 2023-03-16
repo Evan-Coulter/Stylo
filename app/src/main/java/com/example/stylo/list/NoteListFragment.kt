@@ -1,5 +1,7 @@
 package com.example.stylo.list
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -22,6 +24,7 @@ import com.example.stylo.dialogs.DeleteNoteDialog
 import com.example.stylo.dialogs.IDialog
 import com.example.stylo.dialogs.RenameNoteDialog
 import com.example.stylo.editor.NoteEditorFragment
+import com.example.stylo.util.ColorStringMap
 import com.example.stylo.util.fadeInView
 import com.example.stylo.util.fadeOutView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -64,7 +67,7 @@ class NoteListFragment : Fragment() {
     private fun onNewState(newState : NoteListViewState) {
         when (newState) {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes, newState.folder, newState.isListView)
-            is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders)
+            is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders, newState.currentFolder)
             is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
             is NoteListViewState.ShowEditFolderDialog -> TODO()
             is NoteListViewState.LoadingState -> showLoadingState()
@@ -123,6 +126,7 @@ class NoteListFragment : Fragment() {
         noteList.layoutManager = GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
             list.toTypedArray(),
+            folder,
             onClickNote = { id -> viewModel._eventListener.value = NoteListEvent.NoteClicked(id) },
             onClickNoteEditDetails = { note, rootView -> openEditNoteDetailsOptions(note, rootView) }
         )
@@ -130,11 +134,18 @@ class NoteListFragment : Fragment() {
         if (!noteList.isVisible) {
             fadeInView(requireContext(), noteList, 500)
         }
+        fab.setColorFilter(Color.WHITE)
+        fab.rippleColor = Color.parseColor(ColorStringMap.getLightColor(folder.color))
+        fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor(folder.color)))
+        folderButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
+        searchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
+        listCardSwitchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
     }
 
-    private fun showFoldersTray(list: List<RoomFolder>) {
+    private fun showFoldersTray(list: List<RoomFolder>, currentFolder: RoomFolder) {
         val folderTray = view?.findViewById<View>(R.id.folder_tray)
         folderTray?.let{
+            it.backgroundTintList = ColorStateList.valueOf((Color.parseColor(ColorStringMap.getLightColor(currentFolder.color))))
             it.setOnClickListener { /*do nothing*/ }
             view?.findViewById<ImageView>(R.id.close_folder_tray_button)?.setOnClickListener { _ ->
                 fadeOutView(requireContext(), it)
@@ -145,6 +156,7 @@ class NoteListFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(context)
             val adapter = FolderTrayRecyclerViewAdapter(
                 list.toTypedArray(),
+                currentFolder,
                 onClickFolder = { id ->
                     viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
                     fadeOutView(requireContext(), folderTray)
@@ -197,7 +209,7 @@ class NoteListFragment : Fragment() {
 
     private fun displayRenameNoteDialog(note: RoomNote) {
         context?.let {
-            dialogFragment = RenameNoteDialog(note) { newNote ->
+            dialogFragment = RenameNoteDialog(note, viewModel.folder) { newNote ->
                 viewModel._eventListener.value =
                     NoteListEvent.AttemptToRenameNote(newNote)
             }
@@ -211,7 +223,7 @@ class NoteListFragment : Fragment() {
         allFolders: List<RoomFolder>
     ) {
         context?.let {
-            dialogFragment = ChangeNoteFoldersDialog(note, currentFolders, allFolders) { folders ->
+            dialogFragment = ChangeNoteFoldersDialog(note, viewModel.folder, currentFolders, allFolders) { folders ->
                 viewModel._eventListener.value = NoteListEvent.AttemptToChangeNoteFolderMembership(note.uid, folders.map {it.uid})
             }
             (dialogFragment as DialogFragment).show(parentFragmentManager, "change_note_folders_dialog_tag")
@@ -220,7 +232,7 @@ class NoteListFragment : Fragment() {
 
     private fun displayDeleteNoteDialog(note: RoomNote) {
         context?.let {
-            dialogFragment = DeleteNoteDialog(note) { noteID: Int ->
+            dialogFragment = DeleteNoteDialog(note, viewModel.folder) { noteID: Int ->
                 viewModel._eventListener.value = NoteListEvent.AttemptToDeleteNote(noteID)
             }
             (dialogFragment as DialogFragment).show(parentFragmentManager, "delete_note_dialog_tag")

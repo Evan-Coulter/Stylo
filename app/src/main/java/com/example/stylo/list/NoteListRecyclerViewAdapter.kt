@@ -1,16 +1,20 @@
 package com.example.stylo.list
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.stylo.R
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.util.ColorStringMap
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class NoteListAdapter(
     private val dataset: Array<RoomNote>,
+    private val folder: RoomFolder,
     private val onClickNote: (Int)->Unit,
     private val onClickNoteEditDetails: (RoomNote, View)->Unit
 ) : RecyclerView.Adapter<NoteListAdapter.NoteListRecyclerViewHolder>() {
@@ -25,6 +29,7 @@ class NoteListAdapter(
         holder.title.text = dataset[position].title
         holder.content.text = dataset[position].content
         holder.fab.setOnClickListener{onClickNoteEditDetails(dataset[position], holder.fab)}
+        holder.fab.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)))
         holder.view.setOnClickListener {onClickNote(dataset[position].uid)}
     }
 

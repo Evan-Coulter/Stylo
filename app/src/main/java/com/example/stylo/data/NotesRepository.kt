@@ -8,7 +8,7 @@ import com.example.stylo.data.model.*
 //Is actually 127 but keeping it safe.
 private const val ANDROID_FILE_NAME_LENGTH_LIMIT = 125
 const val DEFAULT_FOLDER_NAME = "All Notes"
-const val DEFAULT_FOLDER_COLOR = "Pink"
+const val DEFAULT_FOLDER_COLOR = "Grey"
 
 class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccessor: FileAccessSource) {
 

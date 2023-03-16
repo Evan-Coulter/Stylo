@@ -15,11 +15,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.util.ColorStringMap
 import com.example.stylo.util.fadeInView
 import com.example.stylo.util.fadeOutView
 
 class ChangeNoteFoldersDialog(
     private val note: RoomNote,
+    private val currentFolder: RoomFolder,
     private val currentFolders: List<RoomFolder>,
     private val allFolders: List<RoomFolder>,
     private val onSave: (List<RoomFolder>)->Unit
@@ -56,10 +58,13 @@ class ChangeNoteFoldersDialog(
         saveButton = view.findViewById(R.id.change_folder_membership_save_button)
         cancelButton = view.findViewById(R.id.change_folder_membership_cancel_button)
         savedMessage = view.findViewById(R.id.change_folder_membership_saved_message)
+        cancelButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
+        saveButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
         noteName = view.findViewById(R.id.change_folder_membership_note_name)
         recyclerView.layoutManager = LinearLayoutManager(context)
         val adapter = ChangeNoteFoldersDialogListAdapter(
             currentFolders.toTypedArray(),
+            currentFolder,
             allFolders.toTypedArray()
         )
         recyclerView.adapter = adapter

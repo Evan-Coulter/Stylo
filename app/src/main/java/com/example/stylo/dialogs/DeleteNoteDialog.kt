@@ -11,12 +11,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.example.stylo.R
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
+import com.example.stylo.util.ColorStringMap
 import com.example.stylo.util.fadeInView
 import com.example.stylo.util.fadeOutView
 
 class DeleteNoteDialog(
     private val note: RoomNote,
+    private val currentFolder: RoomFolder,
     private val onConfirm: (Int)->Unit
 ) : IDialog, DialogFragment() {
 
@@ -52,6 +55,8 @@ class DeleteNoteDialog(
         warning = view.findViewById(R.id.delete_note_warning)
         deleteButton = view.findViewById(R.id.delete_note_delete_button)
         cancelButton = view.findViewById(R.id.delete_note_cancel_button)
+        deleteButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
+        cancelButton.setTextColor(Color.parseColor(ColorStringMap.getColor(currentFolder.color)))
         deletedMessage = view.findViewById(R.id.delete_note_message)
         noteName.text = note.title
         cancelButton.setOnClickListener {

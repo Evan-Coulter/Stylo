@@ -15,7 +15,7 @@ sealed class NoteListViewState {
     object ShowEmptySearchResult : NoteListViewState()
     data class ShowBasicListState(val notes: List<RoomNote>, val folder: RoomFolder, val isListView: Boolean) : NoteListViewState()
     data class ShowEditNoteDetailsOptions(val note: RoomNote) : NoteListViewState()
-    data class ShowFoldersTray(val folders: List<RoomFolder>) : NoteListViewState()
+    data class ShowFoldersTray(val folders: List<RoomFolder>, val currentFolder: RoomFolder) : NoteListViewState()
     data class ShowEditFolderDialog(val folder: RoomFolder) : NoteListViewState()
     object ShowCreateFolderDialog : NoteListViewState()
     object ShowCreateFolderSuccessMessage : NoteListViewState()
