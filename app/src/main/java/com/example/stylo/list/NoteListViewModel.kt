@@ -127,6 +127,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
 
     private fun displayBasicListState() {
         val notes = if (folder.uid == 1) repository.getAllNotes() else repository.getNotesInFolder(folder.uid)
+        folder = repository.getFolder(folder.uid) //updates folder object
         postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
 
@@ -199,7 +200,6 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     }
 
     private fun openEditFolderDialog(event: NoteListEvent.EditFolderButtonClicked) {
-        postNewState(NoteListViewState.LoadingState)
         try {
             val folder = repository.getFolder(event.folderID)
             postNewState(NoteListViewState.ShowEditFolderDialog(folder))
@@ -227,9 +227,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun attemptToEditFolder(event: NoteListEvent.AttemptToEditFolder) {
         postNewState(NoteListViewState.LoadingState)
         try {
-            if (event.folder.uid == 1 || event.folder.uid == 0) {
+            if (event.folder.uid == 0) {
                 //We technically shouldn't ever reach here if fragment layout is done properly.
                 showFolderTray()
+                return
             }
             val anotherFolderAlreadyHasThatTitle = repository.getAllFolders()
                 .filter { it.uid != event.folder.uid }

@@ -19,10 +19,7 @@ import com.example.stylo.MainApplication
 import com.example.stylo.R
 import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
-import com.example.stylo.dialogs.ChangeNoteFoldersDialog
-import com.example.stylo.dialogs.DeleteNoteDialog
-import com.example.stylo.dialogs.IDialog
-import com.example.stylo.dialogs.RenameNoteDialog
+import com.example.stylo.dialogs.*
 import com.example.stylo.editor.NoteEditorFragment
 import com.example.stylo.util.ColorStringMap
 import com.example.stylo.util.fadeInView
@@ -41,6 +38,7 @@ class NoteListFragment : Fragment() {
     private lateinit var listCardSwitchButton: ImageButton
     private lateinit var noteList: RecyclerView
     private lateinit var fab: FloatingActionButton
+    private lateinit var folderTray: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,14 +67,14 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowBasicListState -> showBasicListState(newState.notes, newState.folder, newState.isListView)
             is NoteListViewState.ShowFoldersTray -> showFoldersTray(newState.folders, newState.currentFolder)
             is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
-            is NoteListViewState.ShowEditFolderDialog -> TODO()
+            is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog(newState.folder)
             is NoteListViewState.LoadingState -> showLoadingState()
             is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note)
             is NoteListViewState.ShowCreateFolderDialog -> TODO()
             is NoteListViewState.ShowCreateFolderErrorMessage -> TODO()
             is NoteListViewState.ShowCreateFolderSuccessMessage -> TODO()
-            is NoteListViewState.ShowEditFolderErrorMessage -> TODO()
-            is NoteListViewState.ShowEditFolderSuccessMessage -> TODO()
+            is NoteListViewState.ShowEditFolderErrorMessage -> throw NotImplementedError(newState.errorMessage)
+            is NoteListViewState.ShowEditFolderSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowEmptySearchResult -> TODO()
             is NoteListViewState.ShowHelpDialog -> TODO()
             is NoteListViewState.ShowLogoEffect -> TODO()
@@ -96,6 +94,7 @@ class NoteListFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.logo).setOnClickListener { Toast.makeText(context, "Logo clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.helpButton).setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
         noteList = view.findViewById(R.id.list)
+        folderTray = view.findViewById(R.id.folder_tray)
         folderButton = view.findViewById(R.id.folder)
         folderButton.setOnClickListener {
             viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
@@ -113,7 +112,6 @@ class NoteListFragment : Fragment() {
             viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
         }
         view.findViewById<View>(R.id.note_list_fragment).setOnClickListener {
-            val folderTray: View = view.findViewById(R.id.folder_tray)
             if (folderTray.isVisible) {
                 fadeOutView(requireContext(), folderTray)
                 folderTray.visibility = View.GONE
@@ -161,7 +159,9 @@ class NoteListFragment : Fragment() {
                     viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
                     fadeOutView(requireContext(), folderTray)
                 },
-                onLongPressFolder = { id -> Toast.makeText(context, "$id folder long pressed", Toast.LENGTH_SHORT).show() }
+                onLongPressFolder = { id ->
+                    viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(id)
+                }
             )
             recyclerView.adapter = adapter
         }
@@ -245,11 +245,24 @@ class NoteListFragment : Fragment() {
                 it.displayFinishedMessage()
             }
         }
+        if (folderTray.isVisible) {
+            fadeOutView(requireContext(), folderTray)
+        }
+
         viewModel._eventListener.value = NoteListEvent.PageLoaded
     }
 
     private fun showLoadingState() {
         fadeOutView(requireContext(), noteList)
+    }
+
+    private fun showEditFolderDialog(selectedFolder: RoomFolder) {
+        context?.let {
+            dialogFragment = EditFolderDetailsDialog(selectedFolder, viewModel.folder) { folder: RoomFolder ->
+                viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(folder)
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "edit_folder_details_dialog_tag")
+        }
     }
 
     override fun onDestroy() {

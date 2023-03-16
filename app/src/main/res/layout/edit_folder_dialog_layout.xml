@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="24dp"
+    android:paddingBottom="12dp"
+    android:paddingStart="30dp"
+    android:paddingEnd="30dp"
+    android:layout_margin="16dp"
+    android:background="@drawable/dialog_background">
+
+
+    <TextView
+        android:id="@+id/edit_folder_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit folder"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/edit_folder_all_notes_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        android:text="All Notes"
+        app:layout_constraintBottom_toTopOf="@+id/edit_folder_select_color_message"
+        app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
+        app:layout_constraintTop_toBottomOf="@id/edit_folder_title"
+        tools:visibility="visible"
+        android:visibility="gone"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_folder_edit_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="New title"
+        android:paddingBottom="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
+        app:layout_constraintTop_toBottomOf="@id/edit_folder_title"
+        android:layout_marginTop="12dp"
+        app:startIconDrawable="@drawable/ic_round_edit_24"
+        app:startIconTint="@color/text_color"
+        tools:visibility="invisible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="200"
+            android:maxLines="1"
+            tools:visibility="invisible"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/edit_folder_select_color_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select color,"
+        app:layout_constraintStart_toStartOf="@id/edit_folder_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/edit_folder_edit_text" />
+
+    <LinearLayout
+        android:id="@+id/edit_folder_checkbox_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/edit_folder_select_color_message">
+
+        <CheckBox
+            android:id="@+id/edit_folder_yellow_checkbox"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_yellow_color_picker_unchecked"
+            android:button="@null" />
+
+        <CheckBox
+            android:id="@+id/edit_folder_pink_checkbox"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_pink_color_picker_unchecked"
+            android:button="@null" />
+
+        <CheckBox
+            android:id="@+id/edit_folder_blue_checkbox"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_blue_color_picker_unchecked"
+            android:button="@null" />
+
+        <CheckBox
+            android:id="@+id/edit_folder_grey_checkbox"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_grey_color_picker_unchecked"
+            android:button="@null" />
+
+        <CheckBox
+            android:id="@+id/edit_folder_green_checkbox"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_green_color_picker_unchecked"
+            android:button="@null" />
+
+
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/edit_folder_save_button"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_folder_checkbox_layout" />
+
+    <Button
+        android:id="@+id/edit_folder_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/edit_folder_save_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="Cancel"
+        android:textColor="@color/pink"
+        android:textStyle="bold"
+        android:textAllCaps="false"/>
+
+
+    <LinearLayout
+        android:id="@+id/edit_folder_saved_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:visibility="gone"
+        android:layout_marginBottom="12dp">
+        <ImageView
+            android:id="@+id/rename_note_saved_drawable"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_round_edit_24"
+            app:tint="@color/text_color"
+            android:layout_margin="6dp"/>
+        <TextView
+            android:layout_margin="6dp"
+            android:id="@+id/rename_note_saved_text"
+            android:text="Saved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
