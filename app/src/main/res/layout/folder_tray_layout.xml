@@ -49,6 +49,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/folder_tray_add_new_folder_button"
         android:backgroundTint="@color/trash_color"
         android:textColor="@color/black"
         android:layout_width="180dp"

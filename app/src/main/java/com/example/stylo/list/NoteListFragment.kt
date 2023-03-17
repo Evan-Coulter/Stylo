@@ -70,9 +70,9 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog(newState.folder)
             is NoteListViewState.LoadingState -> showLoadingState()
             is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note)
-            is NoteListViewState.ShowCreateFolderDialog -> TODO()
-            is NoteListViewState.ShowCreateFolderErrorMessage -> TODO()
-            is NoteListViewState.ShowCreateFolderSuccessMessage -> TODO()
+            is NoteListViewState.ShowCreateFolderDialog -> openAddNewFolderDialog()
+            is NoteListViewState.ShowCreateFolderErrorMessage -> dialogFragment?.iDismiss()
+            is NoteListViewState.ShowCreateFolderSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowEditFolderErrorMessage -> throw NotImplementedError(newState.errorMessage)
             is NoteListViewState.ShowEditFolderSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowEmptySearchResult -> TODO()
@@ -141,30 +141,30 @@ class NoteListFragment : Fragment() {
     }
 
     private fun showFoldersTray(list: List<RoomFolder>, currentFolder: RoomFolder) {
-        val folderTray = view?.findViewById<View>(R.id.folder_tray)
-        folderTray?.let{
-            it.backgroundTintList = ColorStateList.valueOf((Color.parseColor(ColorStringMap.getLightColor(currentFolder.color))))
-            it.setOnClickListener { /*do nothing*/ }
-            view?.findViewById<ImageView>(R.id.close_folder_tray_button)?.setOnClickListener { _ ->
-                fadeOutView(requireContext(), it)
-                it.visibility = View.GONE
-            }
-            fadeInView(requireContext(), it)
-            val recyclerView: RecyclerView = requireView().findViewById(R.id.folder_list)
-            recyclerView.layoutManager = LinearLayoutManager(context)
-            val adapter = FolderTrayRecyclerViewAdapter(
-                list.toTypedArray(),
-                currentFolder,
-                onClickFolder = { id ->
-                    viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
-                    fadeOutView(requireContext(), folderTray)
-                },
-                onLongPressFolder = { id ->
-                    viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(id)
-                }
-            )
-            recyclerView.adapter = adapter
+        folderTray.backgroundTintList = ColorStateList.valueOf((Color.parseColor(ColorStringMap.getLightColor(currentFolder.color))))
+        folderTray.setOnClickListener { /*do nothing*/ }
+        view?.findViewById<ImageView>(R.id.close_folder_tray_button)?.setOnClickListener { _ ->
+            fadeOutView(requireContext(), folderTray)
+            folderTray.visibility = View.GONE
         }
+        view?.findViewById<Button>(R.id.folder_tray_add_new_folder_button)?.setOnClickListener {
+            viewModel._eventListener.value = NoteListEvent.AddNewFolderButtonClicked
+        }
+        fadeInView(requireContext(), folderTray)
+        val recyclerView: RecyclerView = requireView().findViewById(R.id.folder_list)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        val adapter = FolderTrayRecyclerViewAdapter(
+            list.toTypedArray(),
+            currentFolder,
+            onClickFolder = { id ->
+                viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
+                fadeOutView(requireContext(), folderTray)
+            },
+            onLongPressFolder = { id ->
+                viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(id)
+            }
+        )
+        recyclerView.adapter = adapter
     }
 
     private fun openNoteEditor(note: RoomNote) {
@@ -262,6 +262,15 @@ class NoteListFragment : Fragment() {
                 viewModel._eventListener.value = NoteListEvent.AttemptToEditFolder(folder)
             }
             (dialogFragment as DialogFragment).show(parentFragmentManager, "edit_folder_details_dialog_tag")
+        }
+    }
+
+    private fun openAddNewFolderDialog() {
+        context?.let {
+            dialogFragment = CreateNewFolderDialog(currentFolder = viewModel.folder) { newFolder: RoomFolder ->
+                viewModel._eventListener.value = NoteListEvent.AttemptToAddNewFolder(newFolder)
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "create_folder_details_dialog_tag")
         }
     }
 

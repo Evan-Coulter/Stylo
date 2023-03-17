@@ -11,40 +11,26 @@
     android:layout_margin="16dp"
     android:background="@drawable/dialog_background">
 
-
     <TextView
-        android:id="@+id/edit_folder_title"
+        android:id="@+id/create_folder_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit folder"
+        android:text="Create new folder"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/edit_folder_all_notes_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="26sp"
-        android:text="All Notes"
-        app:layout_constraintBottom_toTopOf="@+id/edit_folder_select_color_message"
-        app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
-        app:layout_constraintTop_toBottomOf="@id/edit_folder_title"
-        tools:visibility="visible"
-        android:visibility="gone"/>
-
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_folder_edit_text"
+        android:id="@+id/create_folder_edit_text"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="New title"
+        android:hint="New folder title"
         android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
-        app:layout_constraintTop_toBottomOf="@id/edit_folder_title"
+        app:layout_constraintStart_toStartOf="@+id/create_folder_title"
+        app:layout_constraintTop_toBottomOf="@id/create_folder_title"
         android:layout_marginTop="12dp"
         app:startIconDrawable="@drawable/ic_round_edit_24"
         app:startIconTint="@color/text_color"
@@ -61,24 +47,24 @@
 
 
     <TextView
-        android:id="@+id/edit_folder_select_color_message"
+        android:id="@+id/create_folder_select_color_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select color,"
-        app:layout_constraintStart_toStartOf="@id/edit_folder_edit_text"
-        app:layout_constraintTop_toBottomOf="@id/edit_folder_edit_text" />
+        app:layout_constraintStart_toStartOf="@id/create_folder_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/create_folder_edit_text" />
 
     <LinearLayout
-        android:id="@+id/edit_folder_checkbox_layout"
+        android:id="@+id/create_folder_checkbox_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="@+id/edit_folder_select_color_message"
-        app:layout_constraintTop_toBottomOf="@id/edit_folder_select_color_message">
+        app:layout_constraintStart_toStartOf="@+id/create_folder_select_color_message"
+        app:layout_constraintTop_toBottomOf="@id/create_folder_select_color_message">
 
         <CheckBox
-            android:id="@+id/edit_folder_yellow_checkbox"
+            android:id="@+id/create_folder_yellow_checkbox"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
@@ -86,7 +72,7 @@
             android:button="@null" />
 
         <CheckBox
-            android:id="@+id/edit_folder_pink_checkbox"
+            android:id="@+id/create_folder_pink_checkbox"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
@@ -94,7 +80,7 @@
             android:button="@null" />
 
         <CheckBox
-            android:id="@+id/edit_folder_blue_checkbox"
+            android:id="@+id/create_folder_blue_checkbox"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
@@ -102,7 +88,7 @@
             android:button="@null" />
 
         <CheckBox
-            android:id="@+id/edit_folder_grey_checkbox"
+            android:id="@+id/create_folder_grey_checkbox"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
@@ -110,7 +96,7 @@
             android:button="@null" />
 
         <CheckBox
-            android:id="@+id/edit_folder_green_checkbox"
+            android:id="@+id/create_folder_green_checkbox"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
@@ -123,7 +109,7 @@
 
 
     <Button
-        android:id="@+id/edit_folder_save_button"
+        android:id="@+id/create_folder_save_button"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -133,13 +119,13 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_folder_checkbox_layout" />
+        app:layout_constraintTop_toBottomOf="@id/create_folder_checkbox_layout" />
 
     <Button
-        android:id="@+id/edit_folder_cancel_button"
+        android:id="@+id/create_folder_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/edit_folder_save_button"
+        app:layout_constraintEnd_toStartOf="@id/create_folder_save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:text="Cancel"
@@ -149,7 +135,7 @@
 
 
     <LinearLayout
-        android:id="@+id/edit_folder_saved_message"
+        android:id="@+id/create_folder_saved_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
