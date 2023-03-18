@@ -105,7 +105,37 @@
         android:layout_marginTop="24dp"
         tools:listitem="@layout/note_list_card_item"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"/>
+        app:spanCount="2"
+        tools:visibility="gone"
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/no_notes_are_saved_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:text="No notes are saved in this folder."
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/folder"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/no_notes_are_saved_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/no_notes_are_saved_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Click the circle button below \n to write a new note."
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:textSize="16sp"
+        tools:visibility="visible"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -115,7 +145,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="@dimen/side_margin"
-        app:fabSize="normal" />
+        app:fabSize="normal"/>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

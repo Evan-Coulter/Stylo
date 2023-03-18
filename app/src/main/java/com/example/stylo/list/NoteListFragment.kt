@@ -39,6 +39,9 @@ class NoteListFragment : Fragment() {
     private lateinit var noteList: RecyclerView
     private lateinit var fab: FloatingActionButton
     private lateinit var folderTray: View
+    private lateinit var title: TextView
+    private lateinit var emptyListTitle: TextView
+    private lateinit var emptyListHint: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,7 +96,10 @@ class NoteListFragment : Fragment() {
     private fun initButtons(view: View) {
         view.findViewById<ImageButton>(R.id.logo).setOnClickListener { Toast.makeText(context, "Logo clicked", Toast.LENGTH_SHORT).show() }
         view.findViewById<ImageButton>(R.id.helpButton).setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
+        title = view.findViewById(R.id.title)
         noteList = view.findViewById(R.id.list)
+        emptyListTitle = view.findViewById(R.id.no_notes_are_saved_title)
+        emptyListHint = view.findViewById(R.id.no_notes_are_saved_hint)
         folderTray = view.findViewById(R.id.folder_tray)
         folderButton = view.findViewById(R.id.folder)
         folderButton.setOnClickListener {
@@ -120,7 +126,14 @@ class NoteListFragment : Fragment() {
     }
 
     private fun showBasicListState(list: List<RoomNote>, folder: RoomFolder, isListView: Boolean) {
-        view?.findViewById<TextView>(R.id.title)?.text = folder.name
+        title.text = folder.name
+        if (list.isEmpty()) {
+            emptyListTitle.visibility = View.VISIBLE
+            emptyListHint.visibility = View.VISIBLE
+        } else {
+            emptyListTitle.visibility = View.GONE
+            emptyListHint.visibility = View.GONE
+        }
         noteList.layoutManager = GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
             list.toTypedArray(),
