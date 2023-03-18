@@ -28,4 +28,5 @@ sealed class NoteListViewState {
     data class ShowRenameNoteDialog(val note: RoomNote) : NoteListViewState()
     data class ShowDeleteNoteDialog(val note: RoomNote) : NoteListViewState()
     data class ShowChangeNoteFolderMembershipDialog(val note: RoomNote, val currentFolders: List<RoomFolder>, val allFolders: List<RoomFolder>) : NoteListViewState()
+    data class OpenDeleteFolderDialog(val folder: RoomFolder) : NoteListViewState()
 }

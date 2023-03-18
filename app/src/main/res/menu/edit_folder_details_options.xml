@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/open_edit_folder_details_button"
+        android:title="Edit folder details"/>
+    <item
+        android:id="@+id/delete_folder_button"
+        android:title="Delete folder"/>
+</menu>

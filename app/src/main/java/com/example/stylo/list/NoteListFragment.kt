@@ -2,6 +2,7 @@ package com.example.stylo.list
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -35,6 +36,8 @@ class NoteListFragment : Fragment() {
 
     private lateinit var folderButton: ImageButton
     private lateinit var searchButton: ImageButton
+    private lateinit var editFolderDetailsButton: ImageButton
+    private lateinit var helpButton: ImageButton
     private lateinit var listCardSwitchButton: ImageButton
     private lateinit var noteList: RecyclerView
     private lateinit var fab: FloatingActionButton
@@ -86,16 +89,20 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowChangeNoteFolderMembershipDialog -> displayChangeFolderMembershipDialog(newState.note, newState.currentFolders, newState.allFolders)
             is NoteListViewState.ShowDeleteNoteDialog -> displayDeleteNoteDialog(newState.note)
             is NoteListViewState.ShowRenameNoteDialog -> displayRenameNoteDialog(newState.note)
+            is NoteListViewState.OpenDeleteFolderDialog -> showDeleteFolderDialog(newState.folder)
         }
     }
+
 
     private fun initTextViews(view: View) {
         view.findViewById<TextView>(R.id.title).text = "All Notes"
     }
 
     private fun initButtons(view: View) {
-        view.findViewById<ImageButton>(R.id.logo).setOnClickListener { Toast.makeText(context, "Logo clicked", Toast.LENGTH_SHORT).show() }
-        view.findViewById<ImageButton>(R.id.helpButton).setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
+        editFolderDetailsButton = view.findViewById(R.id.edit_folder_details_button)
+        editFolderDetailsButton.setOnClickListener { openEditFolderDetailsOptions(viewModel.folder, editFolderDetailsButton) }
+        helpButton = view.findViewById(R.id.helpButton)
+        helpButton.setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
         title = view.findViewById(R.id.title)
         noteList = view.findViewById(R.id.list)
         emptyListTitle = view.findViewById(R.id.no_notes_are_saved_title)
@@ -172,9 +179,6 @@ class NoteListFragment : Fragment() {
             onClickFolder = { id ->
                 viewModel._eventListener.value = NoteListEvent.ChangeFolderButtonClicked(id)
                 fadeOutView(requireContext(), folderTray)
-            },
-            onLongPressFolder = { id ->
-                viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(id)
             }
         )
         recyclerView.adapter = adapter
@@ -218,6 +222,31 @@ class NoteListFragment : Fragment() {
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.edit_note_details_options, popup.menu)
         popup.show()
+    }
+
+    private fun openEditFolderDetailsOptions(folder: RoomFolder, rootView: View) {
+        val popup = PopupMenu(context, rootView)
+        popup.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.open_edit_folder_details_button -> {
+                    viewModel._eventListener.value = NoteListEvent.EditFolderButtonClicked(folder.uid)
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.delete_folder_button -> {
+                    viewModel._eventListener.value = NoteListEvent.DeleteFolderButtonClicked(folder.uid)
+                    popup.dismiss()
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener false
+                }
+            }
+        }
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.edit_folder_details_options, popup.menu)
+        popup.show()
+
     }
 
     private fun displayRenameNoteDialog(note: RoomNote) {
@@ -286,6 +315,11 @@ class NoteListFragment : Fragment() {
             (dialogFragment as DialogFragment).show(parentFragmentManager, "create_folder_details_dialog_tag")
         }
     }
+
+    private fun showDeleteFolderDialog(folder: RoomFolder) {
+        TODO()
+    }
+
 
     override fun onDestroy() {
         if (dialogFragment!=null) {

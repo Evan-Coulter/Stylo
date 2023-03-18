@@ -44,7 +44,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.AddNewFolderButtonClicked -> openCreateNewFolderDialog()
             is NoteListEvent.EditFolderButtonClicked -> openEditFolderDialog(it)
             is NoteListEvent.AttemptToAddNewFolder -> attemptToSaveNewFolder(it)
-            is NoteListEvent.DeleteFolderButtonClicked -> deleteFolder(it)
+            is NoteListEvent.DeleteFolderButtonClicked -> openDeleteFolderDialog(it)
             is NoteListEvent.AttemptToEditFolder -> attemptToEditFolder(it)
             is NoteListEvent.AttemptToDeleteNote -> deleteNote(it)
             is NoteListEvent.AttemptToChangeNoteFolderMembership -> changeNoteFolderMembership(it)
@@ -53,6 +53,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             is NoteListEvent.ChangeNoteFolderMembershipButtonClicked -> showChangeNoteFolderDialog(it)
             is NoteListEvent.DeleteNoteButtonClicked -> showDeleteNoteDialog(it)
             is NoteListEvent.RenameNoteButtonClicked -> showRenameNoteDialog(it)
+            is NoteListEvent.AttemptToDeleteFolder -> attemptToDeleteFolder(it)
         }
     }
 
@@ -210,7 +211,18 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         }
     }
 
-    private fun deleteFolder(event: NoteListEvent.DeleteFolderButtonClicked) {
+    private fun openDeleteFolderDialog(event: NoteListEvent.DeleteFolderButtonClicked) {
+        try {
+            val folder = repository.getFolder(event.folderID)
+            postNewState(NoteListViewState.OpenDeleteFolderDialog(folder))
+        } catch (e : FolderNotFoundException) {
+            displayBasicListState()
+        } catch (e : Throwable) {
+            displayBasicListState()
+        }
+    }
+
+    private fun attemptToDeleteFolder(event: NoteListEvent.AttemptToDeleteFolder) {
         postNewState(NoteListViewState.LoadingState)
         try {
             if (folder.uid == 1) {

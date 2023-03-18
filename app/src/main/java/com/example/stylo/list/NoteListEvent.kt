@@ -34,5 +34,7 @@ sealed class NoteListEvent {
     data class AttemptToRenameNote(val note: RoomNote) : NoteListEvent() //Is used within edit note dialog
     data class AttemptToChangeNoteFolderMembership(val noteID: Int, val newFolderMembership: List<Int>) : NoteListEvent()
     data class AttemptToDeleteNote(val noteID : Int) : NoteListEvent() //Is used within edit note dialog
+    data class AttemptToDeleteFolder(val folderID: Int) : NoteListEvent()
+
     object AddNewNoteButtonClicked : NoteListEvent() //Opens create new note dialog.
 }

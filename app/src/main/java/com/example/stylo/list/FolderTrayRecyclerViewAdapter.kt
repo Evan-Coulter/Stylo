@@ -13,8 +13,7 @@ import com.example.stylo.util.ColorStringMap
 class FolderTrayRecyclerViewAdapter(
     private val folders: Array<RoomFolder>,
     private val currentFolder: RoomFolder,
-    private val onClickFolder: (Int)->Unit,
-    private val onLongPressFolder: (Int)->Unit
+    private val onClickFolder: (Int)->Unit
 ) : RecyclerView.Adapter<FolderTrayRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,10 +25,6 @@ class FolderTrayRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.folderButton.setOnClickListener {
             onClickFolder(folders[position].uid)
-        }
-        holder.folderButton.setOnLongClickListener {
-            onLongPressFolder(folders[position].uid)
-            true
         }
         holder.folderButton.text = folders[position].name
         if (folders[position].uid == currentFolder.uid) {
