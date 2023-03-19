@@ -245,6 +245,7 @@ class NoteListFragment : Fragment() {
         }
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.edit_folder_details_options, popup.menu)
+        popup.menu.findItem(R.id.delete_folder_button).isVisible = folder.uid != 1
         popup.show()
 
     }
@@ -317,7 +318,12 @@ class NoteListFragment : Fragment() {
     }
 
     private fun showDeleteFolderDialog(folder: RoomFolder) {
-        TODO()
+        context?.let {
+            dialogFragment = DeleteFolderDialog(folder, currentFolder = viewModel.folder) { folderID: Int ->
+                viewModel._eventListener.value = NoteListEvent.AttemptToDeleteFolder(folderID)
+            }
+            (dialogFragment as DialogFragment).show(parentFragmentManager, "delete_folder_dialog_tag")
+        }
     }
 
 

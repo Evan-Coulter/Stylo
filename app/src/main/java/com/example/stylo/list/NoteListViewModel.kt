@@ -225,12 +225,12 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun attemptToDeleteFolder(event: NoteListEvent.AttemptToDeleteFolder) {
         postNewState(NoteListViewState.LoadingState)
         try {
-            if (folder.uid == 1) {
-                showFolderTray()
+            postNewState(NoteListViewState.LoadingState)
+            repository.delete(repository.getFolder(event.folderID))
+            if (event.folderID == this.folder.uid) {
+                this.folder = repository.getFolder(1)
             }
-            val folder = repository.getFolder(event.folderID)
-            repository.delete(folder)
-            showFolderTray()
+            postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
         } catch (e : Throwable) {
             displayBasicListState()
         }
