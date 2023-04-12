@@ -2,7 +2,6 @@ package com.example.stylo.list
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -23,9 +22,11 @@ import com.example.stylo.data.model.RoomNote
 import com.example.stylo.dialogs.*
 import com.example.stylo.editor.NoteEditorFragment
 import com.example.stylo.util.ColorStringMap
+import com.example.stylo.util.Presets
 import com.example.stylo.util.fadeInView
 import com.example.stylo.util.fadeOutView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import nl.dionsegijn.konfetti.xml.KonfettiView
 
 
 class NoteListFragment : Fragment() {
@@ -35,9 +36,8 @@ class NoteListFragment : Fragment() {
     }
 
     private lateinit var folderButton: ImageButton
-    private lateinit var searchButton: ImageButton
     private lateinit var editFolderDetailsButton: ImageButton
-    private lateinit var helpButton: ImageButton
+    private lateinit var logoButton: ImageButton
     private lateinit var listCardSwitchButton: ImageButton
     private lateinit var noteList: RecyclerView
     private lateinit var fab: FloatingActionButton
@@ -45,6 +45,7 @@ class NoteListFragment : Fragment() {
     private lateinit var title: TextView
     private lateinit var emptyListTitle: TextView
     private lateinit var emptyListHint: TextView
+    private lateinit var confetti: KonfettiView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,15 +82,16 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowCreateFolderSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowEditFolderErrorMessage -> throw NotImplementedError(newState.errorMessage)
             is NoteListViewState.ShowEditFolderSuccessMessage -> displayFinishedMessageInDialog()
-            is NoteListViewState.ShowEmptySearchResult -> TODO()
-            is NoteListViewState.ShowHelpDialog -> TODO()
-            is NoteListViewState.ShowLogoEffect -> TODO()
+            is NoteListViewState.ShowLogoEffect -> showLogoClickEffect()
             is NoteListViewState.ShowRenameNoteErrorMessage -> dialogFragment?.iDismiss()
             is NoteListViewState.ShowEditNoteDetailsSuccessMessage -> displayFinishedMessageInDialog()
             is NoteListViewState.ShowChangeNoteFolderMembershipDialog -> displayChangeFolderMembershipDialog(newState.note, newState.currentFolders, newState.allFolders)
             is NoteListViewState.ShowDeleteNoteDialog -> displayDeleteNoteDialog(newState.note)
             is NoteListViewState.ShowRenameNoteDialog -> displayRenameNoteDialog(newState.note)
             is NoteListViewState.OpenDeleteFolderDialog -> showDeleteFolderDialog(newState.folder)
+            is NoteListViewState.ShowEmptySearchResult -> viewModel._eventListener.value = NoteListEvent.PageLoaded
+            is NoteListViewState.ShowHelpDialog -> viewModel._eventListener.value = NoteListEvent.PageLoaded
+            is NoteListViewState.ShowSearchBar -> viewModel._eventListener.value = NoteListEvent.PageLoaded
         }
     }
 
@@ -99,10 +101,13 @@ class NoteListFragment : Fragment() {
     }
 
     private fun initButtons(view: View) {
+        confetti = view.findViewById(R.id.confetti)
         editFolderDetailsButton = view.findViewById(R.id.edit_folder_details_button)
         editFolderDetailsButton.setOnClickListener { openEditFolderDetailsOptions(viewModel.folder, editFolderDetailsButton) }
-        helpButton = view.findViewById(R.id.helpButton)
-        helpButton.setOnClickListener { Toast.makeText(context, "Help clicked", Toast.LENGTH_SHORT).show() }
+        logoButton = view.findViewById(R.id.logoButton)
+        logoButton.setOnClickListener {
+            viewModel._eventListener.value = NoteListEvent.LogoButtonClicked
+        }
         title = view.findViewById(R.id.title)
         noteList = view.findViewById(R.id.list)
         emptyListTitle = view.findViewById(R.id.no_notes_are_saved_title)
@@ -112,15 +117,11 @@ class NoteListFragment : Fragment() {
         folderButton.setOnClickListener {
             viewModel._eventListener.value = NoteListEvent.FolderTrayButtonClicked
         }
-        searchButton = view.findViewById<ImageButton>(R.id.search)
-        searchButton.setOnClickListener {
-            Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show()
-        }
-        listCardSwitchButton = view.findViewById<ImageButton>(R.id.list_card_switch)
+        listCardSwitchButton = view.findViewById(R.id.list_card_switch)
         listCardSwitchButton.setOnClickListener {
             Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show()
         }
-        fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab = view.findViewById(R.id.fab)
         fab.setOnClickListener {
             viewModel._eventListener.value = NoteListEvent.AddNewNoteButtonClicked
         }
@@ -156,7 +157,6 @@ class NoteListFragment : Fragment() {
         fab.rippleColor = Color.parseColor(ColorStringMap.getLightColor(folder.color))
         fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor(folder.color)))
         folderButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
-        searchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         listCardSwitchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
     }
 
@@ -326,6 +326,9 @@ class NoteListFragment : Fragment() {
         }
     }
 
+    private fun showLogoClickEffect() {
+        confetti.start(Presets.rain())
+    }
 
     override fun onDestroy() {
         if (dialogFragment!=null) {
