@@ -71,27 +71,15 @@
         app:tint="@color/text_color" />
 
     <ImageButton
-        android:id="@+id/search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_search"
-        app:layout_constraintEnd_toStartOf="@+id/list_card_switch"
-        app:layout_constraintTop_toBottomOf="@id/spacer"
-        app:tint="@color/text_color" />
-
-    <ImageButton
         android:id="@+id/list_card_switch"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_abstract_card_item"
-        app:layout_constraintBottom_toBottomOf="@+id/search"
+        app:layout_constraintBottom_toBottomOf="@+id/folder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/search"
+        app:layout_constraintTop_toTopOf="@+id/folder"
         app:tint="@color/text_color" />
 
     <androidx.recyclerview.widget.RecyclerView
