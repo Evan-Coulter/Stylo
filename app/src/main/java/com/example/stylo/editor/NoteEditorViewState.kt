@@ -1,7 +1,10 @@
 package com.example.stylo.editor
 
+import com.example.stylo.data.model.RoomFolder
+import com.example.stylo.data.model.RoomNote
+
 sealed class NoteEditorViewState {
-    data class ShowBasicEditorScreen(val noteName: String, val noteText: String) : NoteEditorViewState()
+    data class ShowBasicEditorScreen(val note: RoomNote, val folder: RoomFolder) : NoteEditorViewState()
     data class ShowSavePrompt(val newNoteName: String) : NoteEditorViewState()
     data class ShowSetTitleState(val newTitle: String) : NoteEditorViewState()
 }

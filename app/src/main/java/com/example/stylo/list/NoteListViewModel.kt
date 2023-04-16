@@ -153,7 +153,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     }
 
     private fun openNoteEditor(notePushed: NoteListEvent.NoteClicked) {
-        postNewState(NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID)))
+        postNewState(NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID), repository.getFolder(folder.uid)))
     }
 
     private fun displaySearchResults(searchEvent: NoteListEvent.SearchCompleted) {
@@ -303,7 +303,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         val note = repository.getNote(noteID)
         repository.addNoteToFolder(note, repository.getFolder(1))
         repository.addNoteToFolder(note, folder)
-        postNewState(NoteListViewState.OpenNoteEditor(note))
+        postNewState(NoteListViewState.OpenNoteEditor(note, folder))
     }
 
     private fun showRenameNoteDialog(event: NoteListEvent.RenameNoteButtonClicked) {

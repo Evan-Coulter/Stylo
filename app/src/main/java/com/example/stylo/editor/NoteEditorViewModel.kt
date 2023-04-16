@@ -1,7 +1,11 @@
 package com.example.stylo.editor
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.stylo.data.NotesRepository
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
 import com.example.stylo.data.model.RoomNoteBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,7 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 
 
-class NoteEditorViewModel(currentNote: RoomNote, private val repository: NotesRepository) : ViewModel() {
+class NoteEditorViewModel(
+    private val currentNote: RoomNote,
+    private val currentFolder: RoomFolder,
+    private val repository: NotesRepository
+) : ViewModel() {
     private var currentNoteBuilder = RoomNoteBuilder()
         .setTitle(currentNote.title)
         .setContent(currentNote.content)
@@ -19,41 +27,33 @@ class NoteEditorViewModel(currentNote: RoomNote, private val repository: NotesRe
         .setDateLastModified(currentNote.dateLastSaved)
 
     private var _uiState: MutableStateFlow<NoteEditorViewState> = MutableStateFlow(
-        NoteEditorViewState.ShowBasicEditorScreen(
-            currentNote.title,
-            currentNote.content
-        )
+        NoteEditorViewState.ShowBasicEditorScreen(currentNote, currentFolder)
     )
     val uiState = _uiState.asStateFlow()
+    var _eventListener: MutableLiveData<NoteEditorEvent> = MutableLiveData()
+    val eventListener: LiveData<NoteEditorEvent> = _eventListener
 
-    fun onResume() {
-        _uiState.value = NoteEditorViewState.ShowBasicEditorScreen(currentNoteBuilder.title, currentNoteBuilder.content)
+    private var eventListenerObserver = Observer<NoteEditorEvent> {
+        when (it) {
+            is NoteEditorEvent.EditorLoaded -> intializeEditor()
+            is NoteEditorEvent.EditorClosed -> onEditorClosed()
+        }
     }
 
-    fun onTextChanged(text: String) {
-        currentNoteBuilder.setContent(text)
+    init {
+        eventListener.observeForever(eventListenerObserver)
     }
 
-    fun onSaveClicked(title: String) {
-        _uiState.value = NoteEditorViewState.ShowSavePrompt(title)
+    private fun intializeEditor() {
+        val note = repository.getNote(currentNote.uid)
+        val folder = repository.getFolder(currentFolder.uid)
+        _uiState.value = NoteEditorViewState.ShowBasicEditorScreen(note, folder)
     }
 
-    fun onTitleClicked() {
-        _uiState.value = NoteEditorViewState.ShowSetTitleState(currentNoteBuilder.title)
-    }
-
-    fun onSaveFinished(title: String) {
+    private fun onEditorClosed() {
         currentNoteBuilder
-            .setTitle(title)
+            .setTitle(currentNote.title)
             .setDateLastModified(Calendar.getInstance().time)
-        repository.add(currentNoteBuilder.build())
-    }
-
-    fun onSaveCanceled() {
-        _uiState.value = NoteEditorViewState.ShowBasicEditorScreen(currentNoteBuilder.title, currentNoteBuilder.content)
-    }
-
-    fun onEditorClosed() {
-        onSaveFinished(currentNoteBuilder.title)
+        repository.update(currentNoteBuilder.build())
     }
 }

@@ -24,7 +24,7 @@ sealed class NoteListViewState {
     data class ShowEditFolderErrorMessage(val errorMessage: String) : NoteListViewState()
     object ShowEditNoteDetailsSuccessMessage : NoteListViewState()
     data class ShowRenameNoteErrorMessage(val errorMessage: String) : NoteListViewState()
-    data class OpenNoteEditor(val note: RoomNote) : NoteListViewState()
+    data class OpenNoteEditor(val note: RoomNote, val folder: RoomFolder) : NoteListViewState()
     data class ShowRenameNoteDialog(val note: RoomNote) : NoteListViewState()
     data class ShowDeleteNoteDialog(val note: RoomNote) : NoteListViewState()
     data class ShowChangeNoteFolderMembershipDialog(val note: RoomNote, val currentFolders: List<RoomFolder>, val allFolders: List<RoomFolder>) : NoteListViewState()

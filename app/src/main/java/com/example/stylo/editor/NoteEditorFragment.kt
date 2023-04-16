@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,14 +16,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.stylo.MainApplication
 import com.example.stylo.R
+import com.example.stylo.data.model.RoomFolder
 import com.example.stylo.data.model.RoomNote
-import com.example.stylo.data.model.RoomNoteBuilder
+import com.example.stylo.util.ColorStringMap
 import jp.wasabeef.richeditor.RichEditor
 import kotlinx.coroutines.launch
 
-class NoteEditorFragment(private val note: RoomNote) : Fragment() {
+class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFolder) : Fragment() {
+    private lateinit var editor: RichEditor
+    private lateinit var italic: ImageButton
+    private lateinit var bold: ImageButton
+    private lateinit var underline: ImageButton
+    private lateinit var backButton: ImageButton
+    private lateinit var noteTitle: EditText
+    private lateinit var lastEditedTime: TextView
+
     private val viewModel: NoteEditorViewModel by viewModels {
-        NoteEditorViewModelFactory(RoomNoteBuilder().build(), (requireActivity().application as MainApplication).notesRepository)
+        NoteEditorViewModelFactory(note, folder, (requireActivity().application as MainApplication).notesRepository)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,19 +51,45 @@ class NoteEditorFragment(private val note: RoomNote) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initButtons(view)
         initEditor(view)
-        Toast.makeText(context, "${note.title} is open", Toast.LENGTH_SHORT).show()
     }
 
     private fun onNewState(newState: NoteEditorViewState) {
         when (newState) {
-            is NoteEditorViewState.ShowBasicEditorScreen -> showFullEditorState()
+            is NoteEditorViewState.ShowBasicEditorScreen -> showFullEditorState(newState.note, newState.folder)
             is NoteEditorViewState.ShowSavePrompt -> showSaveDialogState()
             is NoteEditorViewState.ShowSetTitleState -> showSetTitleState()
         }
     }
 
-    private fun showFullEditorState() {
+    private fun initButtons(layout: View) {
+        noteTitle = layout.findViewById(R.id.title)
+        lastEditedTime = layout.findViewById(R.id.last_edited_date)
+        editor = layout.findViewById(R.id.editor)
+        italic = layout.findViewById<ImageButton>(R.id.italic).also { it.setOnClickListener { editor.setItalic() }}
+        bold = layout.findViewById<ImageButton>(R.id.bold).also{ it.setOnClickListener { editor.setBold() }}
+        underline = layout.findViewById<ImageButton>(R.id.underline).also{ it.setOnClickListener { editor.setUnderline() }}
+        backButton = layout.findViewById<ImageButton>(R.id.back_button).also{ it.setOnClickListener {
+            viewModel._eventListener.value = NoteEditorEvent.EditorClosed
+            activity?.onBackPressed()
+        }}
+    }
+
+
+    private fun initEditor(layout: View) {
+        layout.findViewById<RichEditor>(R.id.editor).setOnTextChangeListener {
+            //viewModel.onTextChanged(it)
+        }
+        layout.findViewById<RichEditor>(R.id.editor).focusEditor()
+    }
+
+    private fun showFullEditorState(note: RoomNote, folder: RoomFolder) {
         view?.let { initButtons(it) }
+        listOf(bold, underline, italic, backButton).forEach {
+            it.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
+        }
+        editor.html = note.content
+        lastEditedTime.text = note.dateLastSaved.toString()
+        noteTitle.setText(note.title)
     }
 
     private fun showSaveDialogState() {
@@ -63,29 +100,14 @@ class NoteEditorFragment(private val note: RoomNote) : Fragment() {
         context?.let { Toast.makeText(it, "Save Dialog", Toast.LENGTH_SHORT).show() }
     }
 
-    private fun initButtons(layout: View) {
-        val editor = layout.findViewById<RichEditor>(R.id.editor)
-        layout.findViewById<Button>(R.id.italic).setOnClickListener { editor.setItalic() }
-        layout.findViewById<Button>(R.id.bold).setOnClickListener { editor.setBold() }
-        layout.findViewById<Button>(R.id.underline).setOnClickListener { editor.setUnderline() }
-        layout.findViewById<Button>(R.id.color).setOnClickListener { editor.setTextColor(Color.GREEN) }
-        layout.findViewById<Button>(R.id.save).setOnClickListener { /*viewModel.onSaveClicked(editor.html)*/ }
-    }
-
-    private fun initEditor(layout: View) {
-        layout.findViewById<RichEditor>(R.id.editor).setOnTextChangeListener {
-            //viewModel.onTextChanged(it)
-        }
-        layout.findViewById<RichEditor>(R.id.editor).focusEditor()
-    }
 
     override fun onResume() {
         super.onResume()
-        //viewModel.onResume()
+        viewModel._eventListener.value = NoteEditorEvent.EditorLoaded
     }
 
     override fun onPause() {
-        //viewModel.onEditorClosed()
+        viewModel._eventListener.value = NoteEditorEvent.EditorClosed
         super.onPause()
     }
 }

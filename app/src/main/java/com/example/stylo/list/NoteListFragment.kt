@@ -76,7 +76,7 @@ class NoteListFragment : Fragment() {
             is NoteListViewState.ShowEditNoteDetailsOptions -> {/*Do nothing, is already handled in on click listeners*/}
             is NoteListViewState.ShowEditFolderDialog -> showEditFolderDialog(newState.folder)
             is NoteListViewState.LoadingState -> showLoadingState()
-            is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note)
+            is NoteListViewState.OpenNoteEditor -> openNoteEditor(newState.note, newState.folder)
             is NoteListViewState.ShowCreateFolderDialog -> openAddNewFolderDialog()
             is NoteListViewState.ShowCreateFolderErrorMessage -> dialogFragment?.iDismiss()
             is NoteListViewState.ShowCreateFolderSuccessMessage -> displayFinishedMessageInDialog()
@@ -184,9 +184,9 @@ class NoteListFragment : Fragment() {
         recyclerView.adapter = adapter
     }
 
-    private fun openNoteEditor(note: RoomNote) {
+    private fun openNoteEditor(note: RoomNote, folder: RoomFolder) {
         val transaction = parentFragmentManager.beginTransaction()
-        val editor = NoteEditorFragment(note)
+        val editor = NoteEditorFragment(note, folder)
         transaction.replace(R.id.fragmentContainer, editor).addToBackStack("tag").commit()
     }
 
