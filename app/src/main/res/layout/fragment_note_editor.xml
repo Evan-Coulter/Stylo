@@ -16,12 +16,14 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <EditText
-        android:background="@null"
         android:id="@+id/title"
-        android:layout_width="0dp"
+        android:paddingHorizontal="12dp"
+        android:minWidth="56dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
         android:text="New Note"
         android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="@+id/last_edited_date"

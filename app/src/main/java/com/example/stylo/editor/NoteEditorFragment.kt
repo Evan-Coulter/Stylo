@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -56,7 +57,7 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
     private fun onNewState(newState: NoteEditorViewState) {
         when (newState) {
             is NoteEditorViewState.ShowBasicEditorScreen -> showFullEditorState(newState.note, newState.folder)
-            is NoteEditorViewState.ShowSavePrompt -> showSaveDialogState()
+            is NoteEditorViewState.ShowNoteUpdatedState -> showNoteUpdatedState(newState.note)
             is NoteEditorViewState.ShowSetTitleState -> showSetTitleState()
         }
     }
@@ -69,17 +70,19 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
         bold = layout.findViewById<ImageButton>(R.id.bold).also{ it.setOnClickListener { editor.setBold() }}
         underline = layout.findViewById<ImageButton>(R.id.underline).also{ it.setOnClickListener { editor.setUnderline() }}
         backButton = layout.findViewById<ImageButton>(R.id.back_button).also{ it.setOnClickListener {
-            viewModel._eventListener.value = NoteEditorEvent.EditorClosed
             activity?.onBackPressed()
         }}
     }
 
 
     private fun initEditor(layout: View) {
-        layout.findViewById<RichEditor>(R.id.editor).setOnTextChangeListener {
-            //viewModel.onTextChanged(it)
+        editor.setOnTextChangeListener {
+            viewModel._eventListener.value = NoteEditorEvent.NoteContentEdited(it)
         }
-        layout.findViewById<RichEditor>(R.id.editor).focusEditor()
+        editor.focusEditor()
+        noteTitle.addTextChangedListener {
+            viewModel._eventListener.value = NoteEditorEvent.NoteTitleEdited(it.toString())
+        }
     }
 
     private fun showFullEditorState(note: RoomNote, folder: RoomFolder) {
@@ -92,8 +95,8 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
         noteTitle.setText(note.title)
     }
 
-    private fun showSaveDialogState() {
-        context?.let { Toast.makeText(it, "Save Dialog", Toast.LENGTH_SHORT).show() }
+    private fun showNoteUpdatedState(note: RoomNote) {
+        lastEditedTime.text = note.dateLastSaved.toString()
     }
 
     private fun showSetTitleState() {
@@ -107,7 +110,7 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
     }
 
     override fun onPause() {
-        viewModel._eventListener.value = NoteEditorEvent.EditorClosed
+        viewModel._eventListener.value = NoteEditorEvent.EditorClosed(editor.html, noteTitle.text.toString())
         super.onPause()
     }
 }
