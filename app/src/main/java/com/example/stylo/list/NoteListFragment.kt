@@ -186,6 +186,7 @@ class NoteListFragment : Fragment() {
 
     private fun openNoteEditor(note: RoomNote, folder: RoomFolder) {
         val transaction = parentFragmentManager.beginTransaction()
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left)
         val editor = NoteEditorFragment(note, folder)
         transaction.replace(R.id.fragmentContainer, editor).addToBackStack("tag").commit()
     }
