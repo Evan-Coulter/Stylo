@@ -119,7 +119,7 @@ class NoteListFragment : Fragment() {
         }
         listCardSwitchButton = view.findViewById(R.id.list_card_switch)
         listCardSwitchButton.setOnClickListener {
-            Toast.makeText(context, "Item type clicked", Toast.LENGTH_SHORT).show()
+            viewModel._eventListener.value = NoteListEvent.CardListViewSwitchClicked
         }
         fab = view.findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -142,12 +142,13 @@ class NoteListFragment : Fragment() {
             emptyListTitle.visibility = View.GONE
             emptyListHint.visibility = View.GONE
         }
-        noteList.layoutManager = GridLayoutManager(context, 2)
+        noteList.layoutManager = if (isListView) LinearLayoutManager(context) else GridLayoutManager(context, 2)
         val adapter = NoteListAdapter(
             list.toTypedArray(),
             folder,
             onClickNote = { id -> viewModel._eventListener.value = NoteListEvent.NoteClicked(id) },
-            onClickNoteEditDetails = { note, rootView -> openEditNoteDetailsOptions(note, rootView) }
+            onClickNoteEditDetails = { note, rootView -> openEditNoteDetailsOptions(note, rootView) },
+            isListView
         )
         noteList.adapter = adapter
         if (!noteList.isVisible) {
@@ -158,6 +159,7 @@ class NoteListFragment : Fragment() {
         fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor(folder.color)))
         folderButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         listCardSwitchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
+        listCardSwitchButton.rotation = if (isListView) -90f else 0f
     }
 
     private fun showFoldersTray(list: List<RoomFolder>, currentFolder: RoomFolder) {

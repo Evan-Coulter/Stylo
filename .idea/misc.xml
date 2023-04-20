@@ -36,6 +36,7 @@
         <entry key="app/src/main/res/layout/fragment_note_editor.xml" value="0.35997772216796875" />
         <entry key="app/src/main/res/layout/fragment_note_list.xml" value="0.21742553710937507" />
         <entry key="app/src/main/res/layout/note_list_card_item.xml" value="0.33500213623046887" />
+        <entry key="app/src/main/res/layout/note_list_list_item.xml" value="0.1688100179036458" />
         <entry key="app/src/main/res/layout/rename_note_dialog_layout.xml" value="0.2472015380859375" />
         <entry key="app/src/main/res/layout/test_recycler_row.xml" value="0.1703125" />
         <entry key="app/src/main/res/menu/edit_folder_details_options.xml" value="0.28888888888888886" />

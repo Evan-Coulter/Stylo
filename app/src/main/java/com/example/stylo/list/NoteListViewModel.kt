@@ -146,10 +146,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     }
 
     private fun switchCardListView() {
+        postNewState(NoteListViewState.LoadingState)
         isListView = !isListView
         sharedPreferences.edit().putBoolean(SHARED_PREF_LIST_CARD_SWITCH, isListView).apply()
-        val notes = repository.getAllNotes()
-        postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
+        displayBasicListState()
     }
 
     private fun openNoteEditor(notePushed: NoteListEvent.NoteClicked) {
