@@ -4,21 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="220dp"
+    app:elevation="3dp"
     android:layout_margin="12dp"
-    app:elevation="4dp"
-    android:elevation="4dp"
+    android:elevation="3dp"
     android:background="@drawable/note_list_card_background">
 
     <TextView
         android:id="@+id/cardViewTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="Hello World"
-        android:layout_margin="40dp"
-        android:textSize="12sp"/>
+        android:text="Hello World. This Is my really long title! Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World v Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="@+id/cardViewContent"
+        app:layout_constraintStart_toStartOf="@+id/cardViewContent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/cardViewContent"
@@ -40,13 +43,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="18dp"
-        app:fabCustomSize="60dp"
+        app:fabCustomSize="48dp"
         android:backgroundTint="@color/white"
         android:src="@drawable/ic_round_more_horiz_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:backgroundTint="@color/light_grey"
-        app:borderWidth="0dp"/>
+        app:borderWidth="0dp"
+        app:elevation="4dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

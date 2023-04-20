@@ -1,6 +1,7 @@
 package com.example.stylo.list
 
 import android.graphics.Color
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ class NoteListAdapter(
 
     override fun onBindViewHolder(holder: NoteListRecyclerViewHolder, position: Int) {
         holder.title.text = dataset[position].title
-        holder.content.text = dataset[position].content
+        holder.content.text = Html.fromHtml(dataset[position].content, Html.FROM_HTML_MODE_COMPACT)
         holder.fab.setOnClickListener{onClickNoteEditDetails(dataset[position], holder.fab)}
         holder.fab.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)))
         holder.view.setOnClickListener {onClickNote(dataset[position].uid)}
