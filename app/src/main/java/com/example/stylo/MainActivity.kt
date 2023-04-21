@@ -1,10 +1,9 @@
 package com.example.stylo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
-import com.example.stylo.editor.NoteEditorFragment
 import com.example.stylo.list.NoteListFragment
 
 class MainActivity : AppCompatActivity() {
