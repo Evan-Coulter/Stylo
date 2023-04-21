@@ -36,13 +36,17 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/change_folder_membership_list"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="-4dp"
+        android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="300dp"
         app:layout_constraintStart_toStartOf="@+id/change_folder_membership_title"
         app:layout_constraintTop_toBottomOf="@id/change_folder_membership_note_name"
-        tools:listitem="@layout/change_folder_membership_list_item"
-        android:layout_marginTop="12dp"/>
+        tools:listitem="@layout/change_folder_membership_list_item" />
 
     <Button
         android:id="@+id/change_folder_membership_save_button"
