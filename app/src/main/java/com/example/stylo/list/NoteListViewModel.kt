@@ -74,6 +74,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         }
 
         //TODO REMOVE
+        /*
         if (repository.getAllNotes().isEmpty()) {
             val homeworkFolder = repository.getFolder(repository.add(RoomFolderBuilder()
                 .setName("Homework")
@@ -119,6 +120,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             repository.addNoteToFolder(otherStuffNote, otherStuffFolder)
             repository.addNoteToFolder(choresNote, repository.getFolder(1))
         }
+         */
     }
 
     override fun onCleared() {
@@ -225,10 +227,10 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     private fun attemptToDeleteFolder(event: NoteListEvent.AttemptToDeleteFolder) {
         postNewState(NoteListViewState.LoadingState)
         try {
-            postNewState(NoteListViewState.LoadingState)
             repository.delete(repository.getFolder(event.folderID))
             if (event.folderID == this.folder.uid) {
                 this.folder = repository.getFolder(1)
+                sharedPreferences.edit().putInt(SHARED_PREF_FOLDER_ID, folder.uid).apply()
             }
             postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
         } catch (e : Throwable) {
