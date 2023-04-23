@@ -17,7 +17,8 @@
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_baseline_more_vert_24"
         android:background="@android:color/transparent"
-        app:tint="@color/text_color" />
+        app:tint="@color/text_color"
+        android:contentDescription="@string/open_edit_folder_details_menu"/>
 
     <ImageButton
         android:id="@+id/logoButton"
@@ -28,7 +29,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_logo"
-        android:background="@android:color/transparent"/>
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/application_logo"/>
 
     <nl.dionsegijn.konfetti.xml.KonfettiView
         android:id="@+id/confetti"
@@ -77,7 +79,8 @@
         android:background="@android:color/transparent"
         android:layout_marginStart="@dimen/side_margin"
         android:layout_marginTop="12dp"
-        app:tint="@color/text_color" />
+        app:tint="@color/text_color"
+        android:contentDescription="@string/open_list_of_folders"/>
 
     <ImageButton
         android:id="@+id/list_card_switch"
@@ -89,7 +92,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/folder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/folder"
-        app:tint="@color/text_color" />
+        app:tint="@color/text_color"
+        android:contentDescription="@string/switch_between_card_and_list_view"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
@@ -113,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:text="No notes are saved in this folder."
+        android:text="@string/no_notes_are_saved_in_this_folder"
         android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/fab"
@@ -129,7 +133,7 @@
         app:layout_constraintTop_toBottomOf="@id/no_notes_are_saved_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Click the circle button below \n to write a new note."
+        android:text="@string/click_the_circle_button_below_n_to_write_a_new_note"
         android:gravity="center"
         android:layout_marginTop="24dp"
         android:textSize="16sp"
@@ -144,7 +148,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="@dimen/side_margin"
-        app:fabSize="normal"/>
+        app:fabSize="normal"
+        android:contentDescription="@string/create_new_note"/>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

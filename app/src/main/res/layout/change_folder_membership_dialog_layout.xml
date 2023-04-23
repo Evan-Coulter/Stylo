@@ -16,7 +16,7 @@
         android:id="@+id/change_folder_membership_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change folder(s)"
+        android:text="@string/change_folder_s"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
         android:id="@+id/change_folder_membership_note_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Note title"
+        android:text="@string/note_title"
         app:layout_constraintTop_toBottomOf="@id/change_folder_membership_title"
         app:layout_constraintStart_toStartOf="@id/change_folder_membership_title"
         android:layout_marginTop="12dp"
@@ -53,7 +53,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:textAllCaps="false"
         android:textColor="@color/pink"
 
@@ -69,7 +69,7 @@
         app:layout_constraintEnd_toStartOf="@id/change_folder_membership_save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="@color/pink"
         android:textStyle="bold"
         android:textAllCaps="false"/>
@@ -98,7 +98,7 @@
         <TextView
             android:layout_margin="6dp"
             android:id="@+id/change_folder_membership_saved_text"
-            android:text="Saved"
+            android:text="@string/saved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"/>

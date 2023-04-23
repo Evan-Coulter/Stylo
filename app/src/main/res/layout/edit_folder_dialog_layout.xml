@@ -16,7 +16,7 @@
         android:id="@+id/edit_folder_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit folder"
+        android:text="@string/edit_folder"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="26sp"
-        android:text="All Notes"
+        android:text="@string/all_notes"
         app:layout_constraintBottom_toTopOf="@+id/edit_folder_select_color_message"
         app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
         app:layout_constraintTop_toBottomOf="@id/edit_folder_title"
@@ -40,7 +40,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="New title"
+        android:hint="@string/new_title"
         android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edit_folder_title"
@@ -64,7 +64,7 @@
         android:id="@+id/edit_folder_select_color_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select color,"
+        android:text="@string/select_color"
         app:layout_constraintStart_toStartOf="@id/edit_folder_edit_text"
         app:layout_constraintTop_toBottomOf="@id/edit_folder_edit_text" />
 
@@ -127,7 +127,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:textAllCaps="false"
         android:textColor="@color/pink"
         android:textStyle="bold"
@@ -142,7 +142,7 @@
         app:layout_constraintEnd_toStartOf="@id/edit_folder_save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="@color/pink"
         android:textStyle="bold"
         android:textAllCaps="false"/>
@@ -171,7 +171,7 @@
         <TextView
             android:layout_margin="6dp"
             android:id="@+id/rename_note_saved_text"
-            android:text="Saved"
+            android:text="@string/saved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp" />
