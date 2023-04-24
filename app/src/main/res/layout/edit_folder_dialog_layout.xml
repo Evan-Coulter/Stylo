@@ -82,7 +82,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_yellow_color_picker_unchecked"
+            android:background="@drawable/yellow_color_picker_unchecked_background"
             android:button="@null" />
 
         <CheckBox
@@ -90,7 +90,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_pink_color_picker_unchecked"
+            android:background="@drawable/pink_color_picker_unchecked_background"
             android:button="@null" />
 
         <CheckBox
@@ -98,7 +98,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_blue_color_picker_unchecked"
+            android:background="@drawable/blue_color_picker_unchecked_background"
             android:button="@null" />
 
         <CheckBox
@@ -106,7 +106,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_grey_color_picker_unchecked"
+            android:background="@drawable/grey_color_picker_unchecked_background"
             android:button="@null" />
 
         <CheckBox
@@ -114,7 +114,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:background="@drawable/ic_green_color_picker_unchecked"
+            android:background="@drawable/green_color_picker_unchecked_background"
             android:button="@null" />
 
 

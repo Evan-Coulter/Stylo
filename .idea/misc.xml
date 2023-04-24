@@ -5,26 +5,49 @@
       <map>
         <entry key="app/src/main/res/drawable-v24/editor_format_button_background_left.xml" value="0.209" />
         <entry key="app/src/main/res/drawable-v24/note_list_card_background.xml" value="0.1105" />
+        <entry key="app/src/main/res/drawable/blue_color_picker_checked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/blue_color_picker_unchecked_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/color_button_background.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/dialog_background.xml" value="0.1105" />
+        <entry key="app/src/main/res/drawable/editor_format_button.xml" value="0.101" />
         <entry key="app/src/main/res/drawable/editor_format_button_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/editor_format_button_background_left.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/editor_format_button_background_right.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/folder_tray_background.xml" value="0.179" />
         <entry key="app/src/main/res/drawable/folder_tray_rounded_buttons.xml" value="0.179" />
+        <entry key="app/src/main/res/drawable/green_color_picker_checked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/green_color_picker_unchecked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/grey_color_picker_checked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/grey_color_picker_unchecked_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_abstract_card_item.xml" value="0.18" />
         <entry key="app/src/main/res/drawable/ic_abstract_list_item.xml" value="0.18" />
         <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.1105" />
         <entry key="app/src/main/res/drawable/ic_baseline_format_list_bulleted_24.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_blue_color_picker_checked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_blue_color_picker_checked_shape.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_blue_color_picker_unchecked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_green_color_picker_checked.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_green_color_picker_unchecked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_grey_color_picker_checked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_grey_color_picker_unchecked.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_help.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_more_vert_fill0_wght700_grad0_opsz48.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_pink_color_picker_checked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_pink_color_picker_unchecked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_round_arrow_back_24.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/ic_yellow_color_picker_checked.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/ic_yellow_color_picker_unchecked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ic_yellow_color_picker_unchecked_shape.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/note_list_card_background.xml" value="0.101" />
+        <entry key="app/src/main/res/drawable/note_list_card_shape.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/pink_color_picker_checked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/pink_color_picker_unchecked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/ripple_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/rounded_corners.xml" value="0.179" />
+        <entry key="app/src/main/res/drawable/yellow_color_picker_checked_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/yellow_color_picker_unchecked_background.xml" value="0.209" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.17014312744140628" />
         <entry key="app/src/main/res/layout/change_folder_membership_dialog_layout.xml" value="0.29738769531250003" />
         <entry key="app/src/main/res/layout/change_folder_membership_list_item.xml" value="0.33229166666666665" />

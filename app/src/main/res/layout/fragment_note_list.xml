@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_baseline_more_vert_24"
-        android:background="@android:color/transparent"
+        android:background="@drawable/ripple_background"
         app:tint="@color/text_color"
         android:contentDescription="@string/open_edit_folder_details_menu"/>
 
@@ -76,7 +76,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spacer"
         android:src="@drawable/ic_folder"
-        android:background="@android:color/transparent"
+        android:background="@drawable/ripple_background"
         android:layout_marginStart="@dimen/side_margin"
         android:layout_marginTop="12dp"
         app:tint="@color/text_color"
@@ -87,7 +87,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/ripple_background"
         android:src="@drawable/ic_abstract_card_item"
         app:layout_constraintBottom_toBottomOf="@+id/folder"
         app:layout_constraintEnd_toEndOf="parent"

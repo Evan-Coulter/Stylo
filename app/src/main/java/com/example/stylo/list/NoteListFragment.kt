@@ -157,6 +157,7 @@ class NoteListFragment : Fragment() {
         fab.setColorFilter(Color.WHITE)
         fab.rippleColor = Color.parseColor(ColorStringMap.getLightColor(folder.color))
         fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(ColorStringMap.getColor(folder.color)))
+        editFolderDetailsButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         folderButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         listCardSwitchButton.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         listCardSwitchButton.rotation = if (isListView) -90f else 0f

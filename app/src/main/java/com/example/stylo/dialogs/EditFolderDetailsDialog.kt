@@ -115,23 +115,23 @@ class EditFolderDetailsDialog(
             checkBox.setOnClickListener {
                 when(it.id) {
                     R.id.edit_folder_yellow_checkbox -> {
-                        enableCheckBox(checkBox, R.drawable.ic_yellow_color_picker_checked)
+                        enableCheckBox(checkBox, R.drawable.yellow_color_picker_checked_background)
                         newColor = "Yellow"
                     }
                     R.id.edit_folder_pink_checkbox -> {
-                        enableCheckBox(checkBox, R.drawable.ic_pink_color_picker_checked)
+                        enableCheckBox(checkBox, R.drawable.pink_color_picker_checked_background)
                         newColor = "Pink"
                     }
                     R.id.edit_folder_blue_checkbox -> {
-                        enableCheckBox(checkBox, R.drawable.ic_blue_color_picker_checked)
+                        enableCheckBox(checkBox, R.drawable.blue_color_picker_checked_background)
                         newColor = "Blue"
                     }
                     R.id.edit_folder_grey_checkbox -> {
-                        enableCheckBox(checkBox, R.drawable.ic_grey_color_picker_checked)
+                        enableCheckBox(checkBox, R.drawable.grey_color_picker_checked_background)
                         newColor = "Grey"
                     }
                     R.id.edit_folder_green_checkbox -> {
-                        enableCheckBox(checkBox, R.drawable.ic_green_color_picker_checked)
+                        enableCheckBox(checkBox, R.drawable.green_color_picker_checked_background)
                         newColor = "Green"
                     }
                 }
@@ -139,19 +139,19 @@ class EditFolderDetailsDialog(
         }
         when(currentFolder.color){
             "Yellow"->{ view?.findViewById<CheckBox>(R.id.edit_folder_yellow_checkbox)?.let {
-                    enableCheckBox(it, R.drawable.ic_yellow_color_picker_checked)
+                    enableCheckBox(it, R.drawable.yellow_color_picker_checked_background)
             }}
             "Pink"->{ view?.findViewById<CheckBox>(R.id.edit_folder_pink_checkbox)?.let {
-                enableCheckBox(it, R.drawable.ic_pink_color_picker_checked)
+                enableCheckBox(it, R.drawable.pink_color_picker_checked_background)
             }}
             "Blue"->{ view?.findViewById<CheckBox>(R.id.edit_folder_blue_checkbox)?.let {
-                enableCheckBox(it, R.drawable.ic_blue_color_picker_checked)
+                enableCheckBox(it, R.drawable.blue_color_picker_checked_background)
             }}
             "Grey"->{ view?.findViewById<CheckBox>(R.id.edit_folder_grey_checkbox)?.let {
-                enableCheckBox(it, R.drawable.ic_grey_color_picker_checked)
+                enableCheckBox(it, R.drawable.grey_color_picker_checked_background)
             }}
             "Green"->{ view?.findViewById<CheckBox>(R.id.edit_folder_green_checkbox)?.let {
-                enableCheckBox(it, R.drawable.ic_green_color_picker_checked)
+                enableCheckBox(it, R.drawable.green_color_picker_checked_background)
             }}
         }
     }
@@ -162,11 +162,11 @@ class EditFolderDetailsDialog(
         checkBoxes.filter { it.id != checkBox.id }.forEach {
             it.isChecked = false
             when(it.id) {
-                R.id.edit_folder_yellow_checkbox -> it.setBackgroundResource(R.drawable.ic_yellow_color_picker_unchecked)
-                R.id.edit_folder_pink_checkbox -> it.setBackgroundResource(R.drawable.ic_pink_color_picker_unchecked)
-                R.id.edit_folder_blue_checkbox -> it.setBackgroundResource(R.drawable.ic_blue_color_picker_unchecked)
-                R.id.edit_folder_grey_checkbox -> it.setBackgroundResource(R.drawable.ic_grey_color_picker_unchecked)
-                R.id.edit_folder_green_checkbox -> it.setBackgroundResource(R.drawable.ic_green_color_picker_unchecked)
+                R.id.edit_folder_yellow_checkbox -> it.setBackgroundResource(R.drawable.yellow_color_picker_unchecked_background)
+                R.id.edit_folder_pink_checkbox -> it.setBackgroundResource(R.drawable.pink_color_picker_unchecked_background)
+                R.id.edit_folder_blue_checkbox -> it.setBackgroundResource(R.drawable.blue_color_picker_unchecked_background)
+                R.id.edit_folder_grey_checkbox -> it.setBackgroundResource(R.drawable.grey_color_picker_unchecked_background)
+                R.id.edit_folder_green_checkbox -> it.setBackgroundResource(R.drawable.green_color_picker_unchecked_background)
             }
         }
     }
