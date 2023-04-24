@@ -2,5 +2,5 @@
 <ripple
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/off_white">
-    <item android:drawable="@drawable/editor_format_button"/>
+    <item android:drawable="@drawable/editor_format_button_left"/>
 </ripple>

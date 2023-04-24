@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/color_button_background.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/dialog_background.xml" value="0.1105" />
         <entry key="app/src/main/res/drawable/editor_format_button_background.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/editor_format_button_background_left.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/editor_format_button_background_right.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/folder_tray_background.xml" value="0.179" />
         <entry key="app/src/main/res/drawable/folder_tray_rounded_buttons.xml" value="0.179" />
@@ -22,6 +23,7 @@
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/ic_yellow_color_picker_checked.xml" value="0.1495" />
         <entry key="app/src/main/res/drawable/ic_yellow_color_picker_unchecked.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/note_list_card_background.xml" value="0.101" />
         <entry key="app/src/main/res/drawable/rounded_corners.xml" value="0.179" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.17014312744140628" />
         <entry key="app/src/main/res/layout/change_folder_membership_dialog_layout.xml" value="0.29738769531250003" />
