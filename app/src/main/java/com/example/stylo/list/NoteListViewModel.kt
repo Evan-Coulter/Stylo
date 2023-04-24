@@ -72,55 +72,6 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             val folderID = repository.add(repository.getDefaultFolder())
             repository.getFolder(folderID)
         }
-
-        //TODO REMOVE
-        /*
-        if (repository.getAllNotes().isEmpty()) {
-            val homeworkFolder = repository.getFolder(repository.add(RoomFolderBuilder()
-                .setName("Homework")
-                .setColor("Blue")
-                .build()))
-            val otherStuffFolder = repository.getFolder(repository.add(RoomFolderBuilder()
-                .setName("Other stuff")
-                .setColor("Yellow")
-                .build()))
-            val homeworkNote1 = repository.getNote(
-                repository.add(RoomNoteBuilder()
-                    .setTitle("Homework 1")
-                    .setContent("Homework 1 Content")
-                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
-                    .build())
-            )
-            val homeworkNote2 = repository.getNote(
-                repository.add(RoomNoteBuilder()
-                    .setTitle("Homework 2")
-                    .setContent("Homework 2 Content")
-                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
-                    .build())
-            )
-            val otherStuffNote = repository.getNote(
-                repository.add(RoomNoteBuilder()
-                    .setTitle("Other stuff")
-                    .setContent("Other stuff Content")
-                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
-                    .build())
-            )
-            val choresNote = repository.getNote(
-                repository.add(RoomNoteBuilder()
-                    .setTitle("Chores")
-                    .setContent("Chores Content")
-                    .also { it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build())) }
-                    .build())
-            )
-            repository.addNoteToFolder(homeworkNote1, homeworkFolder)
-            repository.addNoteToFolder(homeworkNote1, repository.getFolder(1))
-            repository.addNoteToFolder(homeworkNote2, homeworkFolder)
-            repository.addNoteToFolder(homeworkNote2, repository.getFolder(1))
-            repository.addNoteToFolder(otherStuffNote, repository.getFolder(1))
-            repository.addNoteToFolder(otherStuffNote, otherStuffFolder)
-            repository.addNoteToFolder(choresNote, repository.getFolder(1))
-        }
-         */
     }
 
     override fun onCleared() {

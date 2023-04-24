@@ -110,7 +110,9 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
         tools:visibility="gone"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"/>
 
     <TextView
         android:id="@+id/no_notes_are_saved_title"
