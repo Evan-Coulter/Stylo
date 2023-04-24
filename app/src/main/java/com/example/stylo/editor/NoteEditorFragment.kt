@@ -19,6 +19,8 @@ import com.example.stylo.data.model.RoomNote
 import com.example.stylo.util.ColorStringMap
 import jp.wasabeef.richeditor.RichEditor
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFolder) : Fragment() {
     private lateinit var editor: RichEditor
@@ -98,12 +100,14 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
             it.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         }
         editor.html = note.content
-        lastEditedTime.text = note.dateLastSaved.toString()
+        val format = SimpleDateFormat("MMMM d, yyyy 'at' h:mma", Locale.US)
+        lastEditedTime.text = format.format(note.dateLastSaved)
         noteTitle.setText(note.title)
     }
 
     private fun showNoteUpdatedState(note: RoomNote) {
-        lastEditedTime.text = note.dateLastSaved.toString()
+        lastEditedTime.text = SimpleDateFormat("MMMM d, yyyy 'at' h:mma", Locale.US)
+            .format(note.dateLastSaved)
     }
 
     private fun showSetTitleState() {

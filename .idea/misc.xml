@@ -44,6 +44,7 @@
         <entry key="app/src/main/res/drawable/ic_yellow_color_picker_unchecked_shape.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/note_list_card_background.xml" value="0.101" />
         <entry key="app/src/main/res/drawable/note_list_card_shape.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/note_list_list_item_background.xml" value="0.101" />
         <entry key="app/src/main/res/drawable/pink_color_picker_checked_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/pink_color_picker_unchecked_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/ripple_background.xml" value="0.209" />
@@ -63,7 +64,7 @@
         <entry key="app/src/main/res/layout/fragment_note_editor.xml" value="0.35997772216796875" />
         <entry key="app/src/main/res/layout/fragment_note_list.xml" value="0.21742553710937507" />
         <entry key="app/src/main/res/layout/note_list_card_item.xml" value="0.33500213623046887" />
-        <entry key="app/src/main/res/layout/note_list_list_item.xml" value="0.1688100179036458" />
+        <entry key="app/src/main/res/layout/note_list_list_item.xml" value="0.2814351399739583" />
         <entry key="app/src/main/res/layout/rename_note_dialog_layout.xml" value="0.443011474609375" />
         <entry key="app/src/main/res/layout/test_recycler_row.xml" value="0.1703125" />
         <entry key="app/src/main/res/menu/edit_folder_details_options.xml" value="0.28888888888888886" />
