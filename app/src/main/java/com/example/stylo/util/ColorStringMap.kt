@@ -2,7 +2,7 @@ package com.example.stylo.util
 
 object ColorStringMap {
     private val colorMap = hashMapOf(
-        "Yellow" to listOf("#FCDF4B", "#FFED94"),
+        "Yellow" to listOf("#DCBF2A", "#FFED94"),
         "Pink" to listOf("#E8736A", "#FFC4BF"),
         "Blue" to listOf("#6699CC", "#8EAECF"),
         "Grey" to listOf("#50514F", "#B3B9AD"),

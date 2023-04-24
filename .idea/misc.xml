@@ -13,6 +13,8 @@
         <entry key="app/src/main/res/drawable/editor_format_button_background.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/editor_format_button_background_left.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/editor_format_button_background_right.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/editor_format_button_left.xml" value="0.101" />
+        <entry key="app/src/main/res/drawable/editor_format_button_right.xml" value="0.101" />
         <entry key="app/src/main/res/drawable/folder_tray_background.xml" value="0.179" />
         <entry key="app/src/main/res/drawable/folder_tray_rounded_buttons.xml" value="0.179" />
         <entry key="app/src/main/res/drawable/green_color_picker_checked_background.xml" value="0.209" />

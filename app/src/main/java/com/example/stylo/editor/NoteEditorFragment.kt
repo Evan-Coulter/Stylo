@@ -95,7 +95,7 @@ class NoteEditorFragment(private val note: RoomNote, private val folder: RoomFol
 
     private fun showFullEditorState(note: RoomNote, folder: RoomFolder) {
         listOf(bold, underline, italic, backButton, strikeThrough, bullets).forEach {
-            it.setColorFilter(Color.parseColor(ColorStringMap.getLightColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
+            it.setColorFilter(Color.parseColor(ColorStringMap.getColor(folder.color)), android.graphics.PorterDuff.Mode.SRC_IN)
         }
         editor.html = note.content
         lastEditedTime.text = note.dateLastSaved.toString()
