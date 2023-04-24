@@ -97,7 +97,7 @@ class NoteListFragment : Fragment() {
 
 
     private fun initTextViews(view: View) {
-        view.findViewById<TextView>(R.id.title).text = "All Notes"
+        view.findViewById<TextView>(R.id.title).text = getString(R.string.all_notes_text_string)
     }
 
     private fun initButtons(view: View) {

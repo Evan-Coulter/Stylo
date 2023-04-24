@@ -42,4 +42,5 @@
     <string name="lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa_sit_amet_tempus_magna_tortor_id_ante_lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, sit amet tempus magna tortor id ante Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, ...</string>
     <string name="open_edit_note_details_option_menu">Open edit note details option menu.</string>
     <string name="rename_note">Rename note</string>
+    <string name="all_notes_text_string">All Notes</string>
 </resources>
