@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "306313615786",
+    "project_id": "stylo-c0d45",
+    "storage_bucket": "stylo-c0d45.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306313615786:android:7eb67153ff515a7c8233d3",
+        "android_client_info": {
+          "package_name": "com.example.stylo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306313615786-nideghefe6bhsk6dceg8tbfld0lf39hp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBes5XNhUZsWdWOwwvIovzDK-J3Wfqv5BI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306313615786-nideghefe6bhsk6dceg8tbfld0lf39hp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
