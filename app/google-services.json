@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "306313615786",
-    "project_id": "stylo-c0d45",
-    "storage_bucket": "stylo-c0d45.appspot.com"
+    "project_number": "468738094998",
+    "project_id": "stylo-1233d",
+    "storage_bucket": "stylo-1233d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:306313615786:android:7eb67153ff515a7c8233d3",
+        "mobilesdk_app_id": "1:468738094998:android:2dd781a2bd30b6bfee8fb7",
         "android_client_info": {
-          "package_name": "com.example.stylo"
+          "package_name": "com.coulter.stylo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "306313615786-nideghefe6bhsk6dceg8tbfld0lf39hp.apps.googleusercontent.com",
+          "client_id": "468738094998-8pjm75m2dmf6r2lukmflf54t89suu627.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBes5XNhUZsWdWOwwvIovzDK-J3Wfqv5BI"
+          "current_key": "AIzaSyDM9EcFXlpVX-KaLNyFnFXuQEJo6KpkM3c"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "306313615786-nideghefe6bhsk6dceg8tbfld0lf39hp.apps.googleusercontent.com",
+              "client_id": "468738094998-8pjm75m2dmf6r2lukmflf54t89suu627.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
