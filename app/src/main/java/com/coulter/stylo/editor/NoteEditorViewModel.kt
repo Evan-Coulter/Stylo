@@ -9,6 +9,8 @@ import com.coulter.stylo.data.NotesRepository
 import com.coulter.stylo.data.model.RoomFolder
 import com.coulter.stylo.data.model.RoomNote
 import com.coulter.stylo.data.model.RoomNoteBuilder
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -61,7 +63,8 @@ class NoteEditorViewModel(
                 noteBuilderMutex.withLock {
                     currentNoteBuilder.setTitle(newTitle)
                     currentNoteBuilder.setDateLastModified(Calendar.getInstance().time)
-                    val note = repository.getNote(repository.update(currentNoteBuilder.build()))
+                    repository.update(currentNoteBuilder.build())
+                    val note = repository.getNote(currentNoteBuilder.uid)
                     _uiState.value = NoteEditorViewState.ShowNoteUpdatedState(note)
                 }
             }
@@ -72,11 +75,14 @@ class NoteEditorViewModel(
                 noteBuilderMutex.withLock {
                     currentNoteBuilder.setContent(newContent)
                     currentNoteBuilder.setDateLastModified(Calendar.getInstance().time)
-                    val note = repository.getNote(repository.update(currentNoteBuilder.build()))
+                    repository.update(currentNoteBuilder.build())
+                    val note = repository.getNote(currentNoteBuilder.uid)
                     _uiState.value = NoteEditorViewState.ShowNoteUpdatedState(note)
                 }
             }
         }
+
+        Firebase.crashlytics.log("User opened note editor with note ID ${currentNoteBuilder.uid}")
     }
 
 
@@ -99,6 +105,7 @@ class NoteEditorViewModel(
     }
 
     private fun onEditorClosed(lastNoteContent: String, lastNoteTitle: String) {
+        Firebase.crashlytics.log("Editor is closing.")
         runBlocking {
             noteBuilderMutex.withLock {
                 currentNoteBuilder.setContent(lastNoteContent)

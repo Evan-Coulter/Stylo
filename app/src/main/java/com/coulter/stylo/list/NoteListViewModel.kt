@@ -1,16 +1,15 @@
 package com.coulter.stylo.list
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.coulter.stylo.data.NotesRepository
 import com.coulter.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
 import com.coulter.stylo.data.exceptions.FolderNotFoundException
 import com.coulter.stylo.data.exceptions.FolderSavingError
 import com.coulter.stylo.data.model.RoomFolder
 import com.coulter.stylo.data.model.RoomNoteBuilder
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 
 
 private const val SHARED_PREF_LIST_CARD_SWITCH = "shared_pref_list_card_switch"
@@ -68,9 +67,11 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
         folder = try {
             repository.getFolder(sharedPreferences.getInt(SHARED_PREF_FOLDER_ID, 1))
         } catch (e: NoSuchElementException) {
+            Firebase.crashlytics.log("Error when starting view model" + e.stackTrace)
             val folderID = repository.add(repository.getDefaultFolder())
             repository.getFolder(folderID)
         }
+        Firebase.crashlytics.log("Opened note list view model.")
     }
 
     override fun onCleared() {
@@ -80,6 +81,8 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
 
     private fun displayBasicListState() {
         val notes = if (folder.uid == 1) repository.getAllNotes() else repository.getNotesInFolder(folder.uid)
+        Firebase.crashlytics.log("User has ${notes.size} notes visible.")
+        Firebase.crashlytics.log("Note IDs include ${notes.map{it.uid}}.")
         folder = repository.getFolder(folder.uid) //updates folder object
         postNewState(NoteListViewState.ShowBasicListState(notes, folder, isListView))
     }
@@ -105,6 +108,7 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
     }
 
     private fun openNoteEditor(notePushed: NoteListEvent.NoteClicked) {
+        Firebase.crashlytics.log("User clicked note with ID ${notePushed.noteID}")
         postNewState(NoteListViewState.OpenNoteEditor(repository.getNote(notePushed.noteID), repository.getFolder(folder.uid)))
     }
 

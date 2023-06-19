@@ -33,14 +33,14 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         return dao.insert(note).toInt()
     }
 
-    fun update(note: RoomNote) : Int {
+    fun update(note: RoomNote) {
         if (note.filePath.isEmpty()) {
             throw FilePathNotSetException()
         }
         //Save as file
         saveToFile(note)
         //Save file meta data in database
-        return dao.update(note).toInt()
+        dao.update(note)
     }
 
     fun add(folder: RoomFolder): Int {
@@ -53,14 +53,14 @@ class NotesRepository (private val dao: NotesMetaDataDao, private val fileAccess
         return dao.insert(folder).toInt()
     }
 
-    fun update(folder: RoomFolder): Int {
+    fun update(folder: RoomFolder)  {
         if (folder.name.isEmpty()){
             throw FolderSavingError(FOLDER_TITLE_ERROR_MESSAGE)
         }
         if (folder.color.isEmpty()) {
             throw FolderSavingError(FOLDER_COLOR_ERROR_MESSAGE)
         }
-        return dao.update(folder).toInt()
+        dao.update(folder)
     }
 
 
