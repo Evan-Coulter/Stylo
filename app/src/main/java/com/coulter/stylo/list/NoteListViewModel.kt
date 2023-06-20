@@ -1,7 +1,9 @@
 package com.coulter.stylo.list
 
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.*
+import com.coulter.stylo.R
 import com.coulter.stylo.data.NotesRepository
 import com.coulter.stylo.data.exceptions.FOLDER_ALREADY_EXISTS_MESSAGE
 import com.coulter.stylo.data.exceptions.FolderNotFoundException
@@ -15,7 +17,11 @@ import com.google.firebase.ktx.Firebase
 private const val SHARED_PREF_LIST_CARD_SWITCH = "shared_pref_list_card_switch"
 private const val SHARED_PREF_FOLDER_ID = "shared_pref_folder_id"
 
-class NoteListViewModel(private val repository: NotesRepository, private val sharedPreferences: SharedPreferences) : ViewModel() {
+class NoteListViewModel(
+    private val repository: NotesRepository,
+    private val sharedPreferences: SharedPreferences,
+    private val context: Context
+) : ViewModel() {
     private var isListView: Boolean = true
     var folder: RoomFolder = repository.getDefaultFolder()
 
@@ -247,13 +253,15 @@ class NoteListViewModel(private val repository: NotesRepository, private val sha
             repository.update(event.note)
             postNewState(NoteListViewState.ShowEditNoteDetailsSuccessMessage)
         } catch (error: Throwable) {
-            postNewState(NoteListViewState.ShowRenameNoteErrorMessage("Sorry that title is not valid"))
+            val errorMessage = context.getString(R.string.error_invalid_title)
+            postNewState(NoteListViewState.ShowRenameNoteErrorMessage(errorMessage))
         }
     }
 
     private fun addNewNote() {
         postNewState(NoteListViewState.LoadingState)
-        val noteID = repository.add(RoomNoteBuilder().setTitle("New Note").setContent("").also {
+        val defaultNoteTitle = context.getString(R.string.new_note)
+        val noteID = repository.add(RoomNoteBuilder().setTitle(defaultNoteTitle).setContent("").also {
             it.setFileName(repository.getCurrentOrGenerateNewFileName(it.build()))
         }.build())
         val note = repository.getNote(noteID)

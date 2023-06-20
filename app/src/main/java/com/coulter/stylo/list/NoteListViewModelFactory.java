@@ -28,6 +28,6 @@ public class NoteListViewModelFactory implements ViewModelProvider.Factory {
             application.getString(R.string.stylo_PREFERENCE_FILE_KEY),
             Context.MODE_PRIVATE
         );
-        return (T) new NoteListViewModel(repository, sharedPreferences);
+        return (T) new NoteListViewModel(repository, sharedPreferences, application);
     }
 }
