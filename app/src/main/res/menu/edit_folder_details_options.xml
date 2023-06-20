@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/open_edit_folder_details_button"
-        android:title="Edit folder details"/>
+        android:title="@string/menu_option_edit_folder_label"/>
     <item
         android:id="@+id/delete_folder_button"
-        android:title="Delete folder"/>
+        android:title="@string/menu_option_delete_folder_label"/>
 </menu>

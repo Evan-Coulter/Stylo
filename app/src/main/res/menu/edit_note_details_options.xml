@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/open_note_editor"
-        android:title="Open" />
+        android:title="@string/menu_option_open_label" />
     <item android:id="@+id/rename_note"
-        android:title="Rename"/>
+        android:title="@string/menu_option_rename_label"/>
     <item android:id="@+id/change_folders"
-        android:title="Change Folder"/>
+        android:title="@string/menu_option_change_label"/>
     <item android:id="@+id/delete_note"
-        android:title="Delete"/>
+        android:title="@string/menu_option_delete_label"/>
 </menu>
