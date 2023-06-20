@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="change_folder_s">Alterar pasta(s)</string>
+    <string name="note_title">Título da nota</string>
+    <string name="save">Salvar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="saved">Salvo</string>
+    <string name="folder_title">Título da Pasta</string>
+    <string name="create_new_folder">Criar nova pasta</string>
+    <string name="select_color">Selecionar cor</string>
+    <string name="new_folder_title">Novo título da pasta</string>
+    <string name="delete_folder">Excluir pasta?</string>
+    <string name="folder_name">Nome da pasta</string>
+    <string name="this_action_cannot_be_undone">Essa ação não pode ser desfeita.</string>
+    <string name="delete">Excluir</string>
+    <string name="deleted">Excluído</string>
+    <string name="delete_note">Excluir anotação?</string>
+    <string name="note_name">Nome da anotação</string>
+    <string name="edit_folder">Editar pasta</string>
+    <string name="all_notes">Todas as Anotações</string>
+    <string name="new_title">Novo título</string>
+    <string name="folders">Pastas</string>
+    <string name="new_string">Novo</string>
+    <string name="folder">Pasta</string>
+    <string name="new_note">Nova Anotação</string>
+    <string name="go_back_to_note_list_page">Voltar para a página de lista de anotações</string>
+    <string name="set_bold_format_in_editor">Definir formato em negrito no editor</string>
+    <string name="set_italics_format_in_editor">Definir formato em itálico no editor</string>
+    <string name="set_underline_format_in_editor">Definir formato de sublinhado no editor</string>
+    <string name="set_strikethrough_format_in_editor">Definir formato de tachado no editor</string>
+    <string name="set_bullet_list_format_in_editor">Definir formato de lista com marcadores no editor</string>
+    <string name="open_edit_folder_details_menu">Abrir menu de edição de detalhes da pasta</string>
+    <string name="application_logo">Logotipo do aplicativo</string>
+    <string name="create_new_note">Criar nova anotação</string>
+    <string name="open_list_of_folders">Abrir lista de pastas</string>
+    <string name="switch_between_card_and_list_view">Alternar entre visualização em cartão e em lista</string>
+    <string name="no_notes_are_saved_in_this_folder">Não há anotações salvas nesta pasta</string>
+    <string name="click_the_circle_button_below_n_to_write_a_new_note">Clique no botão circular abaixo\n para escrever uma nova anotação</string>
+    <string name="open_edit_note_details_option_menu">Abrir menu de opções para editar detalhes da anotação</string>
+    <string name="rename_note">Renomear anotação</string>
+    <string name="all_notes_text_string">Todas as Anotações</string>
+
+    <!-- Menu option labels -->
+    <string name="menu_option_open_label">Abrir</string>
+    <string name="menu_option_rename_label">Renomear</string>
+    <string name="menu_option_change_label">Aletar Pasta</string>
+    <string name="menu_option_delete_label">Excluir</string>
+    <string name="menu_option_edit_folder_label">Editar detalhes da pasta</string>
+    <string name="menu_option_delete_folder_label">Excluir pasta</string>
+
+    <!-- Error message -->
+    <string name="error_invalid_title">Desculpe este titulo não é válido</string>
+</resources>
