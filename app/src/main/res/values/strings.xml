@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Stylo</string>
-    <string name="stylo_PREFERENCE_FILE_KEY">STYLO_APP_PREFERENCE_FILE_KEY</string>
+    <string name="app_name" translatable="false">Stylo</string>
+    <string name="stylo_PREFERENCE_FILE_KEY" translatable="false">STYLO_APP_PREFERENCE_FILE_KEY</string>
     <string name="change_folder_s">Change folder(s)</string>
     <string name="note_title">Note title</string>
     <string name="save">Save</string>
@@ -23,7 +23,7 @@
     <string name="folders">Folders</string>
     <string name="new_string">New</string>
     <string name="folder">Folder</string>
-    <string name="april_13_2023_at_1_08pm">April 13, 2023 at 1:08pm</string>
+    <string name="april_13_2023_at_1_08pm" translatable="false">April 13, 2023 at 1:08pm</string>
     <string name="new_note">New Note</string>
     <string name="go_back_to_note_list_page">Go back to note list page</string>
     <string name="set_bold_format_in_editor">Set bold format in editor</string>
@@ -38,9 +38,20 @@
     <string name="switch_between_card_and_list_view">Switch between card and list view.</string>
     <string name="no_notes_are_saved_in_this_folder">No notes are saved in this folder.</string>
     <string name="click_the_circle_button_below_n_to_write_a_new_note">Click the circle button below \n to write a new note.</string>
-    <string name="hello_world_this_is_my_really_long_title_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_v_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world">Hello World. This Is my really long title! Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World v Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World</string>
-    <string name="lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa_sit_amet_tempus_magna_tortor_id_ante_lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, sit amet tempus magna tortor id ante Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, ...</string>
+    <string name="hello_world_this_is_my_really_long_title_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_v_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world_hello_world" translatable="false">Hello World. This Is my really long title! Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World v Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World Hello World</string>
+    <string name="lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa_sit_amet_tempus_magna_tortor_id_ante_lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_curabitur_egestas_nibh_sed_efficitur_elementum_ex_justo_accumsan_massa" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, sit amet tempus magna tortor id ante Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, nibh sed efficitur elementum, ex justo accumsan massa, ...</string>
     <string name="open_edit_note_details_option_menu">Open edit note details option menu.</string>
     <string name="rename_note">Rename note</string>
     <string name="all_notes_text_string">All Notes</string>
+
+    <!-- Menu option labels -->
+    <string name="menu_option_open_label">Open</string>
+    <string name="menu_option_rename_label">Rename</string>
+    <string name="menu_option_change_label">Change Folder</string>
+    <string name="menu_option_delete_label">Delete</string>
+    <string name="menu_option_edit_folder_label">Edit folder details</string>
+    <string name="menu_option_delete_folder_label">Delete folder</string>
+
+    <!-- Error message -->
+    <string name="error_invalid_title">Sorry that title is not valid</string>
 </resources>
